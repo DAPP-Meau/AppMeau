@@ -47,13 +47,7 @@ export default function TabLayout() {
         }}
       />
     <Tabs.Screen
-        name="login"
-        options={{
-            tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-    />
-    <Tabs.Screen
-        name="createLogin"
+        name="introduction"
         options={{
             tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
