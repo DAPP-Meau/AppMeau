@@ -4,13 +4,10 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Text
 } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
-import BottomTabBarItem from "@react-navigation/bottom-tabs/src/views/BottomTabItem";
 import { useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import ScrollView = Animated.ScrollView;
 
 export default function CreateLogin() {

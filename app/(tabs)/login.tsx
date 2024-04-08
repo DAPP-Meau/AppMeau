@@ -1,6 +1,4 @@
-import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
-
-import { Text, View } from "@/components/Themed";
+import { StyleSheet, TextInput, TouchableOpacity, Text, View } from "react-native";
 import { useState } from "react";
 
 export default function Login() {
