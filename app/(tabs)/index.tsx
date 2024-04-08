@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
-    elevation: 1,
+    elevation: 4,
   },
   buttonText: {
     color: Colors.text.gray2,

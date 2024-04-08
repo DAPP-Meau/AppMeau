@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
+    elevation:4
   },
   buttonText: {
     color: Colors.text.gray2,

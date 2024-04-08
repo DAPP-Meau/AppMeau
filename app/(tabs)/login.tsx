@@ -60,7 +60,7 @@ export default function Login() {
             <FontAwesome
               style={{ color: Colors.text.white1 }}
               name="facebook"
-              size={28}
+              size={16}
             />
             <Text
               style={[styles.buttonLoginText, { color: Colors.text.white1 }]}
@@ -75,7 +75,7 @@ export default function Login() {
             <FontAwesome
               style={{ color: Colors.text.white1 }}
               name="google"
-              size={25}
+              size={16}
             />
             <Text style={[styles.buttonLoginText, { color: Colors.text.white1 }]}>
               ENTRAR COM GOOGLE
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginTop: 10,
     gap: 8,
+    elevation:4
   },
   buttonLoginText: {
     color: Colors.text.gray2,
