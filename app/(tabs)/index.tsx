@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
@@ -11,14 +11,12 @@ export default function Introduction() {
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.tintLight.blue1} />
       <Text style={styles.title}>Olá!</Text>
       <View style={styles.flavor}>
+        <Text style={styles.flavorText}>Bem vindo ao Meau!</Text>
         <Text style={styles.flavorText}>
-          Bem vindo ao Meau!
-        </Text>
-        <Text style={styles.flavorText}>
-          Aqui você pode adotar, doar e ajudar cães e gatos com facilidade. Qual o seu interesse?
+          Aqui você pode adotar, doar e ajudar cães e gatos com facilidade. Qual
+          o seu interesse?
         </Text>
       </View>
       <View style={styles.buttonsView}>
@@ -35,6 +33,10 @@ export default function Introduction() {
       <TouchableOpacity style={styles.login}>
         <Text style={styles.loginText}>Login</Text>
       </TouchableOpacity>
+      <Image
+        style={{ flex:1, height:null, width: '50%', resizeMode: "contain" }}
+        source={require("../../assets/images/Meau_marca_2.png")}
+      />
     </View>
   );
 }
@@ -43,8 +45,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     paddingHorizontal: 48,
+    paddingTop: 48,
   },
   title: {
     fontSize: 72,
@@ -52,8 +55,8 @@ const styles = StyleSheet.create({
     paddingBottom: 52,
     color: Colors.tintLight.yellow1,
   },
-  flavor:{
-    width:'100%',
+  flavor: {
+    width: "100%",
     paddingBottom: 48,
   },
   flavorText: {
@@ -68,7 +71,7 @@ const styles = StyleSheet.create({
     paddingBottom: 44,
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 40,
     borderRadius: 2,
     backgroundColor: Colors.tintLight.yellow1,
@@ -83,12 +86,12 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
   },
   login: {
-    width: '100%',
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
   loginText: {
     color: Colors.tintLight.blue1,
     fontSize: 16,
-  }
+  },
 });
