@@ -28,6 +28,7 @@ export default function TabLayout() {
         name="login"
         options={{
           title: "Login",
+          headerStyle: {backgroundColor: Colors.tintLight.blue1},
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
@@ -35,6 +36,7 @@ export default function TabLayout() {
         name="createLogin"
         options={{
           title: "Create Login",
+          headerStyle: {backgroundColor: Colors.tintLight.blue1},
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />

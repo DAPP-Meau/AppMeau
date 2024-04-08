@@ -1,5 +1,6 @@
 import { StyleSheet, TextInput, TouchableOpacity, Text, View } from "react-native";
 import { useState } from "react";
+import Colors from "@/constants/Colors";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -15,7 +16,7 @@ export default function Login() {
       <View style={{ width: "100%", marginBottom:52 }}>
         <TextInput
           style={styles.input}
-          placeholderTextColor="#bdbdbd"
+          placeholderTextColor={Colors.text.gray4}
           placeholder="Nome de usuário"
           value={username}
           onChangeText={setUsername}
@@ -23,7 +24,7 @@ export default function Login() {
         />
         <TextInput
           style={styles.input}
-          placeholderTextColor="#bdbdbd"
+          placeholderTextColor={Colors.text.gray4}
           placeholder="Senha"
           secureTextEntry={true}
           value={password}
@@ -69,7 +70,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    marginTop: 20,
     padding: 20,
   },
   title: {

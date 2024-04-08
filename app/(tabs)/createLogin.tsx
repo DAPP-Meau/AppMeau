@@ -1,14 +1,15 @@
 import {
   Animated,
-  Button,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Text
+  Text,
+  KeyboardTypeOptions,
 } from "react-native";
 
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
+import Colors from "@/constants/Colors";
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -38,12 +39,14 @@ export default function CreateLogin() {
       <Text style={styles.sectionTitle}>Informações Pessoais</Text>
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Nome completo"
         value={fullName}
         onChangeText={setFullName}
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Idade"
         value={age}
         onChangeText={setAge}
@@ -51,6 +54,7 @@ export default function CreateLogin() {
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="E-mail"
         value={email}
         onChangeText={setEmail}
@@ -58,24 +62,28 @@ export default function CreateLogin() {
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Estado"
         value={state}
         onChangeText={setState}
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Cidade"
         value={city}
         onChangeText={setCity}
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Endereço"
         value={address}
         onChangeText={setAddress}
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Telefone"
         value={phone}
         onChangeText={setPhone}
@@ -85,12 +93,14 @@ export default function CreateLogin() {
       <Text style={styles.sectionTitle}>Informações de Perfil</Text>
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Nome de usuário"
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
         value={password}
         onChangeText={setPassword}
@@ -98,6 +108,7 @@ export default function CreateLogin() {
       />
       <TextInput
         style={styles.input}
+        placeholderTextColor={Colors.text.gray4}
         placeholder="Confirmação de senha"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
@@ -117,6 +128,8 @@ export default function CreateLogin() {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
@@ -126,11 +139,11 @@ const styles = StyleSheet.create({
   },
   infoText: {
     width: "100%",
-    backgroundColor: "#cfe9e5",
+    backgroundColor: Colors.tintLight.blue2,
     textAlign: "center",
     padding: 8,
     fontSize: 14,
-    color: "#434343"
+    color: Colors.text.gray2,
   },
   sectionTitle: {
     alignSelf: "flex-start",
@@ -138,21 +151,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     textTransform: "uppercase",
-    color: "#88c9bf"
+    color: Colors.tintLight.blue1,
   },
   input: {
     width: "100%",
     height: 50,
-    backgroundColor: "transparent",
     borderTopWidth: 0,
-    borderLeftWidth: 0,
     borderRightWidth: 0,
-    borderBottomWidth: 0.8,
-    borderColor: "#e6e7e8",
-    borderRadius: 8,
+    borderLeftWidth: 0,
+    borderWidth: 0.8,
+    borderColor: Colors.text.gray3,
     padding: 10,
-    marginBottom: 10,
-    fontSize: 16,
+    marginBottom: 15,
+    fontSize: 14,
+    color: "black",
+    backgroundColor: "transparent",
   },
   photoPlaceholder: {
     width: 150,
@@ -169,13 +182,13 @@ const styles = StyleSheet.create({
   button: {
     width: "80%",
     height: 40,
-    backgroundColor: "#88c9bf",
+    backgroundColor: Colors.tintLight.blue1,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
   },
   buttonText: {
-    color: "#434343",
+    color: Colors.text.gray2,
     fontSize: 12,
     fontWeight: "normal",
   },
