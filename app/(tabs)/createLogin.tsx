@@ -4,7 +4,7 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
-  KeyboardTypeOptions,
+  StatusBar,
 } from "react-native";
 
 import { useState } from "react";
@@ -31,6 +31,7 @@ export default function CreateLogin() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar backgroundColor={Colors.tintLight.blue1} />
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
         qual você realizar o processo de adoção e/ou apadrinhamento após a
@@ -132,7 +133,7 @@ export default function CreateLogin() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background.default,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
@@ -144,6 +145,7 @@ const styles = StyleSheet.create({
     padding: 8,
     fontSize: 14,
     color: Colors.text.gray2,
+    borderRadius: 2,
   },
   sectionTitle: {
     alignSelf: "flex-start",

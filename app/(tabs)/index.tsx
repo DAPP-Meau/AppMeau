@@ -11,6 +11,7 @@ export default function Introduction() {
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor={Colors.background.default} />
       <Text style={styles.title}>Olá!</Text>
       <View style={styles.flavor}>
         <Text style={styles.flavorText}>Bem vindo ao Meau!</Text>
@@ -44,6 +45,7 @@ export default function Introduction() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.background.default,
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 48,
