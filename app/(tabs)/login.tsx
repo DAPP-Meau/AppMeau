@@ -1,91 +1,109 @@
-import {Button, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
-import BottomTabBarItem from "@react-navigation/bottom-tabs/src/views/BottomTabItem";
-import {useState} from "react";
-import {StatusBar} from "expo-status-bar";
-import {text} from "stream/consumers";
-import {black} from "colorette";
+import { Text, View } from "@/components/Themed";
+import { useState } from "react";
 
 export default function Login() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-    const handleLogin = () => {
-        // Implemente a lógica de login aqui
-        alert('Login pressionado!');
-    };
+  const handleLogin = () => {
+    // Implemente a lógica de login aqui
+    alert("Login pressionado!");
+  };
 
-    return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor="#f5f5f5" />
-            <Text style={styles.title}>Login</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Usuário"
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-                autoCapitalize="none"
-            />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar com Facebook</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar com Google</Text>
+  return (
+    <View style={styles.container}>
+      <View style={{ width: "100%", marginBottom:52 }}>
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#bdbdbd"
+          placeholder="Nome de usuário"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholderTextColor="#bdbdbd"
+          placeholder="Senha"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+          autoCapitalize="none"
+        />
+      </View>
+      <View style={{ width: "80%" }}>
+        <View style={{marginBottom: 72}}>
+            <TouchableOpacity
+              style={[styles.buttonLogin, { backgroundColor: "#88c9bf" }]}
+              onPress={handleLogin}
+            >
+              <Text style={[styles.buttonLoginText, { color: "#434343" }]}>
+                ENTRAR
+              </Text>
             </TouchableOpacity>
         </View>
-    );
-};
+        <View style={{gap:4}}>
+            <TouchableOpacity
+              style={[styles.buttonLogin, { backgroundColor: "#194f7c" }]}
+              onPress={handleLogin}
+            >
+              <Text style={[styles.buttonLoginText, { color: "#f7f7f7" }]}>
+                ENTRAR COM FACEBOOK
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.buttonLogin, { backgroundColor: "#f15f5c" }]}
+              onPress={handleLogin}
+            >
+              <Text style={[styles.buttonLoginText, { color: "#f7f7f7" }]}>
+                ENTRAR COM GOOGLE
+              </Text>
+            </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 1,
-        color: '#000000',
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 15,
-        fontSize: 16,
-    },
-    button: {
-        width: '50%',
-        height: 50,
-        backgroundColor: '#6200ee',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 8,
-        marginTop: 10,
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 1,
+    color: "#000000",
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderLeftWidth: 0,
+    borderWidth: 0.8,
+    borderColor: "#e6e7e8",
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 14,
+    color: "black",
+    backgroundColor: "transparent",
+  },
+  buttonLogin: {
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 2,
+    marginTop: 10,
+  },
+  buttonLoginText: {
+    color: "#434343",
+    fontSize: 12,
+    fontWeight: "normal",
+  },
 });
