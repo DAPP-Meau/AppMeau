@@ -3,12 +3,17 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
 
-export default function TabLayout() {
+// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof FontAwesome>["name"];
+  color: string;
+}) {
+  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+}
 
+export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{ tabBarActiveTintColor: Colors.tintLight.yellow1 }}
-    >
+    <Tabs screenOptions={{ tabBarActiveTintColor: Colors.tintLight.yellow1 }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -17,6 +22,22 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="play" color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="login"
+        options={{
+          title: "Login",
+          headerStyle: {backgroundColor: Colors.tintLight.blue1},
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="createLogin"
+        options={{
+          title: "Create Login",
+          headerStyle: {backgroundColor: Colors.tintLight.blue1},
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
     </Tabs>
