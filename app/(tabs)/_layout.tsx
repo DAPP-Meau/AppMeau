@@ -1,45 +1,35 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Drawer } from "expo-router/drawer";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: Colors.tintLight.yellow1 }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Tela Inicial",
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="play" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="login"
-        options={{
-          title: "Login",
-          headerStyle: {backgroundColor: Colors.tintLight.blue1},
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="createLogin"
-        options={{
-          title: "Create Login",
-          headerStyle: {backgroundColor: Colors.tintLight.blue1},
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer>
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: "Tela Inicial",
+            title: "",
+            headerStyle: { backgroundColor: Colors.background.default },
+          }}
+        />
+        <Drawer.Screen
+          name="login"
+          options={{
+            title: "Login",
+            headerStyle: { backgroundColor: Colors.tintLight.blue2 },
+          }}
+        />
+        <Drawer.Screen
+          name="createLogin"
+          options={{
+            title: "Cadastrar Pessoal",
+            headerStyle: { backgroundColor: Colors.tintLight.blue2 },
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }

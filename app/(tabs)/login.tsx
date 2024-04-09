@@ -1,6 +1,13 @@
-import { StyleSheet, TextInput, TouchableOpacity, Text, View } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
 import { useState } from "react";
 import Colors from "@/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -13,7 +20,9 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <View style={{ width: "100%", marginBottom:52 }}>
+      <View
+        style={styles.passwordBox}
+      >
         <TextInput
           style={styles.input}
           placeholderTextColor={Colors.text.gray4}
@@ -33,33 +42,45 @@ export default function Login() {
         />
       </View>
       <View style={{ width: "80%" }}>
-        <View style={{marginBottom: 72}}>
-            <TouchableOpacity
-              style={[styles.buttonLogin, { backgroundColor: "#88c9bf" }]}
-              onPress={handleLogin}
-            >
-              <Text style={[styles.buttonLoginText, { color: "#434343" }]}>
-                ENTRAR
-              </Text>
-            </TouchableOpacity>
+        <View style={{ marginBottom: 72 }}>
+          <TouchableOpacity
+            style={[styles.buttonLogin, { backgroundColor: Colors.tintLight.blue1 }]}
+            onPress={handleLogin}
+          >
+            <Text style={[styles.buttonLoginText, { color: Colors.text.gray2 }]}>
+              ENTRAR
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={{gap:4}}>
-            <TouchableOpacity
-              style={[styles.buttonLogin, { backgroundColor: "#194f7c" }]}
-              onPress={handleLogin}
+        <View style={{ gap: 4 }}>
+          <TouchableOpacity
+            style={[styles.buttonLogin, { backgroundColor: "#194f7c" }]}
+            onPress={handleLogin}
+          >
+            <FontAwesome
+              style={{ color: Colors.text.white1 }}
+              name="facebook"
+              size={16}
+            />
+            <Text
+              style={[styles.buttonLoginText, { color: Colors.text.white1 }]}
             >
-              <Text style={[styles.buttonLoginText, { color: "#f7f7f7" }]}>
-                ENTRAR COM FACEBOOK
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.buttonLogin, { backgroundColor: "#f15f5c" }]}
-              onPress={handleLogin}
-            >
-              <Text style={[styles.buttonLoginText, { color: "#f7f7f7" }]}>
-                ENTRAR COM GOOGLE
-              </Text>
-            </TouchableOpacity>
+              ENTRAR COM FACEBOOK
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.buttonLogin, { backgroundColor: "#f15f5c" }]}
+            onPress={handleLogin}
+          >
+            <FontAwesome
+              style={{ color: Colors.text.white1 }}
+              name="google"
+              size={16}
+            />
+            <Text style={[styles.buttonLoginText, { color: Colors.text.white1 }]}>
+              ENTRAR COM GOOGLE
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -69,16 +90,15 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.background.default,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: 20,
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 1,
-    color: "#000000",
+  passwordBox: {
+    width: "100%",
+    marginTop: 30,
+    marginBottom: 52,
   },
   input: {
     width: "100%",
@@ -92,17 +112,19 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 14,
     color: "black",
-    backgroundColor: "transparent",
   },
   buttonLogin: {
     height: 40,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
     marginTop: 10,
+    gap: 8,
+    elevation:4
   },
   buttonLoginText: {
-    color: "#434343",
+    color: Colors.text.gray2,
     fontSize: 12,
     fontWeight: "normal",
   },
