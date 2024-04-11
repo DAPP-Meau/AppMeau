@@ -146,6 +146,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.gray2,
     borderRadius: 2,
+    fontFamily: 'Roboto_Regular',
+
   },
   sectionTitle: {
     alignSelf: "flex-start",
@@ -154,6 +156,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textTransform: "uppercase",
     color: Colors.tintLight.blue1,
+    fontFamily: 'Roboto_Regular',
+
   },
   input: {
     width: "100%",
@@ -168,6 +172,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
     backgroundColor: "transparent",
+    fontFamily: 'Roboto_Regular',
+
   },
   photoPlaceholder: {
     width: 150,
@@ -193,6 +199,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: Colors.text.gray2,
     fontSize: 12,
+    fontFamily: 'Roboto_Regular',
     fontWeight: "normal",
   },
 });

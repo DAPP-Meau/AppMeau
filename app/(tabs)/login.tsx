@@ -112,6 +112,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 14,
     color: "black",
+    fontFamily: 'Roboto_Regular',
+
   },
   buttonLogin: {
     height: 40,
@@ -127,5 +129,7 @@ const styles = StyleSheet.create({
     color: Colors.text.gray2,
     fontSize: 12,
     fontWeight: "normal",
+    fontFamily: 'Roboto_Regular',
+
   },
 });

@@ -3,7 +3,10 @@ import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 
+
+
 export default function Introduction() {
+
   const handleLogin = () => {
     // Implemente a lógica de login aqui
     alert("Login pressionado!");
@@ -53,9 +56,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 72,
-    fontWeight: "bold",
     paddingBottom: 52,
     color: Colors.tintLight.yellow1,
+    fontFamily: 'Courgette_Regular',
   },
   flavor: {
     width: "100%",
@@ -64,7 +67,8 @@ const styles = StyleSheet.create({
   flavorText: {
     width: "100%",
     fontSize: 16,
-    textAlign: "center",
+    textAlign: "center",    
+    fontFamily: 'Roboto_Regular',
     color: Colors.text.gray1,
   },
   buttonsView: {
@@ -84,8 +88,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.text.gray2,
-    fontSize: 12,
-    fontWeight: "normal",
+    fontSize: 12,    
+    fontFamily: 'Roboto_Regular',
   },
   login: {
     width: "100%",
@@ -95,5 +99,6 @@ const styles = StyleSheet.create({
   loginText: {
     color: Colors.tintLight.blue1,
     fontSize: 16,
+    fontFamily: 'Roboto_Regular',
   },
 });
