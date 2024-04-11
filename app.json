@@ -35,19 +35,20 @@
       [
         "expo-font",
         {
-          "fontsLoaded": ["../assets/fonts/Courgette-Regular.otf",
-                          "../assets/fonts/Roboto-Regular.otf",
-                          "../assets/fonts/Roboto-Black.otf",
-                          "../assets/fonts/Roboto-BlackItalic.otf",
-                          "../assets/fonts/Roboto-Bold.otf",
-                          "../assets/fonts/Roboto-Light.otf",
-                          "../assets/fonts/Roboto-Medium.otf",
-                          "../assets/fonts/Roboto-Thin.otf",
-                          "../assets/fonts/Roboto-Italic.otf",
-                          "../assets/fonts/Roboto-BoldItalic.otf",
-                          "../assets/fonts/Roboto-LightItalic.otf",
-                          "../assets/fonts/Roboto-MediumItalic.otf",
-                          "../assets/fonts/Roboto-ThinItalic.otf"
+          "fonts": [
+            "@/assets/fonts/Courgette-Regular.otf",
+            "@/assets/fonts/Roboto-Regular.otf",
+            "@/assets/fonts/Roboto-Black.otf",
+            "@/assets/fonts/Roboto-BlackItalic.otf",
+            "@/assets/fonts/Roboto-Bold.otf",
+            "@/assets/fonts/Roboto-Light.otf",
+            "@/assets/fonts/Roboto-Medium.otf",
+            "@/assets/fonts/Roboto-Thin.otf",
+            "@/assets/fonts/Roboto-Italic.otf",
+            "@/assets/fonts/Roboto-BoldItalic.otf",
+            "@/assets/fonts/Roboto-LightItalic.otf",
+            "@/assets/fonts/Roboto-MediumItalic.otf",
+            "@/assets/fonts/Roboto-ThinItalic.otf"
           ]
         }
       ]
