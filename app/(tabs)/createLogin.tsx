@@ -10,6 +10,9 @@ import {
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
+import {email} from "@sideway/address";
+import {FIREBASE_AUTH} from "@/FirebaseConfig";
+import {createUserWithEmailAndPassword} from "@firebase/auth";
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -23,11 +26,18 @@ export default function CreateLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const auth = FIREBASE_AUTH;
 
-  const handleRegistration = () => {
-    // Implemente a lógica de registro aqui
-    alert("Registro pressionado!");
-  };
+    const handleRegistration = async () => {
+        try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            console.log(response)
+        } catch (error) {
+            console.log(error)
+        }
+        alert("Login pressionado!");
+        alert("Registro pressionado!");
+    };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
