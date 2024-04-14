@@ -16,14 +16,21 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.unb.meauapp",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "googleServicesFile": "./google-services.json",
+      
     },
     "android": {
+      "package": "com.unb.meauapp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#88c9bf"
       },
-      "package": "com.icode.fontsrn"
+      "googleServicesFile": "./google-services.json",
+      //"package": "com.icode.fontsrn"
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +39,18 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/perf",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
       [
         "expo-font",
         {
@@ -53,6 +72,7 @@
         }
       ]
     ],
+    
     "experiments": {
       "typedRoutes": true
     }
