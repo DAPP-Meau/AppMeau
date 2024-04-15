@@ -5,11 +5,15 @@ import {
   TouchableOpacity,
   Text,
   StatusBar,
+  View,
+  Image,
 } from "react-native";
 
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
+import auth from "@react-native-firebase/auth";
+import { router } from "expo-router";
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -25,10 +29,60 @@ export default function CreateLogin() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegistration = () => {
-    // Implemente a lógica de registro aqui
-    alert("Registro pressionado!");
-  };
+    if(fullName === ''||age === ''|| email === ''|| state === ''|| city === ''|| address === ''|| phone === ''|| username === ''|| password === ''|| confirmPassword === ''){
+      alert("Todos os campos devem ser preenchidos!");
+      return;
+    }
+    if(validadepassword.length === false ||validadepassword.case === false ||validadepassword.number === false ){
+      alert("A senha não cumpre todas as condições!");
+      return;
+    }
+    if(password!==confirmPassword){
+      alert("A senha e a confirmação não são iguais!");
+      return;
+    } else{
 
+      auth()
+      .createUserWithEmailAndPassword(
+        username,
+        password
+      )
+      .then((UserCredencial) => {
+        const user = UserCredencial.user;
+        alert(fullName + ', Seu usuario: '+user+' foi criado com sucesso. Faça o login!' );
+        router.replace('/login');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          alert('Esse endereço de email já esta em uso!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          alert('Esse endereço de e-mail é inválido!');
+        }
+
+        alert(error);
+        router.replace('/');
+      });
+    }
+
+    alert("Registro pressionado!");
+
+      };
+  const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false})
+  const secureText = (password: string) =>{
+    const regexUpperCasse = RegExp(/^(?=.*[A-Z]).=$/)
+    const regexLowerCasse = RegExp(/^(?=.*[a-z]).=$/)
+    const regexNumber = RegExp(/^(?=.*[0-9]).=$/)
+    const length = password.length >= 6
+
+    setValidadepassword({
+      case: regexUpperCasse.test(password) && regexLowerCasse.test(password),
+      number: regexNumber.test(password),
+      length: length
+    })
+
+  }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.blue1} />
@@ -95,7 +149,7 @@ export default function CreateLogin() {
       <TextInput
         style={styles.input}
         placeholderTextColor={Colors.text.gray4}
-        placeholder="Nome de usuário"
+        placeholder="email de usuário"
         value={username}
         onChangeText={setUsername}
       />
@@ -104,9 +158,23 @@ export default function CreateLogin() {
         placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={setPassword =>{secureText(setPassword)}}
         secureTextEntry
       />
+        <Text style={styles.sectionTitle}>Sua senha dece ter:</Text>
+        <View>
+          <Image source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+          <Text>6 Caracteres</Text>
+        </View>
+        <View>
+          <Image source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+          <Text>Numeros</Text>
+        </View>
+        <View>
+          <Image source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+          <Text>Letra maiúscula e minúscula</Text>
+        </View>
+   
       <TextInput
         style={styles.input}
         placeholderTextColor={Colors.text.gray4}
