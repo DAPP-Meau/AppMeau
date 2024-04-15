@@ -29,9 +29,50 @@ export default function CreateLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false,password:password});
 
   const handleRegistration = () => {
-    if(fullName === ''||age === ''|| email === ''|| state === ''|| city === ''|| address === ''|| phone === ''|| username === ''|| password === ''|| confirmPassword === ''){
+    if(fullName === ''||age === ''|| email === ''|| state === ''|| city === ''|| address === ''|| phone === ''|| username === ''|| validadepassword.password === ''|| confirmPassword === ''){
+      if(fullName === ''){
+        alert("fullName"+fullName);
+        return;
+      }
+      if(age === ''){
+        alert("age"+age);
+        return;
+      }
+      if(email === ''){
+        alert("email"+email);
+        return;
+      }
+      if(state === ''){
+        alert("state"+state);
+        return;
+      }
+      if(city === ''){
+        alert("city"+city);
+        return;
+      }
+      if(address === ''){
+        alert("address"+address);
+        return;
+      }
+      if(phone === ''){
+        alert("phone"+phone);
+        return;
+      }
+      if(username === ''){
+        alert("username"+username);
+        return;
+      }
+      if(validadepassword.password === ''){
+        alert("validadepassword.password"+validadepassword.password);
+        return;
+      }if(confirmPassword === ''){
+        alert("confirmPassword"+confirmPassword);
+        return;
+      }
+      
       alert("Todos os campos devem ser preenchidos!");
       return;
     }
@@ -39,7 +80,7 @@ export default function CreateLogin() {
       alert("A senha não cumpre todas as condições!");
       return;
     }
-    if(password!==confirmPassword){
+    if(validadepassword.password!==confirmPassword){
       alert("A senha e a confirmação não são iguais!");
       return;
     } else{
@@ -71,7 +112,7 @@ export default function CreateLogin() {
     alert("Registro pressionado!");
 
       };
-  const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false})
+  
   const secureText = (password: string) =>{
     const regexUpperCasse = RegExp(/[A-Z]/)
     const regexLowerCasse = RegExp(/[a-z]/)
@@ -81,7 +122,9 @@ export default function CreateLogin() {
     setValidadepassword({
       case: regexUpperCasse.test(password) && regexLowerCasse.test(password),
       number: regexNumber.test(password),
-      length: length
+      length: length,
+      password: password
+  
     })
 
   }
@@ -151,7 +194,7 @@ export default function CreateLogin() {
       <TextInput
         style={styles.input}
         placeholderTextColor={Colors.text.gray4}
-        placeholder="email de usuário"
+        placeholder="Nome de usuário"
         value={username}
         onChangeText={setUsername}
       />
@@ -160,7 +203,7 @@ export default function CreateLogin() {
         secureTextEntry
         placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
-        onChangeText={(setPassword) => {secureText(setPassword)}}
+        onChangeText={setPassword => secureText(setPassword)}
       />
       <Text style={styles.Title}>Sua senha deve ter:</Text>
         <View style={styles.View_style}>
