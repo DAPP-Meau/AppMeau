@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
+import React, { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";

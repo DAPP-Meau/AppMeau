@@ -1,4 +1,4 @@
-import {
+import React, {
   Animated,
   StyleSheet,
   TextInput,
@@ -10,7 +10,6 @@ import {
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
-import {email} from "@sideway/address";
 import {FIREBASE_AUTH} from "@/FirebaseConfig";
 import {createUserWithEmailAndPassword} from "@firebase/auth";
 

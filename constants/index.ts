@@ -1,4 +1,4 @@
-export let fonts = {
+export const fonts = {
     'Courgette_Regular': require('../assets/fonts/Courgette-Regular.otf'),
     'Roboto_Regular': require('../assets/fonts/Roboto-Regular.otf'),
     'Roboto_Black': require('../assets/fonts/Roboto-Black.otf'),

@@ -1,4 +1,4 @@
-import {
+import React, {
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -9,7 +9,6 @@ import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import {FIREBASE_AUTH} from "@/FirebaseConfig";
-import {email} from "@sideway/address";
 import {signInWithEmailAndPassword} from "@firebase/auth";
 
 export default function Login() {
