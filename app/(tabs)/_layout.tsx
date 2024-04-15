@@ -5,13 +5,12 @@ import { Drawer } from "expo-router/drawer";
 
 export default function TabLayout() {
   return (
-    <GestureHandlerRootView style={{flex:1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
         screenOptions={{
           headerTitleStyle: { fontFamily: "Roboto_Medium" },
           headerStyle: { backgroundColor: Colors.background.default },
-        }}
-      >
+        }}>
         <Drawer.Screen
           name="index"
           options={{

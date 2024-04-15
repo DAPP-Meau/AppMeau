@@ -3,10 +3,10 @@ export default {
     blue1: "#88c9bf",
     blue2: "#cfe9e5",
     yellow1: "#ffd358",
-    yellow2: "#fee29b"
+    yellow2: "#fee29b",
   },
   background: {
-    default: "#fafafa"
+    default: "#fafafa",
   },
   text: {
     white1: "#f7f7f7",

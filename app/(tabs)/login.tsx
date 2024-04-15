@@ -8,8 +8,8 @@ import React, {
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import {FIREBASE_AUTH} from "@/FirebaseConfig";
-import {signInWithEmailAndPassword} from "@firebase/auth";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { signInWithEmailAndPassword } from "@firebase/auth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -18,20 +18,22 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await signInWithEmailAndPassword(auth, username, password);
+      const response = await signInWithEmailAndPassword(
+        auth,
+        username,
+        password
+      );
       alert("Login pressionado!");
-      console.log(response)
+      console.log(response);
     } catch (error) {
       alert("Login erro!");
-      console.log(error)
+      console.log(error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <View
-        style={styles.passwordBox}
-      >
+      <View style={styles.passwordBox}>
         <TextInput
           style={styles.input}
           placeholderTextColor={Colors.text.gray4}
@@ -53,10 +55,13 @@ export default function Login() {
       <View style={{ width: "80%" }}>
         <View style={{ marginBottom: 72 }}>
           <TouchableOpacity
-            style={[styles.buttonLogin, { backgroundColor: Colors.tintLight.blue1 }]}
-            onPress={handleLogin}
-          >
-            <Text style={[styles.buttonLoginText, { color: Colors.text.gray2 }]}>
+            style={[
+              styles.buttonLogin,
+              { backgroundColor: Colors.tintLight.blue1 },
+            ]}
+            onPress={handleLogin}>
+            <Text
+              style={[styles.buttonLoginText, { color: Colors.text.gray2 }]}>
               ENTRAR
             </Text>
           </TouchableOpacity>
@@ -64,29 +69,27 @@ export default function Login() {
         <View style={{ gap: 4 }}>
           <TouchableOpacity
             style={[styles.buttonLogin, { backgroundColor: "#194f7c" }]}
-            onPress={handleLogin}
-          >
+            onPress={handleLogin}>
             <FontAwesome
               style={{ color: Colors.text.white1 }}
               name="facebook"
               size={16}
             />
             <Text
-              style={[styles.buttonLoginText, { color: Colors.text.white1 }]}
-            >
+              style={[styles.buttonLoginText, { color: Colors.text.white1 }]}>
               ENTRAR COM FACEBOOK
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buttonLogin, { backgroundColor: "#f15f5c" }]}
-            onPress={handleLogin}
-          >
+            onPress={handleLogin}>
             <FontAwesome
               style={{ color: Colors.text.white1 }}
               name="google"
               size={16}
             />
-            <Text style={[styles.buttonLoginText, { color: Colors.text.white1 }]}>
+            <Text
+              style={[styles.buttonLoginText, { color: Colors.text.white1 }]}>
               ENTRAR COM GOOGLE
             </Text>
           </TouchableOpacity>
@@ -121,8 +124,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 14,
     color: "black",
-    fontFamily: 'Roboto_Regular',
-
+    fontFamily: "Roboto_Regular",
   },
   buttonLogin: {
     height: 40,
@@ -132,13 +134,12 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginTop: 10,
     gap: 8,
-    elevation:4
+    elevation: 4,
   },
   buttonLoginText: {
     color: Colors.text.gray2,
     fontSize: 12,
     fontWeight: "normal",
-    fontFamily: 'Roboto_Regular',
-
+    fontFamily: "Roboto_Regular",
   },
 });

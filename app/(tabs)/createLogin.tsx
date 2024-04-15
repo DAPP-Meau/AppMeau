@@ -10,8 +10,8 @@ import React, {
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
-import {FIREBASE_AUTH} from "@/FirebaseConfig";
-import {createUserWithEmailAndPassword} from "@firebase/auth";
+import { FIREBASE_AUTH } from "@/FirebaseConfig";
+import { createUserWithEmailAndPassword } from "@firebase/auth";
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -27,16 +27,20 @@ export default function CreateLogin() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const auth = FIREBASE_AUTH;
 
-    const handleRegistration = async () => {
-        try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response)
-        } catch (error) {
-            console.log(error)
-        }
-        alert("Login pressionado!");
-        alert("Registro pressionado!");
-    };
+  const handleRegistration = async () => {
+    try {
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    alert("Login pressionado!");
+    alert("Registro pressionado!");
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -138,8 +142,6 @@ export default function CreateLogin() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.background.default,
@@ -155,8 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.gray2,
     borderRadius: 2,
-    fontFamily: 'Roboto_Regular',
-
+    fontFamily: "Roboto_Regular",
   },
   sectionTitle: {
     alignSelf: "flex-start",
@@ -165,8 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textTransform: "uppercase",
     color: Colors.tintLight.blue1,
-    fontFamily: 'Roboto_Regular',
-
+    fontFamily: "Roboto_Regular",
   },
   input: {
     width: "100%",
@@ -181,8 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "black",
     backgroundColor: "transparent",
-    fontFamily: 'Roboto_Regular',
-
+    fontFamily: "Roboto_Regular",
   },
   photoPlaceholder: {
     width: 150,
@@ -203,12 +202,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
-    elevation:4
+    elevation: 4,
   },
   buttonText: {
     color: Colors.text.gray2,
     fontSize: 12,
-    fontFamily: 'Roboto_Regular',
+    fontFamily: "Roboto_Regular",
     fontWeight: "normal",
   },
 });

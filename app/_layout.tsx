@@ -1,5 +1,5 @@
 import { Stack } from "expo-router/stack";
-import { useFonts } from 'expo-font';
+import { useFonts } from "expo-font";
 import { fonts } from "@/assets";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
@@ -23,7 +23,7 @@ export default function AppLayout() {
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

@@ -1,12 +1,15 @@
-import React, { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
+import React, {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  View,
+  Image,
+} from "react-native";
 
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
 
-
-
 export default function Introduction() {
-
   const handleLogin = () => {
     // Implemente a lógica de login aqui
     alert("Login pressionado!");
@@ -38,7 +41,7 @@ export default function Introduction() {
         <Text style={styles.loginText}>Login</Text>
       </TouchableOpacity>
       <Image
-        style={{ flex:1, height:null, width: '50%', resizeMode: "contain" }}
+        style={{ flex: 1, height: null, width: "50%", resizeMode: "contain" }}
         source={require("../../assets/images/Meau_marca_2.png")}
       />
     </View>
@@ -58,7 +61,7 @@ const styles = StyleSheet.create({
     fontSize: 72,
     paddingBottom: 52,
     color: Colors.tintLight.yellow1,
-    fontFamily: 'Courgette_Regular',
+    fontFamily: "Courgette_Regular",
   },
   flavor: {
     width: "100%",
@@ -67,8 +70,8 @@ const styles = StyleSheet.create({
   flavorText: {
     width: "100%",
     fontSize: 16,
-    textAlign: "center",    
-    fontFamily: 'Roboto_Regular',
+    textAlign: "center",
+    fontFamily: "Roboto_Regular",
     color: Colors.text.gray1,
   },
   buttonsView: {
@@ -88,8 +91,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.text.gray2,
-    fontSize: 12,    
-    fontFamily: 'Roboto_Regular',
+    fontSize: 12,
+    fontFamily: "Roboto_Regular",
   },
   login: {
     width: "100%",
@@ -99,6 +102,6 @@ const styles = StyleSheet.create({
   loginText: {
     color: Colors.tintLight.blue1,
     fontSize: 16,
-    fontFamily: 'Roboto_Regular',
+    fontFamily: "Roboto_Regular",
   },
 });
