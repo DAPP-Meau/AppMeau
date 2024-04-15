@@ -7,6 +7,7 @@ import {
   StatusBar,
   View,
   Image,
+  PixelRatio,
 } from "react-native";
 
 import { useState } from "react";
@@ -14,6 +15,7 @@ import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
 import auth from "@react-native-firebase/auth";
 import { router } from "expo-router";
+
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -71,9 +73,9 @@ export default function CreateLogin() {
       };
   const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false})
   const secureText = (password: string) =>{
-    const regexUpperCasse = RegExp(/^(?=.*[A-Z]).=$/)
-    const regexLowerCasse = RegExp(/^(?=.*[a-z]).=$/)
-    const regexNumber = RegExp(/^(?=.*[0-9]).=$/)
+    const regexUpperCasse = RegExp(/[A-Z]/)
+    const regexLowerCasse = RegExp(/[a-z]/)
+    const regexNumber = RegExp(/[0-9]/)
     const length = password.length >= 6
 
     setValidadepassword({
@@ -154,25 +156,29 @@ export default function CreateLogin() {
         onChangeText={setUsername}
       />
       <TextInput
-        style={styles.input}
+        style={styles.input}        
+        secureTextEntry
         placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
-        value={password}
-        onChangeText={setPassword =>{secureText(setPassword)}}
-        secureTextEntry
+        onChangeText={(setPassword) => {secureText(setPassword)}}
       />
-        <Text style={styles.sectionTitle}>Sua senha dece ter:</Text>
-        <View>
-          <Image source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
-          <Text>6 Caracteres</Text>
+      <Text style={styles.Title}>Sua senha deve ter:</Text>
+        <View style={styles.View_style}>
+        <Image style={styles.image}
+           source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+          <Text style={styles.Text}>6 Caracteres</Text>
         </View>
-        <View>
-          <Image source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
-          <Text>Numeros</Text>
+        <View style={styles.View_style}>
+        <Image  style={styles.image}
+            source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+
+          <Text style={styles.Text}>Numeros</Text>
         </View>
-        <View>
-          <Image source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
-          <Text>Letra maiúscula e minúscula</Text>
+        <View style={styles.View_style}>
+        <Image style={styles.image}
+            source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+
+          <Text style={styles.Text}>Letra maiúscula e minúscula</Text>
         </View>
    
       <TextInput
@@ -270,4 +276,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_Regular',
     fontWeight: "normal",
   },
+  View_style: {
+    flexDirection: "row",
+    marginTop: 4,
+    alignItems: "center",
+  },
+  image: {
+    width: 10,
+    height: 10,
+  },
+  Title: {
+    marginTop:18,
+  },
+  Text: {
+    marginLeft:4,
+  }
 });
