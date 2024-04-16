@@ -33,6 +33,13 @@ export default function TabLayout() {
             headerStyle: { backgroundColor: Colors.tintLight.blue2 },
           }}
         />
+        <Drawer.Screen
+          name="animalRegistration"
+          options={{
+            title: "Cadastrar Animal",
+            headerStyle: { backgroundColor: Colors.tintLight.yellow2 },
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

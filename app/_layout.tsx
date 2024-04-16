@@ -4,6 +4,7 @@ import { useFonts } from 'expo-font';
 import { fonts } from "@/assets";
 import { SplashScreen } from "expo-router";
 import { useEffect } from "react";
+import { PaperProvider } from "react-native-paper";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,8 +27,10 @@ export default function AppLayout() {
   }
   
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <PaperProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>  
+    </PaperProvider>
   );
 }
