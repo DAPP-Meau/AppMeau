@@ -7,7 +7,7 @@ import {
   StatusBar,
   View,
   Image,
-  PixelRatio,
+  Button,
 } from "react-native";
 
 import { useState } from "react";
@@ -31,64 +31,11 @@ export default function CreateLogin() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false,password:password});
 
-  const handleRegistration = () => {
-    if(fullName === ''||age === ''|| email === ''|| state === ''|| city === ''|| address === ''|| phone === ''|| username === ''|| validadepassword.password === ''|| confirmPassword === ''){
-      if(fullName === ''){
-        alert("fullName"+fullName);
-        return;
-      }
-      if(age === ''){
-        alert("age"+age);
-        return;
-      }
-      if(email === ''){
-        alert("email"+email);
-        return;
-      }
-      if(state === ''){
-        alert("state"+state);
-        return;
-      }
-      if(city === ''){
-        alert("city"+city);
-        return;
-      }
-      if(address === ''){
-        alert("address"+address);
-        return;
-      }
-      if(phone === ''){
-        alert("phone"+phone);
-        return;
-      }
-      if(username === ''){
-        alert("username"+username);
-        return;
-      }
-      if(validadepassword.password === ''){
-        alert("validadepassword.password"+validadepassword.password);
-        return;
-      }if(confirmPassword === ''){
-        alert("confirmPassword"+confirmPassword);
-        return;
-      }
-      
-      alert("Todos os campos devem ser preenchidos!");
-      return;
-    }
-    if(validadepassword.length === false ||validadepassword.case === false ||validadepassword.number === false ){
-      alert("A senha não cumpre todas as condições!");
-      return;
-    }
-    if(validadepassword.password!==confirmPassword){
-      alert("A senha e a confirmação não são iguais!");
-      return;
-    } else{
-
+  function handleRegistration() {
+    
       auth()
       .createUserWithEmailAndPassword(
-        username,
-        password
+        'jane.doe@example.com', 'SuperSecretPassword!'
       )
       .then((UserCredencial) => {
         const user = UserCredencial.user;
@@ -107,8 +54,8 @@ export default function CreateLogin() {
         alert(error);
         router.replace('/');
       });
-    }
-
+    
+    
     alert("Registro pressionado!");
 
       };
@@ -129,7 +76,11 @@ export default function CreateLogin() {
 
   }
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView>
+      <TouchableOpacity style={styles.button} onPress={handleRegistration}>
+        <Text style={styles.buttonText}>FAZER CADASTRO</Text>
+      </TouchableOpacity>
+    {/*<ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.blue1} />
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
@@ -235,13 +186,12 @@ export default function CreateLogin() {
 
       <Text style={styles.sectionTitle}>Foto de Perfil</Text>
       {/* Este é um espaço reservado para a lógica de adicionar foto */}
-      <TouchableOpacity style={styles.photoPlaceholder}>
+      {/*<TouchableOpacity style={styles.photoPlaceholder}>
         <Text style={styles.photoText}>Adicionar Foto</Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={styles.button} onPress={handleRegistration}>
         <Text style={styles.buttonText}>FAZER CADASTRO</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>*/}
     </ScrollView>
   );
 }
