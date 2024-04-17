@@ -29,13 +29,13 @@ export default function CreateLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false,password:password});
+  const [validadepassword, setValidadepassword] = useState({ case: false, number: false, length: false, password: password });
   const auth = getAuth(firebase);
   const fun = () => {
-    createUserWithEmailAndPassword(auth, "a@gmail.com", "Password1234")
+    createUserWithEmailAndPassword(auth, email, validadepassword.password)
       .then((UserCredencial) => {
         const user = UserCredencial.user;
-        alert(fullName + ', Seu usuario: '+user+' foi criado com sucesso. Faça o login!' );
+        alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
         router.replace('/login');
       })
       .catch(error => {
@@ -50,13 +50,12 @@ export default function CreateLogin() {
         alert(error);
         router.replace('/');
       });
-    
-    
-    alert("Registro pressionado!");
 
-      };
-  
-  const secureText = (password: string) =>{
+
+
+  };
+
+  const secureText = (password: string) => {
     const regexUpperCasse = RegExp(/[A-Z]/)
     const regexLowerCasse = RegExp(/[a-z]/)
     const regexNumber = RegExp(/[0-9]/)
@@ -67,7 +66,7 @@ export default function CreateLogin() {
       number: regexNumber.test(password),
       length: length,
       password: password
-  
+
     })
 
   }
@@ -142,31 +141,31 @@ export default function CreateLogin() {
         onChangeText={setUsername}
       />
       <TextInput
-        style={styles.input}        
+        style={styles.input}
         secureTextEntry
         placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
         onChangeText={setPassword => secureText(setPassword)}
       />
       <Text style={styles.Title}>Sua senha deve ter:</Text>
-        <View style={styles.View_style}>
+      <View style={styles.View_style}>
         <Image style={styles.image}
-           source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
-          <Text style={styles.Text}>6 Caracteres</Text>
-        </View>
-        <View style={styles.View_style}>
-        <Image  style={styles.image}
-            source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
-
-          <Text style={styles.Text}>Numeros</Text>
-        </View>
-        <View style={styles.View_style}>
+          source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
+        <Text style={styles.Text}>6 Caracteres</Text>
+      </View>
+      <View style={styles.View_style}>
         <Image style={styles.image}
-            source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")}/>
+          source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
 
-          <Text style={styles.Text}>Letra maiúscula e minúscula</Text>
-        </View>
-   
+        <Text style={styles.Text}>Numeros</Text>
+      </View>
+      <View style={styles.View_style}>
+        <Image style={styles.image}
+          source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
+
+        <Text style={styles.Text}>Letra maiúscula e minúscula</Text>
+      </View>
+
       <TextInput
         style={styles.input}
         placeholderTextColor={Colors.text.gray4}
@@ -253,7 +252,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
-    elevation:4
+    elevation: 4
   },
   buttonText: {
     color: Colors.text.gray2,
@@ -271,10 +270,10 @@ const styles = StyleSheet.create({
     height: 10,
   },
   Title: {
-    marginTop:18,
+    marginTop: 18,
   },
   Text: {
-    marginLeft:4,
+    marginLeft: 4,
   }
 });
 
