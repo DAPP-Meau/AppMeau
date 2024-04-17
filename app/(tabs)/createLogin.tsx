@@ -1,3 +1,5 @@
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 import {
   Animated,
   StyleSheet,
@@ -9,13 +11,11 @@ import {
   Image,
   Button,
 } from "react-native";
-
+import { firebase } from "../../firebase";
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
-import auth from "@react-native-firebase/auth";
 import { router } from "expo-router";
-
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -30,13 +30,9 @@ export default function CreateLogin() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validadepassword , setValidadepassword ] = useState({case:false,number:false,length:false,password:password});
-
-  function handleRegistration() {
-    
-      auth()
-      .createUserWithEmailAndPassword(
-        'jane.doe@example.com', 'SuperSecretPassword!'
-      )
+  const auth = getAuth(firebase);
+  const fun = () => {
+    createUserWithEmailAndPassword(auth, "a@gmail.com", "Password1234")
       .then((UserCredencial) => {
         const user = UserCredencial.user;
         alert(fullName + ', Seu usuario: '+user+' foi criado com sucesso. Faça o login!' );
@@ -76,11 +72,7 @@ export default function CreateLogin() {
 
   }
   return (
-    <ScrollView>
-      <TouchableOpacity style={styles.button} onPress={handleRegistration}>
-        <Text style={styles.buttonText}>FAZER CADASTRO</Text>
-      </TouchableOpacity>
-    {/*<ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.blue1} />
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
@@ -186,12 +178,12 @@ export default function CreateLogin() {
 
       <Text style={styles.sectionTitle}>Foto de Perfil</Text>
       {/* Este é um espaço reservado para a lógica de adicionar foto */}
-      {/*<TouchableOpacity style={styles.photoPlaceholder}>
+      <TouchableOpacity style={styles.photoPlaceholder}>
         <Text style={styles.photoText}>Adicionar Foto</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleRegistration}>
+      <TouchableOpacity style={styles.button} onPress={fun}>
         <Text style={styles.buttonText}>FAZER CADASTRO</Text>
-      </TouchableOpacity>*/}
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -285,3 +277,4 @@ const styles = StyleSheet.create({
     marginLeft:4,
   }
 });
+
