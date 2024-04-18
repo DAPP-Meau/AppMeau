@@ -36,7 +36,7 @@ export default function CreateLogin() {
       .then((UserCredencial) => {
         const user = UserCredencial.user;
         alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
-        router.replace('/login');
+        router.navigate('/(tabs)/login');
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
