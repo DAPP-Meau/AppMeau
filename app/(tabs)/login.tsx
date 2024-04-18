@@ -8,14 +8,27 @@ import {
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { firebase } from "../../firebase";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Implemente a lógica de login aqui
-    alert("Login pressionado!");
+    const auth = getAuth(firebase);
+    signInWithEmailAndPassword(auth, username, password)
+      .then((userCredential) => {
+        alert("Bem vindo!");
+        const user = userCredential.user;
+        // ...
+      })
+      .catch((error) => {
+        alert(error);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+
+
   };
 
   return (
@@ -123,7 +136,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginTop: 10,
     gap: 8,
-    elevation:4
+    elevation: 4
   },
   buttonLoginText: {
     color: Colors.text.gray2,

@@ -1,3 +1,5 @@
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 import {
   Animated,
   StyleSheet,
@@ -5,11 +7,15 @@ import {
   TouchableOpacity,
   Text,
   StatusBar,
+  View,
+  Image,
+  Button,
 } from "react-native";
-
+import { firebase } from "../../firebase";
 import { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
+import { router } from "expo-router";
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -23,12 +29,47 @@ export default function CreateLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [validadepassword, setValidadepassword] = useState({ case: false, number: false, length: false, password: password });
+  const auth = getAuth(firebase);
+  const fun = () => {
+    createUserWithEmailAndPassword(auth, email, validadepassword.password)
+      .then((UserCredencial) => {
+        const user = UserCredencial.user;
+        alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
+        router.navigate('/(tabs)/login');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          alert('Esse endereço de email já esta em uso!');
+        }
 
-  const handleRegistration = () => {
-    // Implemente a lógica de registro aqui
-    alert("Registro pressionado!");
+        if (error.code === 'auth/invalid-email') {
+          alert('Esse endereço de e-mail é inválido!');
+        }
+
+        alert(error);
+        router.replace('/');
+      });
+
+
+
   };
 
+  const secureText = (password: string) => {
+    const regexUpperCasse = RegExp(/[A-Z]/)
+    const regexLowerCasse = RegExp(/[a-z]/)
+    const regexNumber = RegExp(/[0-9]/)
+    const length = password.length >= 6
+
+    setValidadepassword({
+      case: regexUpperCasse.test(password) && regexLowerCasse.test(password),
+      number: regexNumber.test(password),
+      length: length,
+      password: password
+
+    })
+
+  }
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.blue1} />
@@ -101,12 +142,30 @@ export default function CreateLogin() {
       />
       <TextInput
         style={styles.input}
+        secureTextEntry
         placeholderTextColor={Colors.text.gray4}
         placeholder="Senha"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+        onChangeText={setPassword => secureText(setPassword)}
       />
+      <Text style={styles.Title}>Sua senha deve ter:</Text>
+      <View style={styles.View_style}>
+        <Image style={styles.image}
+          source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
+        <Text style={styles.Text}>6 Caracteres</Text>
+      </View>
+      <View style={styles.View_style}>
+        <Image style={styles.image}
+          source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
+
+        <Text style={styles.Text}>Numeros</Text>
+      </View>
+      <View style={styles.View_style}>
+        <Image style={styles.image}
+          source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
+
+        <Text style={styles.Text}>Letra maiúscula e minúscula</Text>
+      </View>
+
       <TextInput
         style={styles.input}
         placeholderTextColor={Colors.text.gray4}
@@ -121,8 +180,7 @@ export default function CreateLogin() {
       <TouchableOpacity style={styles.photoPlaceholder}>
         <Text style={styles.photoText}>Adicionar Foto</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handleRegistration}>
+      <TouchableOpacity style={styles.button} onPress={fun}>
         <Text style={styles.buttonText}>FAZER CADASTRO</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -194,7 +252,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 2,
-    elevation:4
+    elevation: 4
   },
   buttonText: {
     color: Colors.text.gray2,
@@ -202,4 +260,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_Regular',
     fontWeight: "normal",
   },
+  View_style: {
+    flexDirection: "row",
+    marginTop: 4,
+    alignItems: "center",
+  },
+  image: {
+    width: 10,
+    height: 10,
+  },
+  Title: {
+    marginTop: 18,
+  },
+  Text: {
+    marginLeft: 4,
+  }
 });
+
