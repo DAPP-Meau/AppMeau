@@ -1,38 +1,17 @@
 import Adopt from "@/components/cadastrosAnimal/Adopt";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  View,
-  Button,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-} from "react-native";
-
-type ButtonState = {
-  selected: boolean;
-  enabled: boolean;
-};
+import React, { ScrollView, StyleSheet } from "react-native";
 
 export interface IAnimalRegistrationProps {}
 
 export default function AnimalRegistration(props: IAnimalRegistrationProps) {
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <StatusBar backgroundColor={Colors.tintLight.yellow1}/>
+      <StatusBar backgroundColor={Colors.tintLight.yellow1} />
       <Adopt />
     </ScrollView>
   );
-}
-
-interface ButtonProps {
-  title: string;
-  enabled: boolean;
-  selected: boolean;
-  onPress?: any;
 }
 
 const styles = StyleSheet.create({

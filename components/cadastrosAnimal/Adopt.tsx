@@ -1,29 +1,45 @@
 import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import {
   Adoption,
   Animal,
-  ageOptions,
-  healthOptions,
   sexOptions,
+  ageOptions,
   sizeOptions,
   speciesOptions,
-  temperamentOptions,
+  AdoptionForm,
 } from "@/services/models";
-import { CheckBoxGroup, RadioButtonGroup } from "../elements/forms";
+import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 
-export default function Adopt() {
+export interface AdoptProps {
+  onSubmit?: (form: AdoptionForm ) => void;
+}
+
+export default function Adopt({ onSubmit }: AdoptProps) {
   const [animal, setAnimal] = useState<Animal>({
     name: "",
     species: "dog",
     sex: "female",
     size: "small",
     age: "cub",
-    temperament: "calm",
-    health: new Set<healthOptions>(),
+    temperament: {
+      calm: false,
+      guard: false,
+      lazy: false,
+      loving: false,
+      playful: false,
+      shy: false,
+    },
+    health: {
+      dewormed: false,
+      neutered: false,
+      sick: false,
+      vaccinated: false,
+    },
     sicknesses: "",
+    story: "",
   });
 
   const [adopt, setAdopt] = useState<Adoption>({
@@ -114,23 +130,137 @@ export default function Adopt() {
             { text: "Idoso", key: "old" },
           ]}
         />
-        <RadioButtonGroup
-          title="Temperamento"
-          value={animal.temperament}
-          onChange={(newValue) => {
+
+        <Text style={styles.subSectionTitle}>Temperamento</Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            width: "100%",
+            flexWrap: "wrap",
+          }}
+        >
+          <CheckBoxGroup
+            title="Calmo"
+            value={animal.temperament.calm}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, calm: x },
+              }))
+            }
+          />
+          <CheckBoxGroup
+            title="Guarda"
+            value={animal.temperament.guard}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, guard: x },
+              }))
+            }
+          />
+          <CheckBoxGroup
+            title="Preguiçoso"
+            value={animal.temperament.lazy}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, lazy: x },
+              }))
+            }
+          />
+          <CheckBoxGroup
+            title="Amoroso"
+            value={animal.temperament.loving}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, loving: x },
+              }))
+            }
+          />
+          <CheckBoxGroup
+            title="Brincalhão"
+            value={animal.temperament.playful}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, playful: x },
+              }))
+            }
+          />
+          <CheckBoxGroup
+            title="Tímido"
+            value={animal.temperament.shy}
+            style={styles.checkBox}
+            onPress={(x) =>
+              setAnimal((oldState) => ({
+                ...oldState,
+                temperament: { ...oldState.temperament, shy: x },
+              }))
+            }
+          />
+        </View>
+      </View>
+
+      <Text style={styles.subSectionTitle}>Temperamento</Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          width: "100%",
+          flexWrap: "wrap",
+        }}
+      >
+        <CheckBoxGroup
+          title="Vermifugado"
+          value={animal.health.dewormed}
+          style={styles.checkBox}
+          onPress={(x) =>
             setAnimal((oldState) => ({
               ...oldState,
-              temperament: newValue as temperamentOptions,
-            }));
-          }}
-          options={[
-            { text: "Calmo", key: "calm" },
-            { text: "Guarda", key: "guard" },
-            { text: "Preguiçoso", key: "lazy" },
-            { text: "Amoroso", key: "loving" },
-            { text: "Brincalhão", key: "playful" },
-            { text: "Tímido", key: "shy" },
-          ]}
+              health: { ...oldState.health, dewormed: x },
+            }))
+          }
+        />
+        <CheckBoxGroup
+          title="Castrado"
+          value={animal.health.neutered}
+          style={styles.checkBox}
+          onPress={(x) =>
+            setAnimal((oldState) => ({
+              ...oldState,
+              health: { ...oldState.health, neutered: x },
+            }))
+          }
+        />
+        <CheckBoxGroup
+          title="Doente"
+          value={animal.health.sick}
+          style={styles.checkBox}
+          onPress={(x) =>
+            setAnimal((oldState) => ({
+              ...oldState,
+              health: { ...oldState.health, sick: x },
+            }))
+          }
+        />
+        <CheckBoxGroup
+          title="Vacinado"
+          value={animal.health.vaccinated}
+          style={styles.checkBox}
+          onPress={(x) =>
+            setAnimal((oldState) => ({
+              ...oldState,
+              health: { ...oldState.health, vaccinated: x },
+            }))
+          }
         />
       </View>
 
@@ -150,32 +280,54 @@ export default function Adopt() {
         <CheckBoxGroup
           title="Termo de adoção"
           value={adopt.requireAdoptionTerm}
-          onPress={(x) => setAdopt((oldState) => ({...oldState, requireAdoptionTerm: x})) }
+          onPress={(x) =>
+            setAdopt((oldState) => ({ ...oldState, requireAdoptionTerm: x }))
+          }
         />
         <CheckBoxGroup
           title="Fotos da casa"
           value={adopt.requireHousePhoto}
-          onPress={(x) => setAdopt((oldState) => ({...oldState, requireHousePhoto: x})) }
+          onPress={(x) =>
+            setAdopt((oldState) => ({ ...oldState, requireHousePhoto: x }))
+          }
         />
         <CheckBoxGroup
           title="Visita prévia ao animal"
           value={adopt.requirePreviousVisit}
-          onPress={(x) => setAdopt((oldState) => ({...oldState, requirePreviousVisit: x})) }
+          onPress={(x) =>
+            setAdopt((oldState) => ({ ...oldState, requirePreviousVisit: x }))
+          }
         />
         <CheckBoxGroup
           title="Acompanhamento pós adoção"
           value={adopt.requireMonitoring}
-          onPress={(x) => setAdopt((oldState) => ({...oldState, requireMonitoring: x})) }
+          onPress={(x) =>
+            setAdopt((oldState) => ({ ...oldState, requireMonitoring: x }))
+          }
         />
       </View>
+
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Sobre o animal</Text>
         <TextInput
           style={styles.input}
           placeholderTextColor={Colors.text.gray4}
           label="Compartilhe a história do animal"
+          onChangeText={(newValue) => {
+            setAnimal((oldState) => ({
+              ...oldState,
+              story: newValue,
+            }));
+          }}
         />
       </View>
+
+      <Button
+        mode="contained"
+        onPress={() => onSubmit?.({ animal: animal, adoption: adopt })}
+      >
+        <Text>Submit</Text>
+      </Button>
     </View>
   );
 }
@@ -239,4 +391,7 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
   },
   sectionView: { gap: 16, paddingVertical: 24 },
+  checkBox: {
+    width: "33%",
+  },
 });
