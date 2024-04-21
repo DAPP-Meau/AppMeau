@@ -1,5 +1,11 @@
-import React, { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Button, TextInput, ThemeProvider, useTheme, withTheme } from "react-native-paper";
+import React, {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import {
@@ -12,10 +18,13 @@ import {
   AdoptionRegistrationForm,
 } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
-import { MD3Colors, MD3Theme } from "react-native-paper/lib/typescript/types";
+import { MD3Theme } from "react-native-paper/lib/typescript/types";
 
 export interface AdoptProps {
-  onSubmit?: (form: AdoptionRegistrationForm, e?:GestureResponderEvent ) => boolean;
+  onSubmit?: (
+    form: AdoptionRegistrationForm,
+    e?: GestureResponderEvent
+  ) => boolean;
 }
 
 export default function Adopt({ onSubmit }: AdoptProps) {
@@ -278,7 +287,7 @@ export default function Adopt({ onSubmit }: AdoptProps) {
             sicknesses: newValue,
           }));
         }}
-        value={!animal.health.sick?"":animal.sicknesses}
+        value={!animal.health.sick ? "" : animal.sicknesses}
       />
 
       <View style={styles.sectionView}>
@@ -330,7 +339,7 @@ export default function Adopt({ onSubmit }: AdoptProps) {
 
       <Button
         mode="contained"
-        onPress={(e) => onSubmit?.({ animal: animal, adoption: adopt }, e)}
+        onPress={(e) => onSubmit?.({ ...animal, ...adopt }, e)}
       >
         <Text>Submit</Text>
       </Button>
@@ -338,70 +347,68 @@ export default function Adopt({ onSubmit }: AdoptProps) {
   );
 }
 
-
-
-const makeStyles = (theme:MD3Theme) => StyleSheet.create({
-  sectionTitle: {
-    fontSize: 16,
-    textTransform: "capitalize",
-    color: "#434343",
-    fontFamily: "Roboto_Medium",
-  },
-  subSectionTitle: {
-    fontSize: 12,
-    textTransform: "uppercase",
-    color: theme.colors.primary,
-  },
-  infoText: {
-    fontSize: 12,
-    textTransform: "uppercase",
-    color: theme.colors.primary,
-    fontFamily: "Roboto_Regular",
-  },
-  input: {
-    fontSize: 14,
-    backgroundColor: "transparent",
-    fontFamily: "Roboto_Regular",
-  },
-  radioButtonText: {
-    textAlignVertical: "center",
-  },
-  radioButtonGroup: {
-    width: "100%",
-    justifyContent: "space-evenly",
-    flexDirection: "row",
-    alignContent: "center",
-  },
-  photoPlaceholder: {
-    width: "100%",
-    height: 150,
-    backgroundColor: theme.colors.primaryContainer,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  photoText: {
-    textAlign: "center",
-    color: theme.colors.onPrimaryContainer
-  },
-  button: {
-    width: "80%",
-    height: 40,
-    backgroundColor: Colors.tintLight.blue1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 2,
-    elevation: 4,
-  },
-  buttonText: {
-    color: Colors.text.gray2,
-    fontSize: 12,
-    fontFamily: "Roboto_Regular",
-    fontWeight: "normal",
-  },
-  sectionView: { gap: 16, paddingVertical: 24 },
-  checkBox: {
-    width: "33%",
-  },
-});
-
+const makeStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    sectionTitle: {
+      fontSize: 16,
+      textTransform: "capitalize",
+      color: "#434343",
+      fontFamily: "Roboto_Medium",
+    },
+    subSectionTitle: {
+      fontSize: 12,
+      textTransform: "uppercase",
+      color: theme.colors.primary,
+    },
+    infoText: {
+      fontSize: 12,
+      textTransform: "uppercase",
+      color: theme.colors.primary,
+      fontFamily: "Roboto_Regular",
+    },
+    input: {
+      fontSize: 14,
+      backgroundColor: "transparent",
+      fontFamily: "Roboto_Regular",
+    },
+    radioButtonText: {
+      textAlignVertical: "center",
+    },
+    radioButtonGroup: {
+      width: "100%",
+      justifyContent: "space-evenly",
+      flexDirection: "row",
+      alignContent: "center",
+    },
+    photoPlaceholder: {
+      width: "100%",
+      height: 150,
+      backgroundColor: theme.colors.primaryContainer,
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photoText: {
+      textAlign: "center",
+      color: theme.colors.onPrimaryContainer,
+    },
+    button: {
+      width: "80%",
+      height: 40,
+      backgroundColor: Colors.tintLight.blue1,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 2,
+      elevation: 4,
+    },
+    buttonText: {
+      color: Colors.text.gray2,
+      fontSize: 12,
+      fontFamily: "Roboto_Regular",
+      fontWeight: "normal",
+    },
+    sectionView: { gap: 16, paddingVertical: 24 },
+    checkBox: {
+      width: "33%",
+    },
+  });

@@ -22,26 +22,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
   },
-  button: {
-    flex: 1,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 2,
-    elevation: 4,
-    padding: 5,
-  },
-  buttonText: {
-    fontSize: 12,
-    textTransform: "uppercase",
-  },
-  buttonEnabled: {
-    backgroundColor: Colors.tintLight.yellow1,
-  },
-  buttonDisabled: {
-    backgroundColor: "#f1f2f2",
-  },
-  buttonUnSelected: {
-    backgroundColor: Colors.tintLight.yellow1,
-  },
 });

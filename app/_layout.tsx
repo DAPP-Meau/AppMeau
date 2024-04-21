@@ -6,15 +6,9 @@ import { SplashScreen } from "expo-router";
 import { useEffect } from "react";
 import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { ThemeProp } from "react-native-paper/lib/typescript/types";
-import { lightThemeColors } from "@/constants";
+import { lightModeYellowTheme } from "@/constants";
 
 SplashScreen.preventAutoHideAsync();
-
-const theme: ThemeProp = {
-  ...DefaultTheme,
-  colors: lightThemeColors.colors,
-  roundness: 1
-}
 
 export default function AppLayout() {
   let [fontsLoaded, error] = useFonts(fonts);
@@ -35,7 +29,7 @@ export default function AppLayout() {
   }
   
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={lightModeYellowTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>  
