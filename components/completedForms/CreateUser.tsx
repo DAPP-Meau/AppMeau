@@ -11,7 +11,7 @@ import Colors from "@/constants/Colors";
 import { UserRegistrationForm } from "@/services/models";
 
 export interface CreateUserProps {
-  onSubmit?: (form: UserRegistrationForm, e?: GestureResponderEvent) => boolean;
+  onSubmit?: (form: UserRegistrationForm, e?: GestureResponderEvent) => boolean | void;
 }
 
 export default function CreateUser({ onSubmit }: CreateUserProps) {
