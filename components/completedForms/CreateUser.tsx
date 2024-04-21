@@ -30,14 +30,14 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   return (
-    <View style={{ width: "100%", marginVertical: 16 }}>
+    <View style={styles.container}>
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
         qual você realizar o processo de adoção e/ou apadrinhamento após a
         formalização do processo.
       </Text>
-      <Text style={styles.sectionTitle}>Informações Pessoais</Text>
-      <View style={{ gap: 16 }}>
+      <View style={{ gap: 8 }}>
+        <Text style={styles.sectionTitle}>Informações Pessoais</Text>
         <TextInput
           label="Nome completo"
           value={fullName}
@@ -61,8 +61,8 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         />
       </View>
 
-      <Text style={styles.sectionTitle}>Informações de Perfil</Text>
-      <View style={{ gap: 16 }}>
+      <View style={{ gap: 8 }}>
+        <Text style={styles.sectionTitle}>Informações de Perfil</Text>
         <TextInput
           label="E-mail"
           value={email}
@@ -84,10 +84,12 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
       </View>
 
       {/* Botão de adicionar foto */}
-      <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-      <TouchableOpacity style={styles.photoPlaceholder}>
-        <Text style={styles.photoText}>Adicionar Foto</Text>
-      </TouchableOpacity>
+      <View style={{ gap: 8 }}>
+        <Text style={styles.sectionTitle}>Foto de Perfil</Text>
+        <TouchableOpacity style={styles.photoPlaceholder}>
+          <Text style={styles.photoText}>Adicionar Foto</Text>
+        </TouchableOpacity>
+      </View>
 
       <Button
         mode="contained"
@@ -113,21 +115,20 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
   );
 }
 
-const makeStyles = (styles: MD3Theme) =>
+const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
-      backgroundColor: styles.colors.backdrop,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 20,
+      width: "100%",
+      marginVertical: 42,
+      gap:16,
     },
     infoText: {
       width: "100%",
-      backgroundColor: styles.colors.secondaryContainer,
+      backgroundColor: theme.colors.secondaryContainer,
       textAlign: "center",
       padding: 8,
       fontSize: 14,
-      color: styles.colors.onSecondaryContainer,
+      color: theme.colors.onSecondaryContainer,
       borderRadius: 2,
       fontFamily: "Roboto_Regular",
     },
@@ -137,7 +138,7 @@ const makeStyles = (styles: MD3Theme) =>
       marginBottom: 10,
       fontSize: 16,
       textTransform: "uppercase",
-      color: styles.colors.secondary,
+      color: theme.colors.secondary,
       fontFamily: "Roboto_Regular",
     },
     input: {
@@ -156,13 +157,12 @@ const makeStyles = (styles: MD3Theme) =>
       fontFamily: "Roboto_Regular",
     },
     photoPlaceholder: {
-      width: 150,
+      width: "50%",
       height: 150,
-      backgroundColor: "#ddd",
-      borderRadius: 75,
+      backgroundColor: theme.colors.primaryContainer,
+      borderRadius: 20,
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 20,
     },
     photoText: {
       textAlign: "center",
