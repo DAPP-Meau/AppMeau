@@ -1,4 +1,4 @@
-import Adopt from "@/components/cadastrosAnimal/Adopt";
+import Adopt from "@/components/completedForms/Adopt";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
 import React, { ScrollView, StyleSheet } from "react-native";

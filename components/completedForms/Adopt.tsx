@@ -1,5 +1,5 @@
-import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import React, { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, TextInput, ThemeProvider, useTheme, withTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
 import {
@@ -12,9 +12,10 @@ import {
   AdoptionForm,
 } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
+import { MD3Colors, MD3Theme } from "react-native-paper/lib/typescript/types";
 
 export interface AdoptProps {
-  onSubmit?: (form: AdoptionForm ) => void;
+  onSubmit?: (form: AdoptionForm, e?:GestureResponderEvent ) => boolean;
 }
 
 export default function Adopt({ onSubmit }: AdoptProps) {
@@ -48,6 +49,9 @@ export default function Adopt({ onSubmit }: AdoptProps) {
     requirePreviousVisit: false,
     requireMonitoring: false,
   });
+
+  const theme = useTheme();
+  const styles = makeStyles(theme);
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
@@ -324,7 +328,7 @@ export default function Adopt({ onSubmit }: AdoptProps) {
 
       <Button
         mode="contained"
-        onPress={() => onSubmit?.({ animal: animal, adoption: adopt })}
+        onPress={(e) => onSubmit?.({ animal: animal, adoption: adopt }, e)}
       >
         <Text>Submit</Text>
       </Button>
@@ -332,7 +336,9 @@ export default function Adopt({ onSubmit }: AdoptProps) {
   );
 }
 
-const styles = StyleSheet.create({
+
+
+const makeStyles = (theme:MD3Theme) => StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     textTransform: "capitalize",
@@ -342,12 +348,12 @@ const styles = StyleSheet.create({
   subSectionTitle: {
     fontSize: 12,
     textTransform: "uppercase",
-    color: "#f7a800",
+    color: theme.colors.primary,
   },
   infoText: {
     fontSize: 12,
     textTransform: "uppercase",
-    color: "#f7a800",
+    color: theme.colors.primary,
     fontFamily: "Roboto_Regular",
   },
   input: {
@@ -367,13 +373,14 @@ const styles = StyleSheet.create({
   photoPlaceholder: {
     width: "100%",
     height: 150,
-    backgroundColor: "#ddd",
+    backgroundColor: theme.colors.primaryContainer,
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
   },
   photoText: {
     textAlign: "center",
+    color: theme.colors.onPrimaryContainer
   },
   button: {
     width: "80%",
@@ -395,3 +402,4 @@ const styles = StyleSheet.create({
     width: "33%",
   },
 });
+
