@@ -9,13 +9,13 @@ import {
   ageOptions,
   sizeOptions,
   speciesOptions,
-  AdoptionForm,
+  AdoptionRegistrationForm,
 } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Colors, MD3Theme } from "react-native-paper/lib/typescript/types";
 
 export interface AdoptProps {
-  onSubmit?: (form: AdoptionForm, e?:GestureResponderEvent ) => boolean;
+  onSubmit?: (form: AdoptionRegistrationForm, e?:GestureResponderEvent ) => boolean;
 }
 
 export default function Adopt({ onSubmit }: AdoptProps) {
@@ -58,8 +58,8 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       <Text style={styles.sectionTitle}>Adoção</Text>
 
       <TextInput
-        style={styles.input}
         label="Nome do animal"
+        placeholder="Nome"
         onChangeText={(newValue) => {
           setAnimal((oldState) => ({
             ...oldState,
@@ -269,14 +269,16 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       </View>
 
       <TextInput
-        style={styles.input}
         label="Doenças do animal"
+        placeholder="Digite as doenças"
+        disabled={!animal.health.sick}
         onChangeText={(newValue) => {
           setAnimal((oldState) => ({
             ...oldState,
             sicknesses: newValue,
           }));
         }}
+        value={!animal.health.sick?"":animal.sicknesses}
       />
 
       <View style={styles.sectionView}>
@@ -314,9 +316,9 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Sobre o animal</Text>
         <TextInput
-          style={styles.input}
-          placeholderTextColor={Colors.text.gray4}
           label="Compartilhe a história do animal"
+          placeholder="Escreva a história do seu animal"
+          multiline
           onChangeText={(newValue) => {
             setAnimal((oldState) => ({
               ...oldState,

@@ -1,4 +1,4 @@
-import React, { StyleProp, Text, View, ViewStyle  } from "react-native";
+import React, { StyleProp, Text, View, ViewStyle } from "react-native";
 import { Checkbox } from "react-native-paper";
 
 export interface CheckBoxGroupProps {
@@ -8,11 +8,11 @@ export interface CheckBoxGroupProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export default function CheckBoxGroup<T>({
+export default function CheckBoxGroup({
   title,
   value,
   onPress,
-  style
+  style,
 }: CheckBoxGroupProps) {
   return (
     <View style={[{ flexDirection: "row" }, style]}>
@@ -22,7 +22,14 @@ export default function CheckBoxGroup<T>({
           onPress(!value);
         }}
       />
-      <Text style={{ textAlignVertical: "center" }}>{title}</Text>
+      <Text
+        style={{
+          textAlignVertical: "center",
+          flexShrink: 1,
+        }}
+      >
+        {title}
+      </Text>
     </View>
   );
 }
