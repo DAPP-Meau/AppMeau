@@ -1,5 +1,4 @@
 import React, {
-  GestureResponderEvent,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -7,75 +6,95 @@ import React, {
 } from "react-native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
-import { useState } from "react";
-import {
-  Adoption,
-  Animal,
-  sexOptions,
-  ageOptions,
-  sizeOptions,
-  speciesOptions,
-  AdoptionRegistrationForm,
-} from "@/services/models";
+import { AdoptionRegistrationForm } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
+import { Controller, useForm } from "react-hook-form";
 
 export interface AdoptProps {
-  onSubmit?: (
-    form: AdoptionRegistrationForm,
-    e?: GestureResponderEvent
-  ) => boolean;
+  onSubmit?: (form: AdoptionRegistrationForm) => Promise<boolean>;
 }
 
+/**
+ * Componente de formulário de adoção
+ *
+ * @component
+ * @prop {(form: AdoptionRegistrationForm) => Promise<boolean>} onSubmit -
+ * Função a ser chamada quando apertado o botão de enviar e o formulário está
+ * preenchido corretamente. A função deve retornar uma Promise booleana
+ * true caso queira apagar o formulário, ou false caso contrário.
+ *
+ * @example
+ * <Adopt onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ */
 export default function Adopt({ onSubmit }: AdoptProps) {
-  const [animal, setAnimal] = useState<Animal>({
-    name: "",
-    species: "dog",
-    sex: "female",
-    size: "small",
-    age: "cub",
-    temperament: {
-      calm: false,
-      guard: false,
-      lazy: false,
-      loving: false,
-      playful: false,
-      shy: false,
-    },
-    health: {
-      dewormed: false,
-      neutered: false,
-      sick: false,
-      vaccinated: false,
-    },
-    sicknesses: "",
-    story: "",
-  });
-
-  const [adopt, setAdopt] = useState<Adoption>({
-    requireAdoptionTerm: false,
-    requireHousePhoto: false,
-    requirePreviousVisit: false,
-    requireMonitoring: false,
-  });
-
   const theme = useTheme();
   const styles = makeStyles(theme);
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<AdoptionRegistrationForm>({
+    defaultValues: {
+      name: "",
+      species: "dog",
+      sex: "female",
+      size: "small",
+      age: "cub",
+      temperament: {
+        calm: false,
+        guard: false,
+        lazy: false,
+        loving: false,
+        playful: false,
+        shy: false,
+      },
+      health: {
+        dewormed: false,
+        neutered: false,
+        sick: false,
+        vaccinated: false,
+      },
+      sicknesses: "",
+      story: "",
+      requireAdoptionTerm: false,
+      requireHousePhoto: false,
+      requireMonitoring: false,
+      requirePreviousVisit: false,
+    },
+    mode: "all",
+  });
+
+  const watchSick = watch("health.sick");
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
       <Text style={styles.sectionTitle}>Adoção</Text>
 
-      <TextInput
-        label="Nome do animal"
-        placeholder="Nome"
-        onChangeText={(newValue) => {
-          setAnimal((oldState) => ({
-            ...oldState,
-            name: newValue,
-          }));
+      <Controller
+        control={control}
+        rules={{
+          required: "Por favor, insira um nome",
+          minLength: { value: 3, message: "Nome muito curto" },
+          maxLength: { value: 32, message: "Nome muito comprido" },
         }}
+        render={({ field: { onChange, onBlur, value, ...field } }) => (
+          <TextInput
+            {...field}
+            label={"Nome do Animal"}
+            placeholder="Digite o nome"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            error={errors.name ? true : false}
+          />
+        )}
+        name="name"
       />
+      {errors.name && <Text>{errors.name.message}</Text>}
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
@@ -87,60 +106,38 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       <View style={styles.sectionView}>
         <RadioButtonGroup
           title="Espécie"
-          value={animal.species}
-          onChange={(newValue) => {
-            setAnimal((oldState) => ({
-              ...oldState,
-              species: newValue as speciesOptions,
-            }));
-          }}
+          controllerProps={{ control: control, name: "species" }}
           options={[
-            { text: "Cachorro", key: "dog" },
-            { text: "Gato", key: "cat" },
+            { text: "Cachorro", value: "dog" },
+            { text: "Gato", value: "cat" },
           ]}
         />
+
         <RadioButtonGroup
           title="Sexo"
-          value={animal.sex}
-          onChange={(newValue) => {
-            setAnimal((oldState) => ({
-              ...oldState,
-              sex: newValue as sexOptions,
-            }));
-          }}
+          controllerProps={{ control: control, name: "sex" }}
           options={[
-            { text: "Macho", key: "male" },
-            { text: "Fêmea", key: "female" },
+            { text: "Macho", value: "male" },
+            { text: "Fêmea", value: "female" },
           ]}
         />
+
         <RadioButtonGroup
           title="Tamanho"
-          value={animal.size}
-          onChange={(newValue) => {
-            setAnimal((oldState) => ({
-              ...oldState,
-              size: newValue as sizeOptions,
-            }));
-          }}
+          controllerProps={{ control: control, name: "size" }}
           options={[
-            { text: "Pequeno", key: "small" },
-            { text: "Médio", key: "medium" },
-            { text: "Grande", key: "large" },
+            { text: "Pequeno", value: "small" },
+            { text: "Médio", value: "medium" },
+            { text: "Grande", value: "large" },
           ]}
         />
         <RadioButtonGroup
           title="Idade"
-          value={animal.age}
-          onChange={(newValue) => {
-            setAnimal((oldState) => ({
-              ...oldState,
-              age: newValue as ageOptions,
-            }));
-          }}
+          controllerProps={{ control: control, name: "age" }}
           options={[
-            { text: "Filhote", key: "cub" },
-            { text: "Adulto", key: "adult" },
-            { text: "Idoso", key: "old" },
+            { text: "Filhote", value: "cub" },
+            { text: "Adulto", value: "adult" },
+            { text: "Idoso", value: "old" },
           ]}
         />
 
@@ -155,69 +152,33 @@ export default function Adopt({ onSubmit }: AdoptProps) {
         >
           <CheckBoxGroup
             title="Calmo"
-            value={animal.temperament.calm}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, calm: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.calm" }}
           />
           <CheckBoxGroup
             title="Guarda"
-            value={animal.temperament.guard}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, guard: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.guard" }}
           />
           <CheckBoxGroup
             title="Preguiçoso"
-            value={animal.temperament.lazy}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, lazy: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.lazy" }}
           />
           <CheckBoxGroup
             title="Amoroso"
-            value={animal.temperament.loving}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, loving: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.lovely" }}
           />
           <CheckBoxGroup
             title="Brincalhão"
-            value={animal.temperament.playful}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, playful: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.playful" }}
           />
           <CheckBoxGroup
             title="Tímido"
-            value={animal.temperament.shy}
             style={styles.checkBox}
-            onPress={(x) =>
-              setAnimal((oldState) => ({
-                ...oldState,
-                temperament: { ...oldState.temperament, shy: x },
-              }))
-            }
+            controllerProps={{ control: control, name: "temperament.shy" }}
           />
         </View>
       </View>
@@ -233,113 +194,107 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       >
         <CheckBoxGroup
           title="Vermifugado"
-          value={animal.health.dewormed}
           style={styles.checkBox}
-          onPress={(x) =>
-            setAnimal((oldState) => ({
-              ...oldState,
-              health: { ...oldState.health, dewormed: x },
-            }))
-          }
+          controllerProps={{ control: control, name: "health.dewormed" }}
         />
         <CheckBoxGroup
           title="Castrado"
-          value={animal.health.neutered}
           style={styles.checkBox}
-          onPress={(x) =>
-            setAnimal((oldState) => ({
-              ...oldState,
-              health: { ...oldState.health, neutered: x },
-            }))
-          }
+          controllerProps={{ control: control, name: "health.neutered" }}
         />
         <CheckBoxGroup
           title="Doente"
-          value={animal.health.sick}
           style={styles.checkBox}
-          onPress={(x) =>
-            setAnimal((oldState) => ({
-              ...oldState,
-              health: { ...oldState.health, sick: x },
-            }))
-          }
+          controllerProps={{ control: control, name: "health.sick" }}
         />
         <CheckBoxGroup
           title="Vacinado"
-          value={animal.health.vaccinated}
           style={styles.checkBox}
-          onPress={(x) =>
-            setAnimal((oldState) => ({
-              ...oldState,
-              health: { ...oldState.health, vaccinated: x },
-            }))
-          }
+          controllerProps={{ control: control, name: "health.vaccinated" }}
         />
       </View>
 
-      <TextInput
-        label="Doenças do animal"
-        placeholder="Digite as doenças"
-        disabled={!animal.health.sick}
-        onChangeText={(newValue) => {
-          setAnimal((oldState) => ({
-            ...oldState,
-            sicknesses: newValue,
-          }));
+      <Controller
+        control={control}
+        name="sicknesses"
+        rules={{
+          required: {
+            value: watchSick,
+            message: "Por favor, digite as doenças do animal",
+          },
+          minLength: { value: 10, message: "Texto muito curto" },
+          maxLength: { value: 300, message: "Texto muito comprido" },
         }}
-        value={!animal.health.sick ? "" : animal.sicknesses}
+        render={({ field: { onChange, onBlur, value, ...field } }) => (
+          <TextInput
+            {...field}
+            label="Doenças do animal"
+            placeholder={!watchSick ? "Digite as doenças" : ""}
+            disabled={!watchSick}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={watchSick ? value : undefined}
+            error={errors.sicknesses ? true : false}
+          />
+        )}
       />
+      {errors.sicknesses && <Text>{errors.sicknesses.message}</Text>}
 
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Exigências para a adoção</Text>
         <CheckBoxGroup
           title="Termo de adoção"
-          value={adopt.requireAdoptionTerm}
-          onPress={(x) =>
-            setAdopt((oldState) => ({ ...oldState, requireAdoptionTerm: x }))
-          }
+          controllerProps={{ control: control, name: "requireAdoptionTerm" }}
         />
         <CheckBoxGroup
           title="Fotos da casa"
-          value={adopt.requireHousePhoto}
-          onPress={(x) =>
-            setAdopt((oldState) => ({ ...oldState, requireHousePhoto: x }))
-          }
+          controllerProps={{ control: control, name: "requireHousePhoto" }}
         />
         <CheckBoxGroup
           title="Visita prévia ao animal"
-          value={adopt.requirePreviousVisit}
-          onPress={(x) =>
-            setAdopt((oldState) => ({ ...oldState, requirePreviousVisit: x }))
-          }
+          controllerProps={{ control: control, name: "requirePreviousVisit" }}
         />
         <CheckBoxGroup
           title="Acompanhamento pós adoção"
-          value={adopt.requireMonitoring}
-          onPress={(x) =>
-            setAdopt((oldState) => ({ ...oldState, requireMonitoring: x }))
-          }
+          controllerProps={{ control: control, name: "requireMonitoring" }}
         />
       </View>
 
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Sobre o animal</Text>
-        <TextInput
-          label="Compartilhe a história do animal"
-          placeholder="Escreva a história do seu animal"
-          multiline
-          onChangeText={(newValue) => {
-            setAnimal((oldState) => ({
-              ...oldState,
-              story: newValue,
-            }));
+
+        <Controller
+          control={control}
+          name="story"
+          rules={{
+            required: false,
+            minLength: { value: 10, message: "Texto muito curto" },
+            maxLength: { value: 300, message: "Texto muito comprido" },
           }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Compartilhe a história do animal"
+              placeholder="Escreva a história do seu animal"
+              multiline
+              onChangeText={onChange}
+              onBlur={onBlur}
+              value={value}
+              error={errors.story ? true : false}
+            />
+          )}
         />
+        {errors.story && <Text>{errors.story.message}</Text>}
       </View>
 
       <Button
         mode="contained"
-        onPress={(e) => onSubmit?.({ ...animal, ...adopt }, e)}
+        onPress={handleSubmit((completedForm) => {
+          onSubmit?.(completedForm)
+            .then((mustReset) => {
+              if (mustReset) reset();
+            });
+        })}
       >
         <Text>Submit</Text>
       </Button>
