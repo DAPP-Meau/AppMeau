@@ -17,6 +17,18 @@ export interface CreateUserProps {
   onSubmit?: (form: UserRegistrationForm) => Promise<boolean>;
 }
 
+/**
+ * Componente de formulário de registro de usuário
+ *
+ * @component
+ * @prop {form: UserRegistrationForm) => Promise<boolean>} onSubmit -
+ * Função a ser chamada quando apertado o botão de enviar e o formulário está
+ * preenchido corretamente. A função deve retornar uma Promise booleana
+ * true caso queira apagar o formulário, ou false caso contrário.
+ *
+ * @example
+ * <CreateUser onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ */
 export default function CreateUser({ onSubmit }: CreateUserProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
@@ -49,6 +61,8 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         qual você realizar o processo de adoção e/ou apadrinhamento após a
         formalização do processo.
       </Text>
+
+      {/* Dados pessoais */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Informações Pessoais</Text>
 
@@ -178,6 +192,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         {errors.phone && <Text>{errors.phone.message}</Text>}
       </View>
 
+      {/* Informações de Perfil */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Informações de Perfil</Text>
 
@@ -230,7 +245,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
             <TextInput
               {...field}
               label="Senha"
-              placeholder="Crie uma senha." // TODO: Criar validação de senha
+              placeholder="Crie uma senha."
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -255,7 +270,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
             <TextInput
               {...field}
               label="Confirmar senha"
-              placeholder="Repita a sua senha" // TODO: Criar validação de senha
+              placeholder="Repita a sua senha"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -269,7 +284,8 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         )}
       </View>
 
-      {/* Botão de adicionar foto */}
+      {/* Botão de adicionar foto. */}
+      {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
         <TouchableOpacity style={styles.photoPlaceholder}>
@@ -280,7 +296,9 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
       <Button
         mode="contained"
         onPress={handleSubmit((completedForm) => {
-          onSubmit?.(completedForm)
+          // A linha abaixo é para remover a propriedade "passwordConfirm"
+          const {passwordConfirm:_, ...formToSubmit} = completedForm 
+          onSubmit?.(formToSubmit)
             .then((mustReset) => {
               if (mustReset) reset();
             });

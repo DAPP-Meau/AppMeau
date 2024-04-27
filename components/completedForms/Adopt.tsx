@@ -72,6 +72,7 @@ export default function Adopt({ onSubmit }: AdoptProps) {
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
+      {/* Dados da adoção */}
       <Text style={styles.sectionTitle}>Adoção</Text>
 
       <Controller
@@ -96,6 +97,8 @@ export default function Adopt({ onSubmit }: AdoptProps) {
       />
       {errors.name && <Text>{errors.name.message}</Text>}
 
+      {/* Botão de adicionar foto. */}
+      {/* TODO: Adicionar funcionalidade para a foto */}
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
         <TouchableOpacity style={styles.photoPlaceholder}>
@@ -239,7 +242,8 @@ export default function Adopt({ onSubmit }: AdoptProps) {
         )}
       />
       {errors.sicknesses && <Text>{errors.sicknesses.message}</Text>}
-
+      
+      {/* Termos de adoção */}
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Exigências para a adoção</Text>
         <CheckBoxGroup

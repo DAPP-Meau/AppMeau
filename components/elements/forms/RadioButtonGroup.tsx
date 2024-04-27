@@ -52,6 +52,7 @@ export default function RadioButtonGroup<T>({
         render={({ field: { onChange, onBlur, value, ...field } }) => (
           <RadioButton.Group onValueChange={onChange} value={value}>
             <View style={styles.listOfButtons}>
+              {/* Renderizar cada botão da lista options. */}
               {options.map((element, i) => {
                 return (
                   <View key={i} style={styles.radioButtonWrap}>
