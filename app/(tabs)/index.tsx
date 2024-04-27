@@ -1,4 +1,11 @@
-import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
+import { 
+  StyleSheet, 
+  TouchableOpacity, 
+  Text, 
+  View, 
+  Image, 
+  ScrollView,
+} from "react-native";
 
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
@@ -13,6 +20,7 @@ export default function Introduction() {
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <StatusBar backgroundColor={Colors.background.default} />
       <Text style={styles.title}>Olá!</Text>
@@ -42,6 +50,7 @@ export default function Introduction() {
         source={require("../../assets/images/Meau_marca_2.png")}
       />
     </View>
+    </ScrollView>
   );
 }
 
@@ -52,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 48,
-    paddingTop: 48,
+    paddingVertical: 48,
   },
   title: {
     fontSize: 72,
@@ -101,4 +110,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto_Regular',
   },
+  
 });

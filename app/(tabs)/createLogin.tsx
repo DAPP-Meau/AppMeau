@@ -3,54 +3,32 @@ import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import {
   Animated,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Text,
   StatusBar,
-  View,
-  Image,
-  Button,
 } from "react-native";
+
 import { firebaseapp } from "../../firebase";
-import React, { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
+import { PaperProvider } from "react-native-paper";
+import { lightModeBlueTheme } from "@/constants";
+import CreateUser from "@/components/completedForms/CreateUser";
+import { UserRegistrationForm } from "@/services/models";
 
 
 export default function CreateLogin() {
-  // Supondo que você irá implementar a lógica para esses estados
-  const [fullName, setFullName] = useState("");
-  const [age, setAge] = useState("");
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [validadepassword, setValidadepassword] = useState({ case: false, number: false, length: false, password: password });
   const auth = getAuth(firebaseapp);
   const db = getFirestore(firebaseapp);
-  const fun = () => {
-    createUserWithEmailAndPassword(auth, email, validadepassword.password).then((data) => {
-      const uid = data.user.uid;
-      const ref = collection(db, 'users');
-      setDoc(doc(ref, uid), {
-        Cidade: city,
-        Estado: state,
-        Foto: '',
-        Idade: age,
-        Telefone: phone,
-        email: email,
-        endereco: address,
-        nome: fullName,
-        usuario: username
-      });
-      alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
-      router.navigate('/(tabs)/login');
-    },(x)=> {console.log(x);})
+  const fun = (userRegistrationForm : UserRegistrationForm) : Promise<boolean> => {
+    createUserWithEmailAndPassword(auth, userRegistrationForm.login.email, userRegistrationForm.login.password)
+      .then((data) => {
+        const uid = data.user.uid;
+        const ref = collection(db, 'users');
+        setDoc(doc(ref, uid), userRegistrationForm);
+        alert(userRegistrationForm.person.fullName + ', Seu usuario: ' + userRegistrationForm.login.email + ' foi criado com sucesso. Faça o login!');
+        router.navigate('/(tabs)/login');
+        
+      })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
           alert('Esse endereço de email já esta em uso!');
@@ -59,151 +37,25 @@ export default function CreateLogin() {
         if (error.code === 'auth/invalid-email') {
           alert('Esse endereço de e-mail é inválido!');
         }
-
         alert(error);
         router.replace('/');
-      });
-
-
-
+      })
+      return new Promise((resolve) => {resolve(true)})
   };
 
-  const secureText = (password: string) => {
-    const regexUpperCasse = RegExp(/[A-Z]/)
-    const regexLowerCasse = RegExp(/[a-z]/)
-    const regexNumber = RegExp(/[0-9]/)
-    const length = password.length >= 6
-
-    setValidadepassword({
-      case: regexUpperCasse.test(password) && regexLowerCasse.test(password),
-      number: regexNumber.test(password),
-      length: length,
-      password: password
-
-    })
-
-  }
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <StatusBar backgroundColor={Colors.tintLight.blue1} />
-      <Text style={styles.infoText}>
-        As informações preenchidas serão divulgadas apenas para a pessoa com a
-        qual você realizar o processo de adoção e/ou apadrinhamento após a
-        formalização do processo.
-      </Text>
-      <Text style={styles.sectionTitle}>Informações Pessoais</Text>
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Nome completo"
-        value={fullName}
-        onChangeText={setFullName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Idade"
-        value={age}
-        onChangeText={setAge}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="E-mail"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Estado"
-        value={state}
-        onChangeText={setState}
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Cidade"
-        value={city}
-        onChangeText={setCity}
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Endereço"
-        value={address}
-        onChangeText={setAddress}
-      />
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Telefone"
-        value={phone}
-        onChangeText={setPhone}
-        keyboardType="phone-pad"
-      />
-
-      <Text style={styles.sectionTitle}>Informações de Perfil</Text>
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Nome de usuário"
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Senha"
-        onChangeText={setPassword => secureText(setPassword)}
-      />
-      <Text style={styles.Title}>Sua senha deve ter:</Text>
-      <View style={styles.View_style}>
-        <Image style={styles.image}
-          source={validadepassword.length ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
-        <Text style={styles.Text}>6 Caracteres</Text>
-      </View>
-      <View style={styles.View_style}>
-        <Image style={styles.image}
-          source={validadepassword.number ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
-
-        <Text style={styles.Text}>Numeros</Text>
-      </View>
-      <View style={styles.View_style}>
-        <Image style={styles.image}
-          source={validadepassword.case ? require("../../assets/images/check-png.png") : require("../../assets/images/ImageClose.png")} />
-
-        <Text style={styles.Text}>Letra maiúscula e minúscula</Text>
-      </View>
-
-      <TextInput
-        style={styles.input}
-        placeholderTextColor={Colors.text.gray4}
-        placeholder="Confirmação de senha"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-
-      <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-      {/* Este é um espaço reservado para a lógica de adicionar foto */}
-      <TouchableOpacity style={styles.photoPlaceholder}>
-        <Text style={styles.photoText}>Adicionar Foto</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={fun}>
-        <Text style={styles.buttonText}>FAZER CADASTRO</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <PaperProvider theme={lightModeBlueTheme}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <StatusBar backgroundColor={Colors.tintLight.blue1} />
+        <CreateUser onSubmit={(form) => fun(form)} />
+      </ScrollView>
+    </PaperProvider>
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
+    width: "100%",
     backgroundColor: Colors.background.default,
     alignItems: "center",
     justifyContent: "center",
