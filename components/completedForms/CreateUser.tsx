@@ -1,33 +1,58 @@
-import {
+import React, {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  GestureResponderEvent,
 } from "react-native";
-import React, { useState } from "react";
 import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { UserRegistrationForm } from "@/services/models";
+import { Controller, useForm } from "react-hook-form";
+
+type PasswordConfirm = {
+  passwordConfirm: string;
+};
 
 export interface CreateUserProps {
-  onSubmit?: (form: UserRegistrationForm, e?: GestureResponderEvent) => boolean | void;
+  onSubmit?: (form: UserRegistrationForm) => Promise<boolean>;
 }
 
+/**
+ * Componente de formulário de registro de usuário
+ *
+ * @component
+ * @prop {form: UserRegistrationForm) => Promise<boolean>} onSubmit -
+ * Função a ser chamada quando apertado o botão de enviar e o formulário está
+ * preenchido corretamente. A função deve retornar uma Promise booleana
+ * true caso queira apagar o formulário, ou false caso contrário.
+ *
+ * @example
+ * <CreateUser onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ */
 export default function CreateUser({ onSubmit }: CreateUserProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
-  const [fullName, setFullName] = useState("");
-  const [age, setAge] = useState<number | undefined>();
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<UserRegistrationForm & PasswordConfirm>({
+    defaultValues: {
+      address: "",
+      age: 0,
+      city: "",
+      email: "",
+      fullName: "",
+      password: "",
+      phone: "",
+      state: "",
+      passwordConfirm: "",
+    },
+    mode: "all",
+  });
 
   return (
     <View style={styles.container}>
@@ -36,54 +61,231 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         qual você realizar o processo de adoção e/ou apadrinhamento após a
         formalização do processo.
       </Text>
+
+      {/* Dados pessoais */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Informações Pessoais</Text>
-        <TextInput
-          label="Nome completo"
-          value={fullName}
-          onChangeText={setFullName}
-        />
-        <TextInput
-          label="Idade"
-          value={String(age ?? "")}
-          onChangeText={(e) => setAge(Number(e))}
-          keyboardType="numeric"
-        />
 
-        <TextInput label="Estado" value={state} onChangeText={setState} />
-        <TextInput label="Cidade" value={city} onChangeText={setCity} />
-        <TextInput label="Endereço" value={address} onChangeText={setAddress} />
-        <TextInput
-          label="Telefone"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
+        <Controller
+          control={control}
+          name="fullName"
+          rules={{
+            required: "Por favor, insira um nome",
+            minLength: { value: 3, message: "Nome muito curto" },
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Nome completo"
+              placeholder="Digite o seu nome"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.fullName ? true : false}
+            />
+          )}
         />
+        {errors.fullName && <Text>{errors.fullName.message}</Text>}
+
+        <Controller
+          control={control}
+          name="age"
+          rules={{
+            required: "Por favor, insira uma idade",
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Idade"
+              placeholder="Digite a sua idade"
+              value={String(value)}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.age ? true : false}
+              keyboardType="numeric"
+              inputMode="numeric"
+            />
+          )}
+        />
+        {errors.age && <Text>{errors.age.message}</Text>}
+
+        <Controller
+          control={control}
+          name="state"
+          rules={{
+            required: "Por favor, Digite o seu Estado",
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Estado"
+              placeholder="Digite o seu Estado"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.state ? true : false}
+            />
+          )}
+        />
+        {errors.state && <Text>{errors.state.message}</Text>}
+
+        <Controller
+          control={control}
+          name="city"
+          rules={{
+            required: "Por favor, Digite a sua cidade",
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Cidade"
+              placeholder="Digite a sua cidade"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.city ? true : false}
+            />
+          )}
+        />
+        {errors.city && <Text>{errors.city.message}</Text>}
+
+        <Controller
+          control={control}
+          name="address"
+          rules={{
+            required: "Por favor, Digite o seu endereço",
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Endereço"
+              placeholder="Digite o seu endereço"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.address ? true : false}
+            />
+          )}
+        />
+        {errors.address && <Text>{errors.address.message}</Text>}
+
+        <Controller
+          control={control}
+          name="phone"
+          rules={{
+            required: "Por favor, Digite o seu telefone",
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Telefone"
+              placeholder="Digite o número do seu telefone"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.phone ? true : false}
+              keyboardType="phone-pad"
+              inputMode="tel"
+            />
+          )}
+        />
+        {errors.phone && <Text>{errors.phone.message}</Text>}
       </View>
 
+      {/* Informações de Perfil */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Informações de Perfil</Text>
-        <TextInput
-          label="E-mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
+
+        <Controller
+          control={control}
+          name="email"
+          rules={{
+            required: "Por favor, Digite o seu e-mail",
+            validate: {
+              mustContainAtSign: (str) =>
+                /@/.test(str) || "Email tem que ter um @",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="E-mail"
+              placeholder="Digite o seu e-mail"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.email ? true : false}
+              keyboardType="email-address"
+            />
+          )}
         />
-        <TextInput
-          label="Senha"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+        {errors.email && <Text>{errors.email.message}</Text>}
+
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: "Por favor, crie uma senha",
+            validate: {
+              containsLowerCase: (str) =>
+                /[a-z]/.test(str) ||
+                "Senha tem que conter um caractere minúsculo",
+              containsUpperCase: (str) =>
+                /[A-Z]/.test(str) ||
+                "Senha tem que conter um caractere maiúsculo",
+              containsNumber: (str) =>
+                /\d/.test(str) || "Senha tem que conter um dígito",
+              containsNonWord: (str) =>
+                /\W/.test(str) || "Senha tem que conter um símbolo",
+              lengthRequirement: (str) =>
+                str.length >= 7 || "Senha tem que ter no mínimo 8 caracteres",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Senha"
+              placeholder="Crie uma senha."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.password ? true : false}
+              secureTextEntry
+            />
+          )}
         />
-        <TextInput
-          label="Confirmação de senha"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
+        {errors.password && <Text>{errors.password.message}</Text>}
+
+        <Controller
+          control={control}
+          name="passwordConfirm"
+          rules={{
+            required: "Por favor, confirme sua senha",
+            validate: {
+              equalPasswords: (str) =>
+                watch("password") === str || "Sua senha não foi repetida corretamente!",
+            },
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Confirmar senha"
+              placeholder="Repita a sua senha"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.passwordConfirm ? true : false}
+              secureTextEntry
+            />
+          )}
         />
+        {errors.passwordConfirm && (
+          <Text>{errors.passwordConfirm.message}</Text>
+        )}
       </View>
 
-      {/* Botão de adicionar foto */}
+      {/* Botão de adicionar foto. */}
+      {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
         <TouchableOpacity style={styles.photoPlaceholder}>
@@ -93,21 +295,14 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
 
       <Button
         mode="contained"
-        onPress={(e) => {
-          onSubmit?.(
-            {
-              fullName: fullName,
-              age: age ?? 0,
-              state: state,
-              city: city,
-              address: address,
-              email: email,
-              phone: phone,
-              password: password,
-            },
-            e
-          );
-        }}
+        onPress={handleSubmit((completedForm) => {
+          // A linha abaixo é para remover a propriedade "passwordConfirm"
+          const {passwordConfirm:_, ...formToSubmit} = completedForm 
+          onSubmit?.(formToSubmit)
+            .then((mustReset) => {
+              if (mustReset) reset();
+            });
+        })}
       >
         <Text>FAZER CADASTRO</Text>
       </Button>
@@ -120,7 +315,7 @@ const makeStyles = (theme: MD3Theme) =>
     container: {
       width: "100%",
       marginVertical: 42,
-      gap:16,
+      gap: 16,
     },
     infoText: {
       width: "100%",
@@ -157,7 +352,7 @@ const makeStyles = (theme: MD3Theme) =>
       fontFamily: "Roboto_Regular",
     },
     photoPlaceholder: {
-      width: "50%",
+      width: "100%",
       height: 150,
       backgroundColor: theme.colors.primaryContainer,
       borderRadius: 20,

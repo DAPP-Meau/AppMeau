@@ -9,7 +9,7 @@ export default function AnimalRegistration(props: IAnimalRegistrationProps) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.yellow1} />
-      <Adopt />
+      <Adopt onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
     </ScrollView>
   );
 }
