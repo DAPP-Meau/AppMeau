@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import {
   Animated,
   StyleSheet,
@@ -11,11 +11,12 @@ import {
   Image,
   Button,
 } from "react-native";
-import { firebase } from "../../firebase";
-import { useState } from "react";
+import { firebaseapp } from "../../firebase";
+import React, { useState } from "react";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
+
 
 export default function CreateLogin() {
   // Supondo que você irá implementar a lógica para esses estados
@@ -30,14 +31,26 @@ export default function CreateLogin() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validadepassword, setValidadepassword] = useState({ case: false, number: false, length: false, password: password });
-  const auth = getAuth(firebase);
+  const auth = getAuth(firebaseapp);
+  const db = getFirestore(firebaseapp);
   const fun = () => {
-    createUserWithEmailAndPassword(auth, email, validadepassword.password)
-      .then((UserCredencial) => {
-        const user = UserCredencial.user;
-        alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
-        router.navigate('/(tabs)/login');
-      })
+    createUserWithEmailAndPassword(auth, email, validadepassword.password).then((data) => {
+      const uid = data.user.uid;
+      const ref = collection(db, 'users');
+      setDoc(doc(ref, uid), {
+        Cidade: city,
+        Estado: state,
+        Foto: '',
+        Idade: age,
+        Telefone: phone,
+        email: email,
+        endereco: address,
+        nome: fullName,
+        usuario: username
+      });
+      alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
+      router.navigate('/(tabs)/login');
+    },(x)=> {console.log(x);})
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
           alert('Esse endereço de email já esta em uso!');
