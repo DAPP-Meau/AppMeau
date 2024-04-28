@@ -27,9 +27,9 @@ export interface CreateUserProps {
  * true caso queira apagar o formulário, ou false caso contrário.
  *
  * @example
- * <CreateUser onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * <CreateUserForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
  */
-export default function CreateUser({ onSubmit }: CreateUserProps) {
+export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
@@ -41,14 +41,21 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
     formState: { errors },
   } = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
-      address: "",
-      age: 0,
+      address: {
+      fullAddress: "",
       city: "",
-      email: "",
-      fullName: "",
-      password: "",
-      phone: "",
       state: "",
+      },
+      person: {
+      age: 0,
+      fullName: "",
+      phone: "",
+      },
+      login: {
+        email: "",
+        password: "",
+        username: ""
+      },
       passwordConfirm: "",
     },
     mode: "all",
@@ -68,7 +75,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
 
         <Controller
           control={control}
-          name="fullName"
+          name="person.fullName"
           rules={{
             required: "Por favor, insira um nome",
             minLength: { value: 3, message: "Nome muito curto" },
@@ -81,15 +88,15 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.fullName ? true : false}
+              error={errors.person?.fullName ? true : false}
             />
           )}
         />
-        {errors.fullName && <Text>{errors.fullName.message}</Text>}
+        {errors.person?.fullName && <Text>{errors.person?.fullName.message}</Text>}
 
         <Controller
           control={control}
-          name="age"
+          name="person.age"
           rules={{
             required: "Por favor, insira uma idade",
           }}
@@ -101,17 +108,17 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={String(value)}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.age ? true : false}
+              error={errors.person?.age ? true : false}
               keyboardType="numeric"
               inputMode="numeric"
             />
           )}
         />
-        {errors.age && <Text>{errors.age.message}</Text>}
+        {errors.person?.age && <Text>{errors.person?.age.message}</Text>}
 
         <Controller
           control={control}
-          name="state"
+          name="address.state"
           rules={{
             required: "Por favor, Digite o seu Estado",
           }}
@@ -123,15 +130,15 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.state ? true : false}
+              error={errors.address?.state ? true : false}
             />
           )}
         />
-        {errors.state && <Text>{errors.state.message}</Text>}
+        {errors.address?.state && <Text>{errors.address?.state.message}</Text>}
 
         <Controller
           control={control}
-          name="city"
+          name="address.city"
           rules={{
             required: "Por favor, Digite a sua cidade",
           }}
@@ -143,15 +150,15 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.city ? true : false}
+              error={errors.address?.city ? true : false}
             />
           )}
         />
-        {errors.city && <Text>{errors.city.message}</Text>}
+        {errors.address?.city && <Text>{errors.address?.city.message}</Text>}
 
         <Controller
           control={control}
-          name="address"
+          name="address.fullAddress"
           rules={{
             required: "Por favor, Digite o seu endereço",
           }}
@@ -163,15 +170,15 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.address ? true : false}
+              error={errors.address?.fullAddress ? true : false}
             />
           )}
         />
-        {errors.address && <Text>{errors.address.message}</Text>}
+        {errors.address?.fullAddress && <Text>{errors.address?.fullAddress.message}</Text>}
 
         <Controller
           control={control}
-          name="phone"
+          name="person.phone"
           rules={{
             required: "Por favor, Digite o seu telefone",
           }}
@@ -183,13 +190,13 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.phone ? true : false}
+              error={errors.person?.phone ? true : false}
               keyboardType="phone-pad"
               inputMode="tel"
             />
           )}
         />
-        {errors.phone && <Text>{errors.phone.message}</Text>}
+        {errors.person?.phone && <Text>{errors.person?.phone.message}</Text>}
       </View>
 
       {/* Informações de Perfil */}
@@ -198,7 +205,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
 
         <Controller
           control={control}
-          name="email"
+          name="login.email"
           rules={{
             required: "Por favor, Digite o seu e-mail",
             validate: {
@@ -214,16 +221,37 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.email ? true : false}
+              error={errors.login?.email ? true : false}
               keyboardType="email-address"
             />
           )}
         />
-        {errors.email && <Text>{errors.email.message}</Text>}
+        {errors.login?.email && <Text>{errors.login?.email.message}</Text>}
 
         <Controller
           control={control}
-          name="password"
+          name="login.username"
+          rules={{
+            required: "Por favor, Digite o seu usuário",
+            minLength: {value:10, message:"O usuário precisa ter no mínimo 10 caracteres"}
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label="Nome de usuário"
+              placeholder="Digite o seu nome de usuário"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.login?.username ? true : false}
+            />
+          )}
+        />
+        {errors.login?.username && <Text>{errors.login?.username.message}</Text>}
+
+        <Controller
+          control={control}
+          name="login.password"
           rules={{
             required: "Por favor, crie uma senha",
             validate: {
@@ -249,12 +277,12 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.password ? true : false}
+              error={errors.login?.password ? true : false}
               secureTextEntry
             />
           )}
         />
-        {errors.password && <Text>{errors.password.message}</Text>}
+        {errors.login?.password && <Text>{errors.login?.password.message}</Text>}
 
         <Controller
           control={control}
@@ -263,7 +291,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
             required: "Por favor, confirme sua senha",
             validate: {
               equalPasswords: (str) =>
-                watch("password") === str || "Sua senha não foi repetida corretamente!",
+                watch("login.password") === str || "Sua senha não foi repetida corretamente!",
             },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -297,7 +325,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         mode="contained"
         onPress={handleSubmit((completedForm) => {
           // A linha abaixo é para remover a propriedade "passwordConfirm"
-          const {passwordConfirm:_, ...formToSubmit} = completedForm 
+          const {passwordConfirm:_, ...formToSubmit} = completedForm
           onSubmit?.(formToSubmit)
             .then((mustReset) => {
               if (mustReset) reset();

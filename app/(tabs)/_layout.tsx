@@ -27,9 +27,9 @@ export default function TabLayout() {
           }}
         />
         <Drawer.Screen
-          name="createLogin"
+          name="userRegistration"
           options={{
-            title: "Cadastrar Pessoal",
+            title: "Cadastrar Usuário",
             headerStyle: { backgroundColor: Colors.tintLight.blue2 },
           }}
         />

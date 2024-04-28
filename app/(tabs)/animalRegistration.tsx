@@ -1,4 +1,4 @@
-import Adopt from "@/components/completedForms/Adopt";
+import CreateAdoptForm from "@/components/completedForms/CreateAdoptForm";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
 import React, { ScrollView, StyleSheet } from "react-native";
@@ -9,7 +9,7 @@ export default function AnimalRegistration(props: IAnimalRegistrationProps) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar backgroundColor={Colors.tintLight.yellow1} />
-      <Adopt onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+      <CreateAdoptForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
     </ScrollView>
   );
 }
