@@ -25,9 +25,9 @@ export interface AdoptProps {
  * true caso queira apagar o formulário, ou false caso contrário.
  *
  * @example
- * <Adopt onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * <CreateAdoptForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
  */
-export default function Adopt({ onSubmit }: AdoptProps) {
+export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
@@ -242,7 +242,7 @@ export default function Adopt({ onSubmit }: AdoptProps) {
         )}
       />
       {errors.sicknesses && <Text>{errors.sicknesses.message}</Text>}
-      
+
       {/* Termos de adoção */}
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Exigências para a adoção</Text>

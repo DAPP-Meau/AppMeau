@@ -27,9 +27,9 @@ export interface CreateUserProps {
  * true caso queira apagar o formulário, ou false caso contrário.
  *
  * @example
- * <CreateUser onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * <CreateUserForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
  */
-export default function CreateUser({ onSubmit }: CreateUserProps) {
+export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
@@ -55,7 +55,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         email: "",
         password: "",
         username: ""
-      }, 
+      },
       passwordConfirm: "",
     },
     mode: "all",
@@ -325,7 +325,7 @@ export default function CreateUser({ onSubmit }: CreateUserProps) {
         mode="contained"
         onPress={handleSubmit((completedForm) => {
           // A linha abaixo é para remover a propriedade "passwordConfirm"
-          const {passwordConfirm:_, ...formToSubmit} = completedForm 
+          const {passwordConfirm:_, ...formToSubmit} = completedForm
           onSubmit?.(formToSubmit)
             .then((mustReset) => {
               if (mustReset) reset();
