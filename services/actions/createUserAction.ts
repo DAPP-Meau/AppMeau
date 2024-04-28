@@ -43,7 +43,7 @@ export const createUserAction = (
 
       setDoc(doc(ref, uid), registrationDocument);
       alert(
-        fullName + ", Seu usuario: " + email + " foi criado com sucesso. Faça o login!"
+        fullName + ", Seu usuário: " + email + " foi criado com sucesso. Faça o login!"
       );
       router.navigate("/(tabs)/login");
     })
