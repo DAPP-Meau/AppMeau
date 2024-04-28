@@ -1,6 +1,6 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
-import {
+import React, {
   Animated,
   StyleSheet,
   StatusBar,
@@ -13,19 +13,36 @@ import { router } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { lightModeBlueTheme } from "@/constants";
 import CreateUser from "@/components/completedForms/CreateUser";
-import { UserRegistrationForm } from "@/services/models";
+import { UserRegistrationDocument, UserRegistrationForm } from "@/services/models";
 
 
 export default function CreateLogin() {
   const auth = getAuth(firebaseapp);
   const db = getFirestore(firebaseapp);
-  const fun = (userRegistrationForm : UserRegistrationForm) : Promise<boolean> => {
-    createUserWithEmailAndPassword(auth, userRegistrationForm.login.email, userRegistrationForm.login.password)
+  const fun = ( form : UserRegistrationForm) : Promise<boolean> => {
+    // Destruturando somente variáveis uteis nesta função
+    const {
+      login:{email, password, username}, 
+      person:{ fullName }
+    } = form
+
+    createUserWithEmailAndPassword(auth, email, password)
       .then((data) => {
         const uid = data.user.uid;
         const ref = collection(db, 'users');
-        setDoc(doc(ref, uid), userRegistrationForm);
-        alert(userRegistrationForm.person.fullName + ', Seu usuario: ' + userRegistrationForm.login.email + ' foi criado com sucesso. Faça o login!');
+        
+        // Criando objeto de criação de documento com o tipo correto.
+        const registrationDocument : UserRegistrationDocument = {
+          address: form.address,
+          person: form.person,
+          login: {
+            email: email,
+            username: username
+          }
+        }
+
+        setDoc(doc(ref, uid), registrationDocument);
+        alert(fullName + ', Seu usuario: ' + email + ' foi criado com sucesso. Faça o login!');
         router.navigate('/(tabs)/login');
         
       })

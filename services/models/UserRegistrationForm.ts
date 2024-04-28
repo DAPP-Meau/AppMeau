@@ -5,3 +5,9 @@ export type UserRegistrationForm = {
   address: Address;
   login: Login;
 };
+
+export type UserRegistrationDocument = {
+  person: Person;
+  address: Address;
+  login: Omit<Login, "password">;
+}
