@@ -1,15 +1,23 @@
-import { Auth, signInWithEmailAndPassword } from "firebase/auth";
+import { Auth, signInWithEmailAndPassword } from 'firebase/auth'
 
-export const loginAction = (auth: Auth, username: string, password: string) => {
+export type LoginFormData = {
+  username: string
+  password: string
+}
+
+export const loginAction = (
+  auth: Auth,
+  { username, password }: LoginFormData,
+) => {
   signInWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
-      alert("Bem vindo!");
-      const user = userCredential.user;
+      alert('Bem vindo!')
+      const user = userCredential.user
       // ...
     })
     .catch((error) => {
-      alert(error);
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
-};
+      alert(error)
+      const errorCode = error.code
+      const errorMessage = error.message
+    })
+}
