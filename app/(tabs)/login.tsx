@@ -8,26 +8,18 @@ import {
 import { useState } from "react";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { firebase } from "../../firebase";
+import { getAuth } from "firebase/auth";
+import { firebaseapp } from "../../firebase";
+import { loginAction } from "@/services/actions";
+
+
+
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleLogin = () => {
-    const auth = getAuth(firebase);
-    signInWithEmailAndPassword(auth, username, password)
-      .then((userCredential) => {
-        alert("Bem vindo!");
-        const user = userCredential.user;
-        // ...
-      })
-      .catch((error) => {
-        alert(error);
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
-  };
+  
+  const auth = getAuth(firebaseapp);
+  const handleLogin = () => loginAction(auth, username, password)
 
   return (
     <View style={styles.container}>
