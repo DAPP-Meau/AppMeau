@@ -7,39 +7,40 @@ import React, {
 import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { UserRegistrationForm } from "@/services/models";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormReturn, useForm } from "react-hook-form";
 
-type PasswordConfirm = {
+export type PasswordConfirm = {
   passwordConfirm: string;
 };
 
 export interface CreateUserProps {
-  onSubmit?: (form: UserRegistrationForm) => Promise<boolean>;
+  /**
+   * Função callback chamado quando da corretude
+   * @param fields - Campos completados e "corretos" do formulário. Ainda exige
+   * tratamento para verificação no backend. (como por exemplo verificação de
+   * e-mail.)
+   * @param form - O Objeto resultante do usdo do gancho useForm do 
+   * react-hook-form.
+   * 
+   */
+  onSubmit?: (
+    fields: UserRegistrationForm & PasswordConfirm,
+    form: UseFormReturn<UserRegistrationForm & PasswordConfirm, any, undefined>
+  ) => void;
 }
 
 /**
  * Componente de formulário de registro de usuário
  *
  * @component
- * @prop {form: UserRegistrationForm) => Promise<boolean>} onSubmit -
- * Função a ser chamada quando apertado o botão de enviar e o formulário está
- * preenchido corretamente. A função deve retornar uma Promise booleana
- * true caso queira apagar o formulário, ou false caso contrário.
- *
- * @example
- * <CreateUserForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * @param {function} onSubmit - Função Callback a ser chamada quando apertado o 
+ * botão de enviar e o formulário está preenchido corretamente.
  */
 export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<UserRegistrationForm & PasswordConfirm>({
+  const form = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
       address: {
       fullAddress: "",
@@ -60,6 +61,14 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     },
     mode: "all",
   });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = form
 
   return (
     <View style={styles.container}>
@@ -323,13 +332,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit((completedForm) => {
-          // A linha abaixo é para remover a propriedade "passwordConfirm"
-          const {passwordConfirm:_, ...formToSubmit} = completedForm
-          onSubmit?.(formToSubmit)
-            .then((mustReset) => {
-              if (mustReset) reset();
-            });
+        onPress={handleSubmit((formToSubmit) => {
+          onSubmit?.(formToSubmit, form)
         })}
       >
         <Text>FAZER CADASTRO</Text>

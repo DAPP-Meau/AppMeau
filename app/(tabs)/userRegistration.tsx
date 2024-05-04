@@ -6,7 +6,7 @@ import React, {
   StatusBar,
 } from "react-native";
 
-import { firebaseapp } from "../../firebase";
+import { firebaseapp } from "@/firebase";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
 import { PaperProvider } from "react-native-paper";
@@ -23,7 +23,9 @@ export default function userRegistration() {
     <PaperProvider theme={lightModeBlueTheme}>
       <ScrollView contentContainerStyle={styles.container}>
         <StatusBar backgroundColor={Colors.tintLight.blue1} />
-        <CreateUserForm onSubmit={(form) => createUserAction(form, auth, db)} />
+        <CreateUserForm 
+          onSubmit={(fields, form) => createUserAction(fields, form, auth, db)} 
+        />
       </ScrollView>
     </PaperProvider>
   );

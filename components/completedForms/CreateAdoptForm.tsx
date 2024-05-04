@@ -1,18 +1,16 @@
-import React, {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { AdoptionRegistrationForm } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormReturn, useForm } from "react-hook-form";
 
 export interface AdoptProps {
-  onSubmit?: (form: AdoptionRegistrationForm) => Promise<boolean>;
+  onSubmit?: (
+    fields: AdoptionRegistrationForm,
+    form: UseFormReturn<AdoptionRegistrationForm, any, undefined>
+  ) => void;
 }
 
 /**
@@ -31,13 +29,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<AdoptionRegistrationForm>({
+  const form = useForm<AdoptionRegistrationForm>({
     defaultValues: {
       name: "",
       species: "dog",
@@ -67,6 +59,14 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
     },
     mode: "all",
   });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = form;
 
   const watchSick = watch("health.sick");
 
@@ -293,11 +293,8 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit((completedForm) => {
-          onSubmit?.(completedForm)
-            .then((mustReset) => {
-              if (mustReset) reset();
-            });
+        onPress={handleSubmit((completedFields) => {
+          onSubmit?.(completedFields, form)
         })}
       >
         <Text>Submit</Text>
