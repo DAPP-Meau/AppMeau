@@ -8,18 +8,18 @@ import { Controller, UseFormReturn, useForm } from "react-hook-form";
 
 export interface AdoptProps {
   /**
-   * Função callback quando for apertado o botão de enviar e os dados estão 
+   * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
    * @param fields - Campos completados e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend.
-   * @param form - O Objeto resultante do uso do gancho useForm do 
+   * @param form - O Objeto resultante do uso do gancho useForm do
    * react-hook-form.
-   * 
+   *
    */
   onSubmit?: (
     fields: AdoptionRegistrationForm,
     form: UseFormReturn<AdoptionRegistrationForm, any, undefined>
-  ) => void;
+  ) => Promise<void>;
 }
 
 /**
@@ -302,8 +302,8 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit((completedFields) => {
-          onSubmit?.(completedFields, form)
+        onPress={handleSubmit(async (completedFields) => {
+          await onSubmit?.(completedFields, form);
         })}
       >
         <Text>Submit</Text>

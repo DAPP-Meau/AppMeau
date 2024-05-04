@@ -15,14 +15,14 @@ export type PasswordConfirm = {
 
 export interface CreateUserProps {
   /**
-   * Função callback quando for apertado o botão de enviar e os dados estão 
+   * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
    * @param fields - Campos completados e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend. (como por exemplo verificação de
    * e-mail.)
-   * @param form - O Objeto resultante do uso do gancho useForm do 
+   * @param form - O Objeto resultante do uso do gancho useForm do
    * react-hook-form.
-   * 
+   *
    */
   onSubmit: (
     fields: UserRegistrationForm & PasswordConfirm,
@@ -34,7 +34,7 @@ export interface CreateUserProps {
  * Componente de formulário de registro de usuário
  *
  * @component
- * @param {function} onSubmit - Função Callback a ser chamada quando apertado o 
+ * @param {function} onSubmit - Função Callback a ser chamada quando apertado o
  * botão de enviar e o formulário está preenchido corretamente.
  */
 export default function CreateUserForm({ onSubmit }: CreateUserProps) {
@@ -332,8 +332,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit(async (fields) => {
-          await onSubmit(fields, form)
+        onPress={handleSubmit(async (completedFields) => {
+          await onSubmit(completedFields, form)
         })}
         loading={isSubmitting}
         disabled={isSubmitting}

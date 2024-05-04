@@ -38,6 +38,8 @@ export async function createUserAction(
 
     let data: UserCredential;
 
+    // TODO: descobrir o que acontece quando createUserWithEmailAndPassword está
+    // sem conexão.
     data = await createUserWithEmailAndPassword(auth, email, password);
 
     const uid = data.user.uid;
