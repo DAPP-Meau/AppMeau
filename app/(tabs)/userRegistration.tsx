@@ -1,10 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import React, {
-  Animated,
-  StyleSheet,
-  StatusBar,
-} from "react-native";
+import React, { Animated, StyleSheet, StatusBar } from "react-native";
 
 import { firebaseapp } from "@/firebase";
 import ScrollView = Animated.ScrollView;
@@ -14,7 +10,6 @@ import { lightModeBlueTheme } from "@/constants";
 import CreateUserForm from "@/components/completedForms/CreateUserForm";
 import { createUserAction } from "@/services/actions/createUserAction";
 
-
 export default function userRegistration() {
   const auth = getAuth(firebaseapp);
   const db = getFirestore(firebaseapp);
@@ -23,8 +18,10 @@ export default function userRegistration() {
     <PaperProvider theme={lightModeBlueTheme}>
       <ScrollView contentContainerStyle={styles.container}>
         <StatusBar backgroundColor={Colors.tintLight.blue1} />
-        <CreateUserForm 
-          onSubmit={(fields, form) => createUserAction(fields, form, auth, db)} 
+        <CreateUserForm
+          onSubmit={async (fields, form) => {
+            await createUserAction(fields, form, auth, db);
+          }}
         />
       </ScrollView>
     </PaperProvider>
@@ -40,4 +37,3 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
-

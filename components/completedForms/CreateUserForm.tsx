@@ -24,10 +24,10 @@ export interface CreateUserProps {
    * react-hook-form.
    * 
    */
-  onSubmit?: (
+  onSubmit: (
     fields: UserRegistrationForm & PasswordConfirm,
     form: UseFormReturn<UserRegistrationForm & PasswordConfirm, any, undefined>
-  ) => void;
+  ) => Promise<void>;
 }
 
 /**
@@ -67,8 +67,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     control,
     handleSubmit,
     watch,
-    reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form
 
   return (
@@ -333,9 +332,11 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit((formToSubmit) => {
-          onSubmit?.(formToSubmit, form)
+        onPress={handleSubmit(async (fields) => {
+          await onSubmit(fields, form)
         })}
+        loading={isSubmitting}
+        disabled={isSubmitting}
       >
         <Text>FAZER CADASTRO</Text>
       </Button>
