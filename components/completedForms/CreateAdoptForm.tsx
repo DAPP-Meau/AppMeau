@@ -10,10 +10,11 @@ export interface AdoptProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
-   * @param fields - Campos completados e "corretos" do formulário. Ainda exige
+   * 
+   * @param fields - Campos completos e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend.
    * @param form - O Objeto resultante do uso do gancho useForm do
-   * react-hook-form.
+   * react-hook-form neste componente.
    *
    */
   onSubmit?: (
@@ -23,16 +24,10 @@ export interface AdoptProps {
 }
 
 /**
- * Componente de formulário de adoção
+ * Componente de formulário de adoção.
  *
  * @component
- * @prop {(form: AdoptionRegistrationForm) => Promise<boolean>} onSubmit -
- * Função a ser chamada quando apertado o botão de enviar e o formulário está
- * preenchido corretamente. A função deve retornar uma Promise booleana
- * true caso queira apagar o formulário, ou false caso contrário.
- *
- * @example
- * <CreateAdoptForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * 
  */
 export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
   const theme = useTheme();
