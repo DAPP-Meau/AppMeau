@@ -15,11 +15,12 @@ export type PasswordConfirm = {
 
 export interface CreateUserProps {
   /**
-   * Função callback chamado quando da corretude
+   * Função callback quando for apertado o botão de enviar e os dados estão 
+   * corretos.
    * @param fields - Campos completados e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend. (como por exemplo verificação de
    * e-mail.)
-   * @param form - O Objeto resultante do usdo do gancho useForm do 
+   * @param form - O Objeto resultante do uso do gancho useForm do 
    * react-hook-form.
    * 
    */

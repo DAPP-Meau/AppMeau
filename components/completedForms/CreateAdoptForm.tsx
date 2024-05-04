@@ -7,6 +7,15 @@ import { MD3Theme } from "react-native-paper/lib/typescript/types";
 import { Controller, UseFormReturn, useForm } from "react-hook-form";
 
 export interface AdoptProps {
+  /**
+   * Função callback quando for apertado o botão de enviar e os dados estão 
+   * corretos.
+   * @param fields - Campos completados e "corretos" do formulário. Ainda exige
+   * tratamento para verificação no backend.
+   * @param form - O Objeto resultante do uso do gancho useForm do 
+   * react-hook-form.
+   * 
+   */
   onSubmit?: (
     fields: AdoptionRegistrationForm,
     form: UseFormReturn<AdoptionRegistrationForm, any, undefined>
