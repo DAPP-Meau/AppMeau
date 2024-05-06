@@ -1,6 +1,6 @@
 import React from 'react'
 import { getAuth } from 'firebase/auth'
-import { firebaseapp } from '../../firebase'
+import { firebaseapp } from '@/firebase'
 import { loginAction } from '@/services/actions'
 import LoginForm from '@/components/completedForms/LoginForm'
 import { PaperProvider } from 'react-native-paper'
@@ -11,7 +11,7 @@ export default function Login() {
 
   return (
     <PaperProvider theme={lightModeBlueTheme}>
-        <LoginForm onSubmit={(login) => loginAction(auth, login)} />
+        <LoginForm onSubmit={async (fields, form) => {return loginAction(auth, fields, form)}} />
     </PaperProvider>
   )
 }

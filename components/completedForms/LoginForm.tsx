@@ -1,31 +1,49 @@
 import Colors from '@/constants/Colors'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, UseFormReturn, useForm } from 'react-hook-form'
 import React, { StyleSheet, Text, View } from 'react-native'
 import { Button, TextInput } from 'react-native-paper'
 
-type LoginType = {
+export type LoginFields = {
   username: string
   password: string
 }
 
 export interface LoginFormProps {
-  // TODO: Descobrir um tipo de retorno mais adequado para onSubmit
-  onSubmit?: (login: LoginType) => void 
+  /**
+   * Função callback quando for apertado o botão de enviar e os dados estão
+   * corretos.
+   *
+   * @param fields - Campos completados e "corretos" do formulário. Ainda exige
+   * tratamento para verificação no backend.
+   * @param form - O Objeto resultante do uso do gancho useForm do
+   * react-hook-form neste componente.
+   */
+  onSubmit?: (
+    fields: LoginFields,
+    form: UseFormReturn<LoginFields, any, undefined>
+  ) => Promise<void>
 }
 
+/**
+ * Componente de formulário de login de usuário
+ *
+ * @component
+ *
+ */
 export default function LoginForm({ onSubmit }: LoginFormProps) {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<LoginType>({
+  const form = useForm<LoginFields>({
     defaultValues: {
       username: undefined,
       password: undefined,
     },
     mode: 'onBlur',
   })
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = form
 
   return (
     <View style={styles.container}>
@@ -76,21 +94,24 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <Button
           mode="contained"
           style={{ marginBottom: 72 }}
-          onPress={handleSubmit((completedForm) => {
-            onSubmit?.(completedForm)
+          onPress={handleSubmit((completedFields) => {
+            onSubmit?.(completedFields, form)
           })}
+          disabled={isSubmitting}
+          loading={isSubmitting}
         >
           <Text>ENTRAR</Text>
         </Button>
 
         <View style={{ gap: 4 }}>
-          {/* TODO: Adicionar funcionalidade para login com o oAuth do facebook 
+          {/* TODO: Adicionar funcionalidade para login com o oAuth do facebook
             * e google abaixo. */}
           <Button
             mode="contained"
             icon="facebook"
             buttonColor="#194f7c"
             textColor="white"
+            disabled={isSubmitting}
           >
             <Text>ENTRAR COM FACEBOOK</Text>
           </Button>
@@ -99,6 +120,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             icon="google"
             buttonColor="#f15f5c"
             textColor="white"
+            disabled={isSubmitting}
           >
             <Text>ENTRAR COM GOOGLE</Text>
           </Button>
