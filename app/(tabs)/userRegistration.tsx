@@ -6,16 +6,18 @@ import React, {
   StatusBar,
 } from "react-native";
 
-import { firebaseapp } from "../../firebase";
+import { FirebaseAppContext } from "@/services/firebaseAppContext";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";
 import { PaperProvider } from "react-native-paper";
 import { lightModeBlueTheme } from "@/constants";
 import CreateUserForm from "@/components/completedForms/CreateUserForm";
 import { createUserAction } from "@/services/actions/createUserAction";
+import { useContext } from "react";
 
 
 export default function userRegistration() {
+  const firebaseapp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseapp);
   const db = getFirestore(firebaseapp);
 

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { ThemeProp } from "react-native-paper/lib/typescript/types";
 import { lightModeYellowTheme } from "@/constants";
+import FirebaseAppProvider from "@/components/FirebaseAppProvider";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,12 +28,14 @@ export default function AppLayout() {
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
     <PaperProvider theme={lightModeYellowTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>  
+      <FirebaseAppProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </FirebaseAppProvider>
     </PaperProvider>
   );
 }
