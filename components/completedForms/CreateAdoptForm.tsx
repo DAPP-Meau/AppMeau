@@ -1,43 +1,39 @@
-import React, {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { AdoptionRegistrationForm } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormReturn, useForm } from "react-hook-form";
 
 export interface AdoptProps {
-  onSubmit?: (form: AdoptionRegistrationForm) => Promise<boolean>;
+  /**
+   * Função callback quando for apertado o botão de enviar e os dados estão
+   * corretos.
+   * 
+   * @param fields - Campos completos e "corretos" do formulário. Ainda exige
+   * tratamento para verificação no backend.
+   * @param form - O Objeto resultante do uso do gancho useForm do
+   * react-hook-form neste componente.
+   *
+   */
+  onSubmit?: (
+    fields: AdoptionRegistrationForm,
+    form: UseFormReturn<AdoptionRegistrationForm, any, undefined>
+  ) => Promise<void>;
 }
 
 /**
- * Componente de formulário de adoção
+ * Componente de formulário de adoção.
  *
  * @component
- * @prop {(form: AdoptionRegistrationForm) => Promise<boolean>} onSubmit -
- * Função a ser chamada quando apertado o botão de enviar e o formulário está
- * preenchido corretamente. A função deve retornar uma Promise booleana
- * true caso queira apagar o formulário, ou false caso contrário.
- *
- * @example
- * <CreateAdoptForm onSubmit={(e) => {console.log(e); return new Promise((resolve) => {resolve(true)})}}/>
+ * 
  */
 export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<AdoptionRegistrationForm>({
+  const form = useForm<AdoptionRegistrationForm>({
     defaultValues: {
       name: "",
       species: "dog",
@@ -67,6 +63,14 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
     },
     mode: "all",
   });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = form;
 
   const watchSick = watch("health.sick");
 
@@ -293,11 +297,8 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit((completedForm) => {
-          onSubmit?.(completedForm)
-            .then((mustReset) => {
-              if (mustReset) reset();
-            });
+        onPress={handleSubmit(async (completedFields) => {
+          await onSubmit?.(completedFields, form);
         })}
       >
         <Text>Submit</Text>
