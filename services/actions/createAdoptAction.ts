@@ -37,14 +37,13 @@ export async function createAdoptAction(
     form.reset()
     // TODO: Navegar para tela de sucesso.
   } catch (error: any) {
+    // TODO: Criar tratamento de exceção para erros do firebase.
     if (error === timeoutError) {
       alert(
         "Está levando muito tempo para adicionar o animal. Verifique sua conexão com a internet",
       )
-    } else if ((error as FirestoreErrorCode) === "unauthenticated") {
-      // TODO: erros do firestore
     } else {
-      console.log(error)
+      throw error;
     }
   }
 }

@@ -175,7 +175,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
           <CheckBoxGroup
             title="Amoroso"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.lovely" }}
+            controllerProps={{ control: control, name: "temperament.loving" }}
           />
           <CheckBoxGroup
             title="Brincalhão"
