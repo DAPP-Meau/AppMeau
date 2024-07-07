@@ -15,7 +15,7 @@ export async function createPetAction(
 ) : Promise<void> {
   try {
     if (auth.currentUser === null) {
-      return 
+      throw new Error("No user logged in to create pet.");
     }
     
     const ref = collection(db, collections.pets)
@@ -32,6 +32,7 @@ export async function createPetAction(
     form.reset()
     // TODO: Navegar para tela de sucesso.
   } catch (error) {
-    console.log(error)
+    alert(error)
+    throw(error)
   }
 }

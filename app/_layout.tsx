@@ -1,18 +1,16 @@
-import { Text } from "react-native";
 import { Stack } from "expo-router/stack";
 import { useFonts } from 'expo-font';
 import { fonts } from "@/assets";
 import { SplashScreen } from "expo-router";
-import { useEffect } from "react";
-import { DefaultTheme, PaperProvider } from "react-native-paper";
-import { ThemeProp } from "react-native-paper/lib/typescript/types";
+import React, { useEffect } from "react";
+import { PaperProvider } from "react-native-paper";
 import { lightModeYellowTheme } from "@/constants";
 import FirebaseAppProvider from "@/components/FirebaseAppProvider";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function AppLayout() {
-  let [fontsLoaded, error] = useFonts(fonts);
+  const [fontsLoaded, error] = useFonts(fonts);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {

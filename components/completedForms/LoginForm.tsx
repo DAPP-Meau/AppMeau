@@ -42,7 +42,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = form
 
   return (
@@ -97,12 +97,13 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
           onPress={handleSubmit(async (completedFields) => {
             await onSubmit?.(completedFields, form)
           })}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           loading={isSubmitting}
         >
           <Text>ENTRAR</Text>
         </Button>
-
+        
+        {!isSubmitting && 
         <View style={{ gap: 4 }}>
           {/* TODO: Adicionar funcionalidade para login com o oAuth do facebook
             * e google abaixo. */}
@@ -125,6 +126,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             <Text>ENTRAR COM GOOGLE</Text>
           </Button>
         </View>
+        }
       </View>
     </View>
   )

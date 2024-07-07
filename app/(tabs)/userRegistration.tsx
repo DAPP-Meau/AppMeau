@@ -1,7 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import React, { Animated, StyleSheet, StatusBar } from "react-native";
-
 import { FirebaseAppContext } from "@/services/firebaseAppContext";
 import ScrollView = Animated.ScrollView;
 import Colors from "@/constants/Colors";

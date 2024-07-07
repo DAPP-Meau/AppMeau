@@ -65,14 +65,14 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         requirePreviousVisit: false,
       }
     },
-    mode: "all",
+    mode: "onChange",
   });
 
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting, isValidating },
+    formState: { errors, isSubmitting, isValid },
   } = form;
 
   const watchSick = watch("health.sick");
@@ -97,7 +97,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         control={control}
         rules={{
           required: "Por favor, insira um nome",
-          minLength: { value: 3, message: "Nome muito curto" },
+          minLength: { value: 1, message: "Nome muito curto" },
           maxLength: { value: 32, message: "Nome muito comprido" },
         }}
         render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -314,7 +314,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
           await onSubmit?.(completedFields, form);
         })}
         loading={isSubmitting}
-        disabled={isSubmitting || isValidating}
+        disabled={isSubmitting || !isValid}
       >
         <Text>CADASTRAR ANIMAL</Text>
       </Button>

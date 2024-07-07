@@ -67,35 +67,11 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     control,
     handleSubmit,
     watch,
-    formState: {errors, isSubmitting, isValidating, isValid},
-    reset,
+    formState: {errors, isSubmitting, isValid},
   } = form
 
   return (
     <View style={styles.container}>
-
-      <Button
-        mode="contained"
-        onPress={() => reset({
-          address: {
-          fullAddress: "123123123",
-          city: "bsb",
-          state: "df",
-          },
-          person: {
-          age: 20,
-          fullName: "wagner",
-          phone: "1234",
-          },
-          login: {
-            email: "wagne@google",
-            password: "1234Abcd!",
-            username: "wagnerBatalha"
-          },
-          passwordConfirm: "1234Abcd!",})}
-      >
-        <Text>preencher</Text>
-      </Button>
 
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
@@ -361,7 +337,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
           await onSubmit?.(completedFields, form)
         })}
         loading={isSubmitting}
-        disabled={isSubmitting || isValidating || !isValid}
+        disabled={isSubmitting || !isValid}
       >
         <Text>FAZER CADASTRO</Text>
       </Button>

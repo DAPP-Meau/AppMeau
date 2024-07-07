@@ -1,6 +1,6 @@
 import CreatePetForm from "@/components/completedForms/CreatePetForm"
 import Colors from "@/constants/Colors"
-import { createPetAction } from "@/services/actions/createPetAction"
+import { createPetAction } from "@/services/actions"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { StatusBar } from "expo-status-bar"
 import { getAuth } from "firebase/auth"

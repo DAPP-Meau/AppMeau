@@ -34,7 +34,7 @@ export default function TabLayout() {
           }}
         />
         <Drawer.Screen
-          name="animalRegistration"
+          name="petRegistration"
           options={{
             title: "Cadastrar Animal",
             headerStyle: { backgroundColor: Colors.tintLight.yellow2 },
