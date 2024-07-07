@@ -1,16 +1,16 @@
-import { Controller } from "react-hook-form";
+import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import React, { View, StyleSheet } from "react-native";
 import { Text, MD3Theme, RadioButton, useTheme } from "react-native-paper";
 
 export type radioButton<T> = {
-  value: T;
   text: string;
+  value: T;
 };
 
-export interface RadioButtonProps<T> {
+export interface RadioButtonProps<T extends FieldValues, T2> {
   title: string;
-  controllerProps: any; // TODO: Encontrar o tipo do controller props dado um tipo de campo T
-  options: radioButton<T>[];
+  controllerProps: {control: Control<T>, name: Path<T>}; // Prático!
+  options: radioButton<T2>[];
 }
 
 /**
@@ -36,11 +36,11 @@ export interface RadioButtonProps<T> {
  *   ]}
  * />
  */
-export default function RadioButtonGroup<T>({
+export default function RadioButtonGroup<T extends FieldValues, T2>({
   title,
   controllerProps,
   options,
-}: RadioButtonProps<T>) {
+}: RadioButtonProps<T, T2>) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
@@ -49,7 +49,7 @@ export default function RadioButtonGroup<T>({
       <Text style={styles.sectionTitle}>{title}</Text>
       <Controller
         {...controllerProps}
-        render={({ field: { onChange, onBlur, value, ...field } }) => (
+        render={({ field: { onChange, value } }) => (
           <RadioButton.Group onValueChange={onChange} value={value}>
             <View style={styles.listOfButtons}>
               {/* Renderizar cada botão da lista options. */}

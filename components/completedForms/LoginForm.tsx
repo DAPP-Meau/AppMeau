@@ -20,7 +20,7 @@ export interface LoginFormProps {
    */
   onSubmit?: (
     fields: LoginFields,
-    form: UseFormReturn<LoginFields, any, undefined>
+    form: UseFormReturn<LoginFields>
   ) => Promise<void>
 }
 
@@ -33,8 +33,8 @@ export interface LoginFormProps {
 export default function LoginForm({ onSubmit }: LoginFormProps) {
   const form = useForm<LoginFields>({
     defaultValues: {
-      username: undefined,
-      password: undefined,
+      username: "",
+      password: "",
     },
     mode: 'onBlur',
   })
@@ -94,8 +94,8 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <Button
           mode="contained"
           style={{ marginBottom: 72 }}
-          onPress={handleSubmit((completedFields) => {
-            onSubmit?.(completedFields, form)
+          onPress={handleSubmit(async (completedFields) => {
+            await onSubmit?.(completedFields, form)
           })}
           disabled={isSubmitting}
           loading={isSubmitting}

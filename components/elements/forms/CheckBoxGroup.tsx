@@ -41,7 +41,7 @@ export default function CheckBoxGroup({
     <View style={[styles.wrapper, style]}>
       <Controller
         {...controllerProps}
-        render={({ field: { onChange, onBlur, value, ...field } }) => (
+        render={({ field: { onChange, value } }) => (
           <Checkbox
             status={value ? "checked" : "unchecked"}
             onPress={() => onChange(!value)}

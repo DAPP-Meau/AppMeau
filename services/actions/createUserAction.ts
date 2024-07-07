@@ -18,14 +18,14 @@ import { collections } from "@/constants";
  * Registra novo usuário no firebase.
  * @param {UserRegistrationForm & PasswordConfirm} fields - O objeto contendo os
  * dados do usuário a ser registrado.
- * @param {UseFormReturn<UserRegistrationForm & PasswordConfirm, any, undefined>} form -
+ * @param {UseFormReturn<UserRegistrationForm & PasswordConfirm>} form -
  * O formulário gerado pelo gancho useHook do react-hook-form.
  * @param {Auth} auth - A interface de serviço de autorização do firebase.
  * @param {Firestore} db - A interface de serviço do Firestore.
  */
 export async function createUserAction(
   fields: UserRegistrationForm & PasswordConfirm,
-  form: UseFormReturn<UserRegistrationForm & PasswordConfirm, any, undefined>,
+  form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
   auth: Auth,
   db: Firestore
 ): Promise<void> {
@@ -36,11 +36,13 @@ export async function createUserAction(
       person: { fullName },
     } = fields;
 
-    let data: UserCredential;
-
     // TODO: descobrir o que acontece quando createUserWithEmailAndPassword está
     // sem conexão.
-    data = await createUserWithEmailAndPassword(auth, email, password);
+    const data: UserCredential = await createUserWithEmailAndPassword(
+      auth, 
+      email,
+      password
+    );
 
     const uid = data.user.uid;
     const ref = collection(db, collections.users);
@@ -54,12 +56,9 @@ export async function createUserAction(
         username: username,
       },
     };
-    // SetDoc nunca resolve caso esteja sem conexão.
-    // Portanto é adicionado um timeout de 10 segundos.
-    await Promise.race([
-      timeout(10000),
-      setDoc(doc(ref, uid), registrationDocument),
-    ]);
+    // TODO: setDoc não resolve enquanto está sem internet. Como resolver
+    // esse problema?
+    setDoc(doc(ref, uid), registrationDocument),
 
     alert(
       fullName +
@@ -84,18 +83,8 @@ export async function createUserAction(
         message: "Este email é inválido.",
       });
       form.setFocus("login.email");
-    } else if (error === timeoutError) {
-      alert("Está levando muito tempo para criar sua conta. Verifique sua conexão com a internet");
     } else {
-      console.log(error);
+      throw error
     }
   }
-}
-
-const timeoutError = "setdoc/timeout";
-
-function timeout(ms: number) {
-  return new Promise((_, reject) => {
-    setTimeout(() => reject(() => new Error(timeoutError)), ms);
-  });
 }

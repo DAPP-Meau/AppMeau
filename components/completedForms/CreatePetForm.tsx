@@ -1,12 +1,12 @@
 import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
-import { AdoptionRegistrationForm } from "@/services/models";
+import { PetRegistrationFields } from "@/services/models";
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
-import { Controller, UseFormReturn, useForm } from "react-hook-form";
+import { Controller, Path, UseFormReturn, useForm } from "react-hook-form";
 
-export interface AdoptProps {
+export interface CreatePetFormProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
@@ -18,8 +18,8 @@ export interface AdoptProps {
    *
    */
   onSubmit?: (
-    fields: AdoptionRegistrationForm,
-    form: UseFormReturn<AdoptionRegistrationForm, any, undefined>
+    fields: PetRegistrationFields,
+    form: UseFormReturn<PetRegistrationFields>
   ) => Promise<void>;
 }
 
@@ -29,37 +29,41 @@ export interface AdoptProps {
  * @component
  * 
  */
-export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
+export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
-  const form = useForm<AdoptionRegistrationForm>({
+  const form = useForm<PetRegistrationFields>({
     defaultValues: {
-      name: "",
-      species: "dog",
-      sex: "female",
-      size: "small",
-      age: "cub",
+      animal: {
+        name: "",
+        species: "dog",
+        sex: "female",
+        size: "small",
+        age: "cub",
+        story: "",
+      },
       temperament: {
-        calm: false,
-        guard: false,
-        lazy: false,
-        loving: false,
         playful: false,
         shy: false,
+        calm: false,
+        guard: false,
+        loving: false,
+        lazy: false,
       },
       health: {
+        vaccinated: false,
         dewormed: false,
         neutered: false,
         sick: false,
-        vaccinated: false,
+        sicknesses: "",
       },
-      sicknesses: "",
-      story: "",
-      requireAdoptionTerm: false,
-      requireHousePhoto: false,
-      requireMonitoring: false,
-      requirePreviousVisit: false,
+      adoptionRequirements: {
+        requireAdoptionTerm: false,
+        requireHousePhoto: false,
+        requireMonitoring: false,
+        requirePreviousVisit: false,
+      }
     },
     mode: "all",
   });
@@ -68,11 +72,21 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
     control,
     handleSubmit,
     watch,
-    reset,
-    formState: { errors },
+    formState: { errors, isSubmitting, isValidating },
   } = form;
 
   const watchSick = watch("health.sick");
+
+  // Isso aqui transforma um tipo em um monte de strings do tipo caminhos.
+  // Bem prático.
+  type PetFieldsPath = Path<PetRegistrationFields>
+
+  // Essa função existe apenas pra poder aumentar reutilização de código
+  // E para utilizar a coerção de tipo correta no parâmetro name.
+  // O mais certo era utilizar isso no
+  function constructController(theName: PetFieldsPath){
+    return({ control: control, name: theName })
+  }
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
@@ -94,12 +108,12 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            error={errors.name ? true : false}
+            error={errors?.animal?.name ? true : false}
           />
         )}
-        name="name"
+        name="animal.name"
       />
-      {errors.name && <Text>{errors.name.message}</Text>}
+      {errors?.animal?.name && <Text>{errors?.animal?.name?.message}</Text>}
 
       {/* Botão de adicionar foto. */}
       {/* TODO: Adicionar funcionalidade para a foto */}
@@ -113,7 +127,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
       <View style={styles.sectionView}>
         <RadioButtonGroup
           title="Espécie"
-          controllerProps={{ control: control, name: "species" }}
+          controllerProps={constructController("animal.species")}
           options={[
             { text: "Cachorro", value: "dog" },
             { text: "Gato", value: "cat" },
@@ -122,7 +136,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
         <RadioButtonGroup
           title="Sexo"
-          controllerProps={{ control: control, name: "sex" }}
+          controllerProps={constructController("animal.sex")}
           options={[
             { text: "Macho", value: "male" },
             { text: "Fêmea", value: "female" },
@@ -131,7 +145,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
         <RadioButtonGroup
           title="Tamanho"
-          controllerProps={{ control: control, name: "size" }}
+          controllerProps={constructController("animal.size")}
           options={[
             { text: "Pequeno", value: "small" },
             { text: "Médio", value: "medium" },
@@ -140,7 +154,7 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
         />
         <RadioButtonGroup
           title="Idade"
-          controllerProps={{ control: control, name: "age" }}
+          controllerProps={constructController("animal.age")}
           options={[
             { text: "Filhote", value: "cub" },
             { text: "Adulto", value: "adult" },
@@ -160,32 +174,32 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
           <CheckBoxGroup
             title="Calmo"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.calm" }}
+            controllerProps={constructController("temperament.calm")}
           />
           <CheckBoxGroup
             title="Guarda"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.guard" }}
+            controllerProps={constructController("temperament.guard")}
           />
           <CheckBoxGroup
             title="Preguiçoso"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.lazy" }}
+            controllerProps={constructController("temperament.lazy")}
           />
           <CheckBoxGroup
             title="Amoroso"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.loving" }}
+            controllerProps={constructController("temperament.loving")}
           />
           <CheckBoxGroup
             title="Brincalhão"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.playful" }}
+            controllerProps={constructController("temperament.playful")}
           />
           <CheckBoxGroup
             title="Tímido"
             style={styles.checkBox}
-            controllerProps={{ control: control, name: "temperament.shy" }}
+            controllerProps={constructController("temperament.shy")}
           />
         </View>
       </View>
@@ -202,28 +216,28 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
         <CheckBoxGroup
           title="Vermifugado"
           style={styles.checkBox}
-          controllerProps={{ control: control, name: "health.dewormed" }}
+          controllerProps={constructController("health.dewormed")}
         />
         <CheckBoxGroup
           title="Castrado"
           style={styles.checkBox}
-          controllerProps={{ control: control, name: "health.neutered" }}
+          controllerProps={constructController("health.neutered")}
         />
         <CheckBoxGroup
           title="Doente"
           style={styles.checkBox}
-          controllerProps={{ control: control, name: "health.sick" }}
+          controllerProps={constructController("health.sick")}
         />
         <CheckBoxGroup
           title="Vacinado"
           style={styles.checkBox}
-          controllerProps={{ control: control, name: "health.vaccinated" }}
+          controllerProps={constructController("health.vaccinated")}
         />
       </View>
 
       <Controller
         control={control}
-        name="sicknesses"
+        name="health.sicknesses"
         rules={{
           required: {
             value: watchSick,
@@ -241,30 +255,30 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
             onChangeText={onChange}
             onBlur={onBlur}
             value={watchSick ? value : undefined}
-            error={errors.sicknesses ? true : false}
+            error={errors?.health?.sicknesses ? true : false}
           />
         )}
       />
-      {errors.sicknesses && <Text>{errors.sicknesses.message}</Text>}
+      {errors?.health?.sicknesses && <Text>{errors?.health?.sicknesses?.message}</Text>}
 
       {/* Termos de adoção */}
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Exigências para a adoção</Text>
         <CheckBoxGroup
           title="Termo de adoção"
-          controllerProps={{ control: control, name: "requireAdoptionTerm" }}
+          controllerProps={constructController("adoptionRequirements.requireAdoptionTerm")}
         />
         <CheckBoxGroup
           title="Fotos da casa"
-          controllerProps={{ control: control, name: "requireHousePhoto" }}
+          controllerProps={constructController("adoptionRequirements.requireHousePhoto")}
         />
         <CheckBoxGroup
           title="Visita prévia ao animal"
-          controllerProps={{ control: control, name: "requirePreviousVisit" }}
+          controllerProps={constructController("adoptionRequirements.requirePreviousVisit")}
         />
         <CheckBoxGroup
           title="Acompanhamento pós adoção"
-          controllerProps={{ control: control, name: "requireMonitoring" }}
+          controllerProps={constructController("adoptionRequirements.requireMonitoring")}
         />
       </View>
 
@@ -273,10 +287,9 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
 
         <Controller
           control={control}
-          name="story"
+          name="animal.story"
           rules={{
             required: false,
-            minLength: { value: 10, message: "Texto muito curto" },
             maxLength: { value: 300, message: "Texto muito comprido" },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -288,11 +301,11 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              error={errors.story ? true : false}
+              error={errors?.animal?.story ? true : false}
             />
           )}
         />
-        {errors.story && <Text>{errors.story.message}</Text>}
+        {errors?.animal?.story && <Text>{errors?.animal?.story.message}</Text>}
       </View>
 
       <Button
@@ -300,8 +313,10 @@ export default function CreateAdoptForm({ onSubmit }: AdoptProps) {
         onPress={handleSubmit(async (completedFields) => {
           await onSubmit?.(completedFields, form);
         })}
+        loading={isSubmitting}
+        disabled={isSubmitting || isValidating}
       >
-        <Text>Submit</Text>
+        <Text>CADASTRAR ANIMAL</Text>
       </Button>
     </View>
   );

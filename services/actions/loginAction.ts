@@ -16,11 +16,11 @@ import { UseFormReturn } from "react-hook-form";
 export async function loginAction(
   auth: Auth,
   fields: LoginFields,
-  form: UseFormReturn<LoginFields, any, undefined>
+  form: UseFormReturn<LoginFields>
 ): Promise<void> {
   try {
     const { username, password } = fields;
-    const userCredential = await signInWithEmailAndPassword(
+    await signInWithEmailAndPassword(
       auth,
       username,
       password
@@ -29,7 +29,10 @@ export async function loginAction(
     form.reset();
     // TODO: Navegação, permanência de credenciais, etc...
   } catch (error: any) {
-    if (error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS) {
+    if (
+      error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS 
+      || error.code === AuthErrorCodes.INVALID_EMAIL) 
+    {
       alert("Sua senha ou seu e-mail estão errados. Tente novamente");
       form.setError("username", {
         type: "custom",
@@ -41,7 +44,6 @@ export async function loginAction(
       });
       form.setFocus("password");
     } else {
-      console.log({ error });
       throw error;
     }
   }
