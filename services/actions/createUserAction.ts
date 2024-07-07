@@ -68,7 +68,7 @@ export async function createUserAction(
     );
     form.reset();
     router.navigate("/(tabs)/login");
-  } catch (error: any) {
+  } catch (error: any) { // TODO: tratar outros erros que possam ocorrer.
     if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
       alert("Esse endereço de email já esta em uso!");
       form.setError("login.email", {

@@ -32,6 +32,7 @@ export async function createPetAction(
     form.reset()
     // TODO: Navegar para tela de sucesso.
   } catch (error) {
+    // TODO: tratar erros que possam ocorrer aqui.
     alert(error)
     throw(error)
   }

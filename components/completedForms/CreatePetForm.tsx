@@ -77,7 +77,8 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
   const watchSick = watch("health.sick");
 
-  // Isso aqui transforma um tipo em um monte de strings do tipo caminhos.
+  // Isso aqui transforma um tipo inicial em um outro tipo que é uma união de um
+  // monte de strings com os nomes das propriedades.
   // Bem prático.
   type PetFieldsPath = Path<PetRegistrationFields>
 
