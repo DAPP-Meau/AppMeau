@@ -1,4 +1,4 @@
-import { Controller } from "react-hook-form";
+import { Control, Controller, FieldValues, Path } from "react-hook-form";
 import React, {
   StyleProp,
   StyleSheet,
@@ -8,9 +8,9 @@ import React, {
 } from "react-native";
 import { Checkbox } from "react-native-paper";
 
-export interface CheckBoxGroupProps {
+export interface CheckBoxGroupProps<T extends FieldValues> {
   title: string;
-  controllerProps: any; // TODO: Encontrar o tipo do controller props dado um tipo de campo T
+  controllerProps: {control: Control<T>, name: Path<T>};
   style?: StyleProp<ViewStyle>;
 }
 
@@ -32,16 +32,16 @@ export interface CheckBoxGroupProps {
  *   controllerProps={{ control: control, name: "temperament.calm" }}
  * />
  */
-export default function CheckBoxGroup({
+export default function CheckBoxGroup<T extends FieldValues>({
   title,
   controllerProps,
   style,
-}: CheckBoxGroupProps) {
+}: CheckBoxGroupProps<T>) {
   return (
     <View style={[styles.wrapper, style]}>
       <Controller
         {...controllerProps}
-        render={({ field: { onChange, onBlur, value, ...field } }) => (
+        render={({ field: { onChange, value } }) => (
           <Checkbox
             status={value ? "checked" : "unchecked"}
             onPress={() => onChange(!value)}

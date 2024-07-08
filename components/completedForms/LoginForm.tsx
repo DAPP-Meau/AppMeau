@@ -20,7 +20,7 @@ export interface LoginFormProps {
    */
   onSubmit?: (
     fields: LoginFields,
-    form: UseFormReturn<LoginFields, any, undefined>
+    form: UseFormReturn<LoginFields>
   ) => Promise<void>
 }
 
@@ -33,8 +33,8 @@ export interface LoginFormProps {
 export default function LoginForm({ onSubmit }: LoginFormProps) {
   const form = useForm<LoginFields>({
     defaultValues: {
-      username: undefined,
-      password: undefined,
+      username: "",
+      password: "",
     },
     mode: 'onBlur',
   })
@@ -42,7 +42,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
   } = form
 
   return (
@@ -94,15 +94,16 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <Button
           mode="contained"
           style={{ marginBottom: 72 }}
-          onPress={handleSubmit((completedFields) => {
-            onSubmit?.(completedFields, form)
+          onPress={handleSubmit(async (completedFields) => {
+            await onSubmit?.(completedFields, form)
           })}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           loading={isSubmitting}
         >
           <Text>ENTRAR</Text>
         </Button>
-
+        
+        {!isSubmitting && 
         <View style={{ gap: 4 }}>
           {/* TODO: Adicionar funcionalidade para login com o oAuth do facebook
             * e google abaixo. */}
@@ -125,6 +126,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             <Text>ENTRAR COM GOOGLE</Text>
           </Button>
         </View>
+        }
       </View>
     </View>
   )

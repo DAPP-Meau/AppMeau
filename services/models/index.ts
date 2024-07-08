@@ -1,4 +1,2 @@
-export * from "./Adoption"
-export * from "./Animal"
-export * from "./AdoptionRegistrationForm"
-export * from "./UserRegistrationForm"
+export * from "./Pet"
+export * from "./User"

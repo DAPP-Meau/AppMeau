@@ -27,7 +27,7 @@ export interface CreateUserProps {
    */
   onSubmit?: (
     fields: UserRegistrationForm & PasswordConfirm,
-    form: UseFormReturn<UserRegistrationForm & PasswordConfirm, any, undefined>
+    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>
   ) => Promise<void>;
 }
 
@@ -67,11 +67,12 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: {errors, isSubmitting, isValid},
   } = form
 
   return (
     <View style={styles.container}>
+
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
         qual você realizar o processo de adoção e/ou apadrinhamento após a
@@ -336,7 +337,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
           await onSubmit?.(completedFields, form)
         })}
         loading={isSubmitting}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !isValid}
       >
         <Text>FAZER CADASTRO</Text>
       </Button>
