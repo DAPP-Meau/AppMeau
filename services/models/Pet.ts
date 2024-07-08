@@ -10,6 +10,8 @@ export type Animal = {
   size: sizeOptions
   age: ageOptions
   story?: string
+  owner_uid: string
+  picture_uid: string
 }
 
 export type Temperament = {
@@ -49,6 +51,4 @@ export type PetRegistrationDocument = {
   animal: Animal
   health: Health
   temperament: Temperament
-  owner_uid: string
-  picture_uid: string
 }

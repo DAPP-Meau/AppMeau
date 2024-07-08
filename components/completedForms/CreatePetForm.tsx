@@ -77,15 +77,9 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
   const watchSick = watch("health.sick");
 
-  // Isso aqui transforma um tipo inicial em um outro tipo que é uma união de um
-  // monte de strings com os nomes das propriedades.
-  // Bem prático.
-  type PetFieldsPath = Path<PetRegistrationFields>
-
   // Essa função existe apenas pra poder aumentar reutilização de código
-  // E para utilizar a coerção de tipo correta no parâmetro name.
-  // O mais certo era utilizar isso no
-  function constructController(theName: PetFieldsPath){
+  // e para aproveitar a coerção de tipo correta no prop name.
+  function constructController(theName: Path<PetRegistrationFields>){
     return({ control: control, name: theName })
   }
 
@@ -205,7 +199,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         </View>
       </View>
 
-      <Text style={styles.subSectionTitle}>Temperamento</Text>
+      <Text style={styles.subSectionTitle}>Saúde</Text>
       <View
         style={{
           flex: 1,
@@ -244,7 +238,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
             value: watchSick,
             message: "Por favor, digite as doenças do animal",
           },
-          minLength: { value: 10, message: "Texto muito curto" },
+          minLength: { value: 1, message: "Texto muito curto" },
           maxLength: { value: 300, message: "Texto muito comprido" },
         }}
         render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -260,26 +254,36 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
           />
         )}
       />
-      {errors?.health?.sicknesses && <Text>{errors?.health?.sicknesses?.message}</Text>}
+      {errors?.health?.sicknesses && (
+        <Text>{errors?.health?.sicknesses?.message}</Text>
+      )}
 
       {/* Termos de adoção */}
       <View style={styles.sectionView}>
         <Text style={styles.subSectionTitle}>Exigências para a adoção</Text>
         <CheckBoxGroup
           title="Termo de adoção"
-          controllerProps={constructController("adoptionRequirements.requireAdoptionTerm")}
+          controllerProps={constructController(
+            "adoptionRequirements.requireAdoptionTerm",
+          )}
         />
         <CheckBoxGroup
           title="Fotos da casa"
-          controllerProps={constructController("adoptionRequirements.requireHousePhoto")}
+          controllerProps={constructController(
+            "adoptionRequirements.requireHousePhoto",
+          )}
         />
         <CheckBoxGroup
           title="Visita prévia ao animal"
-          controllerProps={constructController("adoptionRequirements.requirePreviousVisit")}
+          controllerProps={constructController(
+            "adoptionRequirements.requirePreviousVisit",
+          )}
         />
         <CheckBoxGroup
           title="Acompanhamento pós adoção"
-          controllerProps={constructController("adoptionRequirements.requireMonitoring")}
+          controllerProps={constructController(
+            "adoptionRequirements.requireMonitoring",
+          )}
         />
       </View>
 
@@ -312,7 +316,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       <Button
         mode="contained"
         onPress={handleSubmit(async (completedFields) => {
-          await onSubmit?.(completedFields, form);
+          await onSubmit?.(completedFields, form)
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}
@@ -320,7 +324,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         <Text>CADASTRAR ANIMAL</Text>
       </Button>
     </View>
-  );
+  )
 }
 
 const makeStyles = (theme: MD3Theme) =>
