@@ -6,20 +6,20 @@ import {
 import { Firestore, collection, doc, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 
 export async function createPetAction(
   fields: PetRegistrationFields,
   form: UseFormReturn<PetRegistrationFields>,
   db: Firestore,
   auth: Auth,
-) : Promise<void> {
+): Promise<void> {
   try {
     if (auth.currentUser === null) {
       throw new Error("No user logged in to create pet.");
     }
-    
-    const ref = collection(db, collections.pets)
 
+    const ref = collection(db, collections.pets)
     const data: PetRegistrationDocument = {
       ...fields,
       owner_uid: auth.currentUser.uid,
@@ -34,6 +34,7 @@ export async function createPetAction(
   } catch (error) {
     // TODO: tratar erros que possam ocorrer aqui.
     alert(error)
-    throw(error)
+    throw (error)
   }
 }
+
