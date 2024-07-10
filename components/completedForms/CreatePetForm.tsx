@@ -1,4 +1,4 @@
-import React, { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { Alert, StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { Button, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { PetRegistrationFields } from "@/services/models";
@@ -6,7 +6,8 @@ import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form";
 import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
-import { CameraOptions, ImageLibraryOptions, launchCamera, launchImageLibrary } from "react-native-image-picker";
+import {  launchCameraAsync,launchImageLibraryAsync } from "expo-image-picker";
+import { useState } from "react";
 
 export interface CreatePetFormProps {
   /**
@@ -86,39 +87,48 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   }
 
 
-
+  const [image, setImage] = useState(null);
 
   const pickImageGalery = async () => {
-    console.log('Oii2')
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo'
-    }
+    try {
 
-    const result = await launchImageLibrary(options)
-    if (result.assets) (
-      //adcionar a foto no local atual?
-    console.log(result.assets)
-    )
+    
+    const options: any = {
+        mediaType: 'photo',
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1, 
+    }
+    let result = await launchImageLibraryAsync(options)
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  }
+  catch(E){
+    console.log(E)
+
+    
+  }
   }
 
   const pickImageCam = async () => {
-    console.log('Oii3')
-    const options: CameraOptions = {
+    const options: any = {
       mediaType: 'photo',
+      allowsEditing: true,
       saveToPhotos: false,
       cameraType: 'front',
+      aspect: [4, 4],
       quality: 1
     }
 
-    const result = await launchCamera(options)
+    const result = await launchCameraAsync(options)
     if (result.assets) (
-      //adcionar a foto no local atual?
-    console.log(result.assets)
+      setImage(result.assets[0].uri!)
     )
   }
-
+  
   const handleImage = () => {
-    console.log('Oii')
     Alert.alert('', '', [
       {
         text: 'Camera',
@@ -165,8 +175,9 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity style={styles.photoPlaceholder} onPress={() => handleImage()}>
-          <Text style={styles.photoText}>Adicionar Fotos</Text>
+        <TouchableOpacity  style={styles.photoPlaceholder} onPress={() => handleImage()}>
+        {image && <Image source={{ uri: image }}  style={styles.photo}/>} 
+            <Text style={styles.photoText}>Adicionar Fotos</Text> 
         </TouchableOpacity>
       </View>
 
@@ -413,8 +424,15 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photoPlaceholder: {
       width: "100%",
-      height: 150,
+      height: 200,
       backgroundColor: theme.colors.primaryContainer,
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photo: {
+      width: "100%",
+      height: 250, 
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
