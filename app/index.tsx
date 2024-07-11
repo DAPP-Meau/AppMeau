@@ -9,15 +9,16 @@ import React, {
 
 import { StatusBar } from "expo-status-bar";
 import Colors from "@/constants/Colors";
+import { Link } from "expo-router";
+import { useContext } from "react";
+import { FirebaseAppContext } from "@/services/firebaseAppContext";
+import { getAuth } from "firebase/auth";
 
 
 
 export default function Introduction() {
-
-  const handleLogin = () => {
-    // Implemente a lógica de login aqui
-    alert("Login pressionado!");
-  };
+  const firebaseApp = useContext(FirebaseAppContext)
+  const auth = getAuth(firebaseApp)
 
   return (
     <ScrollView>
@@ -32,22 +33,33 @@ export default function Introduction() {
         </Text>
       </View>
       <View style={styles.buttonsView}>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>ADOTAR</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>AJUDAR</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>CADASTRAR ANIMAL</Text>
-        </TouchableOpacity>
+
+        <Link push href="/(app)/listPets" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>ADOTAR</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link push href="/(app)/petRegistration" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>CADASTRAR ANIMAL</Text>
+          </TouchableOpacity>
+        </Link>
+
       </View>
-      <TouchableOpacity style={styles.login}>
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
+      
+      {/* Botão de Login apenas se o usuário estiver logado. */}
+      {!auth.currentUser &&
+        <Link push href="/login" asChild>
+          <TouchableOpacity style={styles.login}>
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+        </Link>
+      }
+
       <Image
         style={{ flex:1, height:null, width: '50%', resizeMode: "contain" }}
-        source={require("../../assets/images/Meau_marca_2.png")}
+        source={require("@/assets/images/Meau_marca_2.png")}
       />
     </View>
     </ScrollView>
