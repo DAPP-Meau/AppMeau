@@ -1,13 +1,17 @@
 import React, {
+  Alert,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { UserRegistrationForm } from "@/services/models";
 import { Controller, UseFormReturn, useForm } from "react-hook-form";
+import {  launchCameraAsync,launchImageLibraryAsync } from "expo-image-picker";
+import { useState } from "react";
 
 export type PasswordConfirm = {
   passwordConfirm: string;
@@ -69,6 +73,60 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     watch,
     formState: {errors, isSubmitting, isValid},
   } = form
+
+  const [image, setImage] = useState(null);
+
+  const pickImageGalery = async () => {
+    try {
+
+    
+    const options: any = {
+        mediaType: 'photo',
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1, 
+    }
+    let result = await launchImageLibraryAsync(options)
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  }
+  catch(E){
+    console.log(E)
+
+    
+  }
+  }
+
+  const pickImageCam = async () => {
+    const options: any = {
+      mediaType: 'photo',
+      allowsEditing: true,
+      saveToPhotos: false,
+      cameraType: 'front',
+      aspect: [4, 4],
+      quality: 1
+    }
+
+    const result = await launchCameraAsync(options)
+    if (result.assets) (
+      setImage(result.assets[0].uri!)
+    )
+  }
+  
+  const handleImage = () => {
+    Alert.alert('', '', [
+      {
+        text: 'Camera',
+        onPress: () => pickImageCam(),
+        style: 'default'
+      },
+      { text: 'Galeria', 
+        onPress: () => pickImageGalery(),
+        style: 'default' },
+    ]);
+  }
 
   return (
     <View style={styles.container}>
@@ -326,7 +384,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-        <TouchableOpacity style={styles.photoPlaceholder}>
+        <TouchableOpacity style={styles.photoPlaceholder}  onPress={() => handleImage()}>          
+        {image && <Image source={{ uri: image }}  style={styles.photo}/>} 
           <Text style={styles.photoText}>Adicionar Foto</Text>
         </TouchableOpacity>
       </View>
@@ -391,6 +450,13 @@ const makeStyles = (theme: MD3Theme) =>
       height: 150,
       backgroundColor: theme.colors.primaryContainer,
       borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photo: {
+      width: "100%",
+      height: 250, 
+      borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
     },
