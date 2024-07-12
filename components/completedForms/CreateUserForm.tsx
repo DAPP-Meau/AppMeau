@@ -385,8 +385,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
         <TouchableOpacity style={styles.photoPlaceholder}  onPress={() => handleImage()}>          
-        {image && <Image source={{ uri: image }}  style={styles.photo}/>} 
-          <Text style={styles.photoText}>Adicionar Foto</Text>
+        {image && <Image source={{ uri: image }}  style={styles.photo}/>}
+        {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
       </View>
 

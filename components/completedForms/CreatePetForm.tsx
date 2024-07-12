@@ -87,7 +87,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   }
 
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<String|null>(null);
 
   const pickImageGalery = async () => {
     try {
@@ -102,6 +102,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     let result = await launchImageLibraryAsync(options)
 
     if (!result.canceled) {
+      //console.log(result.assets[0].uri)
       setImage(result.assets[0].uri);
     }
   }
@@ -124,7 +125,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
     const result = await launchCameraAsync(options)
     if (result.assets) (
-      setImage(result.assets[0].uri!)
+      setImage(result.assets[0].uri)
     )
   }
   
@@ -177,7 +178,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         <Text style={styles.infoText}>Fotos do animal</Text>
         <TouchableOpacity  style={styles.photoPlaceholder} onPress={() => handleImage()}>
         {image && <Image source={{ uri: image }}  style={styles.photo}/>} 
-            <Text style={styles.photoText}>Adicionar Fotos</Text> 
+            {!image && <Text style={styles.photoText}>Adicionar Foto</Text>} 
         </TouchableOpacity>
       </View>
 
