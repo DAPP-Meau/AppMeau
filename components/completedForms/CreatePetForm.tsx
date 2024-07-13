@@ -88,101 +88,88 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     return ({ control: control, name: theName })
   }
 
-
+  let uri = ''
   const [image, setImage] = useState("");
 
   const [ishandleImage, setishandleImage] = useState(false)
 
-  useEffect(() => {
-
-    const pickImageGalery = async () => {
-      try {
-        const options: any = {
-          mediaType: 'photo',
-          allowsEditing: true,
-          aspect: [4, 4],
-          quality: 1,
-        }
-        let result = await launchImageLibraryAsync(options)
-        if (!result.canceled) {
-          console.log(result.assets[0].uri)
-          setImage(result.assets[0].uri);
-          Alert.alert('', 'Deseja subir a foto', [
-            {
-              text: 'Sim',
-              onPress: () => submitData(),
-              style: 'default'
-            },
-            {
-              text: 'Não',
-              style: 'default'
-            },
-          ]);
-        }
-      }
-      catch (E) {
-        console.log(E)
-
-
-      }
-    }
-
-    const pickImageCam = async () => {
+  const pickImageGalery = async () => {
+    try {
       const options: any = {
         mediaType: 'photo',
         allowsEditing: true,
-        saveToPhotos: false,
-        cameraType: 'front',
         aspect: [4, 4],
-        quality: 1
+        quality: 1,
       }
-
-      const result = await launchCameraAsync(options)
-      if (result.assets) (
-        setImage(result.assets[0].uri)
-      )
+      let result = await launchImageLibraryAsync(options)
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        uri = result.assets[0].uri;
+      }
     }
+    catch (E) {
+      console.log(E)
+
+
+    }
+  }
+
+  const pickImageCam = async () => {
+    const options: any = {
+      mediaType: 'photo',
+      allowsEditing: true,
+      saveToPhotos: false,
+      cameraType: 'front',
+      aspect: [4, 4],
+      quality: 1
+    }
+
+    const result = await launchCameraAsync(options)
+    if (result.assets) {
+      setImage(result.assets[0].uri)      
+      uri = result.assets[0].uri;
+    }
+    
+  }
 //modal
-    const handleImage = () => {
-      Alert.alert('', '', [
-        {
-          text: 'Camera',
-          onPress: () => pickImageCam(),
-          style: 'default'
-        },
-        {
-          text: 'Galeria',
-          onPress: () => pickImageGalery(),
-          style: 'default'
-        },
-      ]);
-    }
-
-    handleImage()
-    setishandleImage(false)
-  }, [ishandleImage
-  ])
+  const handleImage = () => {
+    Alert.alert('', '', [
+      {
+        text: 'Camera',
+        onPress: () => pickImageCam(),
+        style: 'default'
+      },
+      {
+        text: 'Galeria',
+        onPress: () => pickImageGalery(),
+        style: 'default'
+      },
+      {
+        text: 'Sair', 
+        style: 'default'
+      },
+    ]);
+  }
   const firebaseapp = useContext(FirebaseAppContext);
   const submitData = async () => {
     //const storage = getStorage();
-    const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_Pet.jpeg"
+    
+    console.log('image = '+image)
+    try{
+      const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_Pet.jpeg"
     const storage = getStorage(firebaseapp);
     const storageRef = ref(storage, "photo/pets/" + nameImage);
     // 'file' comes from the Blob or File API
-    console.log(image)
-    const image_pet = await fetch(image)
+    const image_pet = await fetch(image)    
     const image_blob = await image_pet.blob()
-    console.log('oii')
     const snapshot = await uploadBytesResumable(storageRef, image_blob)
     console.log(snapshot)
     const url_image = await getDownloadURL(snapshot.ref)
-    console.log(url_image)
+    return url_image;
+    }catch (error) {
+      console.error("image esta vasia:", error);
+    }
   }
-
-
-
-
-
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
@@ -216,7 +203,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity style={styles.photoPlaceholder} onPress={()=>setishandleImage(true)}>
+        <TouchableOpacity style={styles.photoPlaceholder} onPress={()=>handleImage()}>
           {image && <Image source={{ uri: image }} style={styles.photo} />}
           {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
@@ -419,9 +406,11 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       <Button
         mode="contained"
         onPress={handleSubmit(async (completedFields) => {
+          let url_image = await submitData() 
+          completedFields.animal.picture_uid = url_image
           await onSubmit?.(completedFields, form)
         })}
-        loading={isSubmitting}
+        loading={isSubmitting} 
         disabled={isSubmitting || !isValid}
       >
         <Text>CADASTRAR ANIMAL</Text>
