@@ -3,6 +3,6 @@ export const firebaseAppConfig = {
   authDomain: "meau-app-1b023.firebaseapp.com",
   // The value of `databaseURL` depends on the location of the database
   projectId: "meau-app-1b023",
-  //storageBucket: STORAGE_BUCKET,
+  storageBucket: "meau-app-1b023.appspot.com",
   appId: "813508935570",
 };

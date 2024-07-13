@@ -6,8 +6,9 @@ import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
 import { MD3Theme } from "react-native-paper/lib/typescript/types";
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form";
 import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
-import {  launchCameraAsync,launchImageLibraryAsync } from "expo-image-picker";
-import { useState } from "react";
+import { launchCameraAsync, launchImageLibraryAsync } from "expo-image-picker";
+import { useContext, useEffect, useState } from "react";
+import { FirebaseAppContext } from '@/services/firebaseAppContext'
 
 export interface CreatePetFormProps {
   /**
@@ -80,6 +81,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
   const watchSick = watch("health.sick");
 
+  const watchname = watch("animal.name");
   // Essa função existe apenas pra poder aumentar reutilização de código
   // e para aproveitar a coerção de tipo correta no prop name.
   function constructController(theName: Path<PetRegistrationFields>) {
@@ -87,60 +89,98 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   }
 
 
-  const [image, setImage] = useState<String|null>(null);
+  const [image, setImage] = useState("");
 
-  const pickImageGalery = async () => {
-    try {
+  const [ishandleImage, setishandleImage] = useState(false)
 
-    
-    const options: any = {
+  useEffect(() => {
+
+    const pickImageGalery = async () => {
+      try {
+        const options: any = {
+          mediaType: 'photo',
+          allowsEditing: true,
+          aspect: [4, 4],
+          quality: 1,
+        }
+        let result = await launchImageLibraryAsync(options)
+        if (!result.canceled) {
+          console.log(result.assets[0].uri)
+          setImage(result.assets[0].uri);
+          Alert.alert('', 'Deseja subir a foto', [
+            {
+              text: 'Sim',
+              onPress: () => submitData(),
+              style: 'default'
+            },
+            {
+              text: 'Não',
+              style: 'default'
+            },
+          ]);
+        }
+      }
+      catch (E) {
+        console.log(E)
+
+
+      }
+    }
+
+    const pickImageCam = async () => {
+      const options: any = {
         mediaType: 'photo',
         allowsEditing: true,
+        saveToPhotos: false,
+        cameraType: 'front',
         aspect: [4, 4],
-        quality: 1, 
+        quality: 1
+      }
+
+      const result = await launchCameraAsync(options)
+      if (result.assets) (
+        setImage(result.assets[0].uri)
+      )
     }
-    let result = await launchImageLibraryAsync(options)
-
-    if (!result.canceled) {
-      //console.log(result.assets[0].uri)
-      setImage(result.assets[0].uri);
-    }
-  }
-  catch(E){
-    console.log(E)
-
-    
-  }
-  }
-
-  const pickImageCam = async () => {
-    const options: any = {
-      mediaType: 'photo',
-      allowsEditing: true,
-      saveToPhotos: false,
-      cameraType: 'front',
-      aspect: [4, 4],
-      quality: 1
+//modal
+    const handleImage = () => {
+      Alert.alert('', '', [
+        {
+          text: 'Camera',
+          onPress: () => pickImageCam(),
+          style: 'default'
+        },
+        {
+          text: 'Galeria',
+          onPress: () => pickImageGalery(),
+          style: 'default'
+        },
+      ]);
     }
 
-    const result = await launchCameraAsync(options)
-    if (result.assets) (
-      setImage(result.assets[0].uri)
-    )
+    handleImage()
+    setishandleImage(false)
+  }, [ishandleImage
+  ])
+  const firebaseapp = useContext(FirebaseAppContext);
+  const submitData = async () => {
+    //const storage = getStorage();
+    const nameImage = watchname + "_Image_Pet.jpeg"
+    const storage = getStorage(firebaseapp);
+    const storageRef = ref(storage, "photo/pets/" + nameImage);
+    // 'file' comes from the Blob or File API
+    console.log(image)
+    const image_pet = await fetch(image)
+    const image_blob = await image_pet.blob()
+    console.log('oii')
+    const snapshot = await uploadBytesResumable(storageRef, image_blob)
+    console.log(snapshot)
+    const url_image = await getDownloadURL(snapshot.ref)
+    console.log(url_image)
   }
-  
-  const handleImage = () => {
-    Alert.alert('', '', [
-      {
-        text: 'Camera',
-        onPress: () => pickImageCam(),
-        style: 'default'
-      },
-      { text: 'Galeria', 
-        onPress: () => pickImageGalery(),
-        style: 'default' },
-    ]);
-  }
+
+
+
 
 
 
@@ -176,9 +216,9 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity  style={styles.photoPlaceholder} onPress={() => handleImage()}>
-        {image && <Image source={{ uri: image }}  style={styles.photo}/>} 
-            {!image && <Text style={styles.photoText}>Adicionar Foto</Text>} 
+        <TouchableOpacity style={styles.photoPlaceholder} onPress={()=>setishandleImage(true)}>
+          {image && <Image source={{ uri: image }} style={styles.photo} />}
+          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
       </View>
 
@@ -433,7 +473,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       width: "100%",
-      height: 250, 
+      height: 250,
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
