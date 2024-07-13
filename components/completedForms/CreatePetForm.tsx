@@ -165,7 +165,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   const firebaseapp = useContext(FirebaseAppContext);
   const submitData = async () => {
     //const storage = getStorage();
-    const nameImage = watchname + "_Image_Pet.jpeg"
+    const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_Pet.jpeg"
     const storage = getStorage(firebaseapp);
     const storageRef = ref(storage, "photo/pets/" + nameImage);
     // 'file' comes from the Blob or File API
