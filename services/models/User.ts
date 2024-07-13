@@ -1,7 +1,8 @@
 export type Person = {
   fullName: string
   age: number
-  phone: string
+  phone: string  
+  picture_uid: string
 }
 
 export type Address = {

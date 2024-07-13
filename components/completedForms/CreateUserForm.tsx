@@ -10,8 +10,11 @@ import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import { UserRegistrationForm } from "@/services/models";
 import { Controller, UseFormReturn, useForm } from "react-hook-form";
-import {  launchCameraAsync,launchImageLibraryAsync } from "expo-image-picker";
-import { useState } from "react";
+import { launchCameraAsync, launchImageLibraryAsync } from "expo-image-picker";
+import { useContext, useState } from "react";
+import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
+import { FirebaseAppContext } from '@/services/firebaseAppContext'
+
 
 export type PasswordConfirm = {
   passwordConfirm: string;
@@ -48,14 +51,14 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const form = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
       address: {
-      fullAddress: "",
-      city: "",
-      state: "",
+        fullAddress: "",
+        city: "",
+        state: "",
       },
       person: {
-      age: 0,
-      fullName: "",
-      phone: "",
+        age: 0,
+        fullName: "",
+        phone: "",
       },
       login: {
         email: "",
@@ -71,32 +74,33 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     control,
     handleSubmit,
     watch,
-    formState: {errors, isSubmitting, isValid},
+    formState: { errors, isSubmitting, isValid },
   } = form
 
-  const [image, setImage] = useState(null);
+  let uri = ''
+  const [image, setImage] = useState("");
+
+  const [ishandleImage, setishandleImage] = useState(false)
 
   const pickImageGalery = async () => {
     try {
-
-    
-    const options: any = {
+      const options: any = {
         mediaType: 'photo',
         allowsEditing: true,
         aspect: [4, 4],
-        quality: 1, 
+        quality: 1,
+      }
+      let result = await launchImageLibraryAsync(options)
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        uri = result.assets[0].uri;
+      }
     }
-    let result = await launchImageLibraryAsync(options)
+    catch (E) {
+      console.log(E)
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+
     }
-  }
-  catch(E){
-    console.log(E)
-
-    
-  }
   }
 
   const pickImageCam = async () => {
@@ -110,11 +114,13 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     }
 
     const result = await launchCameraAsync(options)
-    if (result.assets) (
-      setImage(result.assets[0].uri!)
-    )
+    if (result.assets) {
+      setImage(result.assets[0].uri)
+      uri = result.assets[0].uri;
+    }
+
   }
-  
+  //modal
   const handleImage = () => {
     Alert.alert('', '', [
       {
@@ -122,10 +128,36 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
         onPress: () => pickImageCam(),
         style: 'default'
       },
-      { text: 'Galeria', 
+      {
+        text: 'Galeria',
         onPress: () => pickImageGalery(),
-        style: 'default' },
+        style: 'default'
+      },
+      {
+        text: 'Sair',
+        style: 'default'
+      },
     ]);
+  }
+  const firebaseapp = useContext(FirebaseAppContext);
+  const submitData = async () => {
+    //const storage = getStorage();
+
+    console.log('image = ' + image)
+    try {
+      const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_User.jpeg"
+      const storage = getStorage(firebaseapp);
+      const storageRef = ref(storage, "photo/users/" + nameImage);
+      // 'file' comes from the Blob or File API
+      const image_pet = await fetch(image)
+      const image_blob = await image_pet.blob()
+      const snapshot = await uploadBytesResumable(storageRef, image_blob)
+      console.log(snapshot)
+      const url_image = await getDownloadURL(snapshot.ref)
+      return url_image;
+    } catch (error) {
+      console.error("image esta vasia:", error);
+    }
   }
 
   return (
@@ -301,7 +333,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
           name="login.username"
           rules={{
             required: "Por favor, Digite o seu usuário",
-            minLength: {value:10, message:"O usuário precisa ter no mínimo 10 caracteres"}
+            minLength: { value: 10, message: "O usuário precisa ter no mínimo 10 caracteres" }
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
             <TextInput
@@ -384,15 +416,17 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-        <TouchableOpacity style={styles.photoPlaceholder}  onPress={() => handleImage()}>          
-        {image && <Image source={{ uri: image }}  style={styles.photo}/>}
-        {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
+        <TouchableOpacity style={styles.photoPlaceholder} onPress={() => handleImage()}>
+          {image && <Image source={{ uri: image }} style={styles.photo} />}
+          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
       </View>
 
       <Button
         mode="contained"
-        onPress={handleSubmit(async (completedFields) => {
+        onPress={handleSubmit(async (completedFields) => {          
+          let url_image = await submitData() 
+          completedFields.person.picture_uid = url_image
           await onSubmit?.(completedFields, form)
         })}
         loading={isSubmitting}
@@ -455,7 +489,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       width: "100%",
-      height: 250, 
+      height: 250,
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
