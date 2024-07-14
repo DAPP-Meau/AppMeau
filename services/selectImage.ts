@@ -13,7 +13,7 @@ const options: ImagePickerOptions = {
   allowsEditing: true,
   cameraType: CameraType.front,
   aspect: [4, 4],
-  quality: 0,
+  quality: 0.5,
 }
 
 async function getImageURIFromPicker(
