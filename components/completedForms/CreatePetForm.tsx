@@ -1,20 +1,28 @@
-import React, { Alert, StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-import { Button, TextInput, useTheme } from "react-native-paper";
-import Colors from "@/constants/Colors";
-import { PetRegistrationFields } from "@/services/models";
-import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
-import { MD3Theme } from "react-native-paper/lib/typescript/types";
-import { Controller, Path, UseFormReturn, useForm } from "react-hook-form";
-import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
-import { launchCameraAsync, launchImageLibraryAsync } from "expo-image-picker";
-import { useContext, useEffect, useState } from "react";
-import { FirebaseAppContext } from '@/services/firebaseAppContext'
+import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms"
+import Colors from "@/constants/Colors"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { PetRegistrationFields } from "@/services/models"
+import { handleImage, submitData } from "@/services/selectPhoto"
+import { getStorage } from "firebase/storage"
+import { useContext, useState } from "react"
+import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
+import React, {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { Button, TextInput, useTheme } from "react-native-paper"
+import { MD3Theme } from "react-native-paper/lib/typescript/types"
+
+import * as Crypto from "expo-crypto"
 
 export interface CreatePetFormProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
-   * 
+   *
    * @param fields - Campos completos e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend.
    * @param form - O Objeto resultante do uso do gancho useForm do
@@ -23,19 +31,22 @@ export interface CreatePetFormProps {
    */
   onSubmit?: (
     fields: PetRegistrationFields,
-    form: UseFormReturn<PetRegistrationFields>
-  ) => Promise<void>;
+    form: UseFormReturn<PetRegistrationFields>,
+  ) => Promise<void>
 }
 
 /**
  * Componente de formulário de adoção.
  *
  * @component
- * 
+ *
  */
 export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
-  const theme = useTheme();
-  const styles = makeStyles(theme);
+  const theme = useTheme()
+  const styles = makeStyles(theme)
+
+  const firebaseapp = useContext(FirebaseAppContext)
+  const storage = getStorage(firebaseapp)
 
   const form = useForm<PetRegistrationFields>({
     defaultValues: {
@@ -67,109 +78,27 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         requireHousePhoto: false,
         requireMonitoring: false,
         requirePreviousVisit: false,
-      }
+      },
     },
     mode: "onChange",
-  });
+  })
 
   const {
     control,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting, isValid },
-  } = form;
+  } = form
 
-  const watchSick = watch("health.sick");
+  const watchSick = watch("health.sick")
 
-  const watchname = watch("animal.name");
   // Essa função existe apenas pra poder aumentar reutilização de código
   // e para aproveitar a coerção de tipo correta no prop name.
   function constructController(theName: Path<PetRegistrationFields>) {
-    return ({ control: control, name: theName })
+    return { control: control, name: theName }
   }
 
-  let uri = ''
-  const [image, setImage] = useState("");
-
-  const [ishandleImage, setishandleImage] = useState(false)
-
-  const pickImageGalery = async () => {
-    try {
-      const options: any = {
-        mediaType: 'photo',
-        allowsEditing: true,
-        aspect: [4, 4],
-        quality: 1,
-      }
-      let result = await launchImageLibraryAsync(options)
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-        uri = result.assets[0].uri;
-      }
-    }
-    catch (E) {
-      console.log(E)
-
-
-    }
-  }
-
-  const pickImageCam = async () => {
-    const options: any = {
-      mediaType: 'photo',
-      allowsEditing: true,
-      saveToPhotos: false,
-      cameraType: 'front',
-      aspect: [4, 4],
-      quality: 1
-    }
-
-    const result = await launchCameraAsync(options)
-    if (result.assets) {
-      setImage(result.assets[0].uri)      
-      uri = result.assets[0].uri;
-    }
-    
-  }
-//modal
-  const handleImage = () => {
-    Alert.alert('', '', [
-      {
-        text: 'Camera',
-        onPress: () => pickImageCam(),
-        style: 'default'
-      },
-      {
-        text: 'Galeria',
-        onPress: () => pickImageGalery(),
-        style: 'default'
-      },
-      {
-        text: 'Sair', 
-        style: 'default'
-      },
-    ]);
-  }
-  const firebaseapp = useContext(FirebaseAppContext);
-  const submitData = async () => {
-    //const storage = getStorage();
-    
-    console.log('image = '+image)
-    try{
-      const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_Pet.jpeg"
-    const storage = getStorage(firebaseapp);
-    const storageRef = ref(storage, "photo/pets/" + nameImage);
-    // 'file' comes from the Blob or File API
-    const image_pet = await fetch(image)    
-    const image_blob = await image_pet.blob()
-    const snapshot = await uploadBytesResumable(storageRef, image_blob)
-    console.log(snapshot)
-    const url_image = await getDownloadURL(snapshot.ref)
-    return url_image;
-    }catch (error) {
-      console.error("image esta vasia:", error);
-    }
-  }
+  const [image, setImage] = useState("")
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
@@ -203,7 +132,10 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity style={styles.photoPlaceholder} onPress={()=>handleImage()}>
+        <TouchableOpacity
+          style={styles.photoPlaceholder}
+          onPress={() => handleImage(setImage)}
+        >
           {image && <Image source={{ uri: image }} style={styles.photo} />}
           {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
@@ -406,11 +338,19 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       <Button
         mode="contained"
         onPress={handleSubmit(async (completedFields) => {
-          let url_image = await submitData() 
+          const url_image = await submitData(
+            image,
+            storage,
+            "photo/pets/" + Crypto.randomUUID() + "_image_pet.jpeg",
+          )
+          if (!url_image) {
+            throw new Error("não tem url_imagem")
+          }
           completedFields.animal.picture_uid = url_image
           await onSubmit?.(completedFields, form)
+          setImage("")
         })}
-        loading={isSubmitting} 
+        loading={isSubmitting}
         disabled={isSubmitting || !isValid}
       >
         <Text>CADASTRAR ANIMAL</Text>
@@ -462,7 +402,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       width: "100%",
-      height: 250,
+      height: 200,
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
@@ -490,4 +430,4 @@ const makeStyles = (theme: MD3Theme) =>
     checkBox: {
       width: "33%",
     },
-  });
+  })

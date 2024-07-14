@@ -1,30 +1,29 @@
+import Colors from "@/constants/Colors"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { UserRegistrationForm } from "@/services/models"
+import { handleImage, submitData } from "@/services/selectPhoto"
+import { getStorage } from "firebase/storage"
+import { useContext, useState } from "react"
+import { Controller, UseFormReturn, useForm } from "react-hook-form"
 import React, {
-  Alert,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Image,
-} from "react-native";
-import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
-import Colors from "@/constants/Colors";
-import { UserRegistrationForm } from "@/services/models";
-import { Controller, UseFormReturn, useForm } from "react-hook-form";
-import { launchCameraAsync, launchImageLibraryAsync } from "expo-image-picker";
-import { useContext, useState } from "react";
-import { getDownloadURL, getStorage, ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
-import { FirebaseAppContext } from '@/services/firebaseAppContext'
-
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper"
+import * as Crypto from "expo-crypto"
 
 export type PasswordConfirm = {
-  passwordConfirm: string;
-};
+  passwordConfirm: string
+}
 
 export interface CreateUserProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
-   * 
+   *
    * @param fields - Campos completados e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend. (como por exemplo verificação de
    * e-mail.)
@@ -34,19 +33,22 @@ export interface CreateUserProps {
    */
   onSubmit?: (
     fields: UserRegistrationForm & PasswordConfirm,
-    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>
-  ) => Promise<void>;
+    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
+  ) => Promise<void>
 }
 
 /**
  * Componente de formulário de registro de usuário
  *
  * @component
- * 
+ *
  */
 export default function CreateUserForm({ onSubmit }: CreateUserProps) {
-  const theme = useTheme();
-  const styles = makeStyles(theme);
+  const theme = useTheme()
+  const styles = makeStyles(theme)
+
+  const firebaseapp = useContext(FirebaseAppContext)
+  const storage = getStorage(firebaseapp)
 
   const form = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
@@ -63,12 +65,12 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       login: {
         email: "",
         password: "",
-        username: ""
+        username: "",
       },
       passwordConfirm: "",
     },
     mode: "all",
-  });
+  })
 
   const {
     control,
@@ -77,92 +79,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     formState: { errors, isSubmitting, isValid },
   } = form
 
-  let uri = ''
-  const [image, setImage] = useState("");
-
-  const [ishandleImage, setishandleImage] = useState(false)
-
-  const pickImageGalery = async () => {
-    try {
-      const options: any = {
-        mediaType: 'photo',
-        allowsEditing: true,
-        aspect: [4, 4],
-        quality: 1,
-      }
-      let result = await launchImageLibraryAsync(options)
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-        uri = result.assets[0].uri;
-      }
-    }
-    catch (E) {
-      console.log(E)
-
-
-    }
-  }
-
-  const pickImageCam = async () => {
-    const options: any = {
-      mediaType: 'photo',
-      allowsEditing: true,
-      saveToPhotos: false,
-      cameraType: 'front',
-      aspect: [4, 4],
-      quality: 1
-    }
-
-    const result = await launchCameraAsync(options)
-    if (result.assets) {
-      setImage(result.assets[0].uri)
-      uri = result.assets[0].uri;
-    }
-
-  }
-  //modal
-  const handleImage = () => {
-    Alert.alert('', '', [
-      {
-        text: 'Camera',
-        onPress: () => pickImageCam(),
-        style: 'default'
-      },
-      {
-        text: 'Galeria',
-        onPress: () => pickImageGalery(),
-        style: 'default'
-      },
-      {
-        text: 'Sair',
-        style: 'default'
-      },
-    ]);
-  }
-  const firebaseapp = useContext(FirebaseAppContext);
-  const submitData = async () => {
-    //const storage = getStorage();
-
-    console.log('image = ' + image)
-    try {
-      const nameImage = image.split("/").at(-1)?.split(".")[0] + "_Image_User.jpeg"
-      const storage = getStorage(firebaseapp);
-      const storageRef = ref(storage, "photo/users/" + nameImage);
-      // 'file' comes from the Blob or File API
-      const image_pet = await fetch(image)
-      const image_blob = await image_pet.blob()
-      const snapshot = await uploadBytesResumable(storageRef, image_blob)
-      console.log(snapshot)
-      const url_image = await getDownloadURL(snapshot.ref)
-      return url_image;
-    } catch (error) {
-      console.error("image esta vasia:", error);
-    }
-  }
+  const [image, setImage] = useState("")
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
         qual você realizar o processo de adoção e/ou apadrinhamento após a
@@ -192,7 +112,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.person?.fullName && <Text>{errors.person?.fullName.message}</Text>}
+        {errors.person?.fullName && (
+          <Text>{errors.person?.fullName.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -274,7 +196,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.address?.fullAddress && <Text>{errors.address?.fullAddress.message}</Text>}
+        {errors.address?.fullAddress && (
+          <Text>{errors.address?.fullAddress.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -333,7 +257,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
           name="login.username"
           rules={{
             required: "Por favor, Digite o seu usuário",
-            minLength: { value: 10, message: "O usuário precisa ter no mínimo 10 caracteres" }
+            minLength: {
+              value: 10,
+              message: "O usuário precisa ter no mínimo 10 caracteres",
+            },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
             <TextInput
@@ -347,7 +274,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.username && <Text>{errors.login?.username.message}</Text>}
+        {errors.login?.username && (
+          <Text>{errors.login?.username.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -382,7 +311,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.password && <Text>{errors.login?.password.message}</Text>}
+        {errors.login?.password && (
+          <Text>{errors.login?.password.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -391,7 +322,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             required: "Por favor, confirme sua senha",
             validate: {
               equalPasswords: (str) =>
-                watch("login.password") === str || "Sua senha não foi repetida corretamente!",
+                watch("login.password") === str ||
+                "Sua senha não foi repetida corretamente!",
             },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -416,7 +348,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-        <TouchableOpacity style={styles.photoPlaceholder} onPress={() => handleImage()}>
+        <TouchableOpacity
+          style={styles.photoPlaceholder}
+          onPress={() => handleImage(setImage)}
+        >
           {image && <Image source={{ uri: image }} style={styles.photo} />}
           {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
@@ -424,10 +359,18 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit(async (completedFields) => {          
-          let url_image = await submitData() 
+        onPress={handleSubmit(async (completedFields) => {
+          const url_image = await submitData(
+            image,
+            storage,
+            "photo/users/" + Crypto.randomUUID() + "_image_user.jpeg",
+          )
+          if (!url_image) {
+            throw new Error("não tem url_imagem")
+          }
           completedFields.person.picture_uid = url_image
           await onSubmit?.(completedFields, form)
+          setImage("")
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}
@@ -435,7 +378,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
         <Text>FAZER CADASTRO</Text>
       </Button>
     </View>
-  );
+  )
 }
 
 const makeStyles = (theme: MD3Theme) =>
@@ -481,7 +424,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photoPlaceholder: {
       width: "100%",
-      height: 150,
+      height: 200,
       backgroundColor: theme.colors.primaryContainer,
       borderRadius: 20,
       justifyContent: "center",
@@ -489,7 +432,7 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       width: "100%",
-      height: 250,
+      height: 200,
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
@@ -512,4 +455,4 @@ const makeStyles = (theme: MD3Theme) =>
       fontFamily: "Roboto_Regular",
       fontWeight: "normal",
     },
-  });
+  })

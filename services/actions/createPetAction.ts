@@ -6,7 +6,6 @@ import {
 import { Firestore, collection, doc, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage"
 
 export async function createPetAction(
   fields: PetRegistrationFields,
