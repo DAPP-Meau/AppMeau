@@ -29,6 +29,10 @@ async function getImageURIFromPicker(
 export default async function selectImage(setImageUri: (uri: string) => void) {
   Alert.alert("Selecione sua imagem", undefined, [
     {
+      text: "Sair",
+      style: "cancel",
+    },
+    {
       text: "Camera",
       onPress: async () => {
         const imageURI = await getImageURIFromPicker(launchCameraAsync)
@@ -43,10 +47,6 @@ export default async function selectImage(setImageUri: (uri: string) => void) {
         setImageUri(imageURI!)
       },
       style: "default",
-    },
-    {
-      text: "Sair",
-      style: "cancel",
     },
   ])
 }

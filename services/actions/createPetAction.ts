@@ -3,12 +3,12 @@ import {
   PetRegistrationDocument,
   PetRegistrationFields,
 } from "@/services/models"
-import { Firestore, collection, doc, getFirestore, setDoc } from "firebase/firestore"
+import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
 import { router } from "expo-router"
-import { submitDataToStorage } from "./submitImageToStorage"
-import { FirebaseStorage, getStorage } from "firebase/storage"
+import { submitDataToStorage } from "./submitDataToStorage"
+import { getStorage } from "firebase/storage"
 import * as Crypto from "expo-crypto"
 import { FirebaseApp } from "firebase/app"
 

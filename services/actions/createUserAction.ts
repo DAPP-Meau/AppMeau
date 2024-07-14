@@ -1,5 +1,4 @@
 import {
-  Auth,
   AuthErrorCodes,
   UserCredential,
   createUserWithEmailAndPassword,
@@ -9,14 +8,14 @@ import {
   UserRegistrationDocument,
   UserRegistrationForm,
 } from "@/services/models"
-import { Firestore, collection, doc, getFirestore, setDoc } from "firebase/firestore"
+import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { router } from "expo-router"
 import { UseFormReturn } from "react-hook-form"
 import { PasswordConfirm } from "@/components/completedForms/CreateUserForm"
 import { collections } from "@/constants"
-import { submitDataToStorage } from "./submitImageToStorage"
+import { submitDataToStorage } from "./submitDataToStorage"
 import * as Crypto from "expo-crypto"
-import { FirebaseStorage, getStorage } from "firebase/storage"
+import { getStorage } from "firebase/storage"
 import { FirebaseApp } from "firebase/app"
 
 /**
