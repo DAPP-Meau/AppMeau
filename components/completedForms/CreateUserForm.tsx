@@ -1,23 +1,29 @@
+import Colors from "@/constants/Colors"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { UserRegistrationForm } from "@/services/models"
+import { handleImage, submitData } from "@/services/selectPhoto"
+import { getStorage } from "firebase/storage"
+import { useContext, useState } from "react"
+import { Controller, UseFormReturn, useForm } from "react-hook-form"
 import React, {
-  View,
-  Text,
+  Image,
   StyleSheet,
+  Text,
   TouchableOpacity,
-} from "react-native";
-import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper";
-import Colors from "@/constants/Colors";
-import { UserRegistrationForm } from "@/services/models";
-import { Controller, UseFormReturn, useForm } from "react-hook-form";
+  View,
+} from "react-native"
+import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper"
+import * as Crypto from "expo-crypto"
 
 export type PasswordConfirm = {
-  passwordConfirm: string;
-};
+  passwordConfirm: string
+}
 
 export interface CreateUserProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
-   * 
+   *
    * @param fields - Campos completados e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend. (como por exemplo verificação de
    * e-mail.)
@@ -27,52 +33,56 @@ export interface CreateUserProps {
    */
   onSubmit?: (
     fields: UserRegistrationForm & PasswordConfirm,
-    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>
-  ) => Promise<void>;
+    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
+  ) => Promise<void>
 }
 
 /**
  * Componente de formulário de registro de usuário
  *
  * @component
- * 
+ *
  */
 export default function CreateUserForm({ onSubmit }: CreateUserProps) {
-  const theme = useTheme();
-  const styles = makeStyles(theme);
+  const theme = useTheme()
+  const styles = makeStyles(theme)
+
+  const firebaseapp = useContext(FirebaseAppContext)
+  const storage = getStorage(firebaseapp)
 
   const form = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
       address: {
-      fullAddress: "",
-      city: "",
-      state: "",
+        fullAddress: "",
+        city: "",
+        state: "",
       },
       person: {
-      age: 0,
-      fullName: "",
-      phone: "",
+        age: 0,
+        fullName: "",
+        phone: "",
       },
       login: {
         email: "",
         password: "",
-        username: ""
+        username: "",
       },
       passwordConfirm: "",
     },
     mode: "all",
-  });
+  })
 
   const {
     control,
     handleSubmit,
     watch,
-    formState: {errors, isSubmitting, isValid},
+    formState: { errors, isSubmitting, isValid },
   } = form
+
+  const [image, setImage] = useState("")
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.infoText}>
         As informações preenchidas serão divulgadas apenas para a pessoa com a
         qual você realizar o processo de adoção e/ou apadrinhamento após a
@@ -102,7 +112,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.person?.fullName && <Text>{errors.person?.fullName.message}</Text>}
+        {errors.person?.fullName && (
+          <Text>{errors.person?.fullName.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -184,7 +196,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.address?.fullAddress && <Text>{errors.address?.fullAddress.message}</Text>}
+        {errors.address?.fullAddress && (
+          <Text>{errors.address?.fullAddress.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -243,7 +257,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
           name="login.username"
           rules={{
             required: "Por favor, Digite o seu usuário",
-            minLength: {value:10, message:"O usuário precisa ter no mínimo 10 caracteres"}
+            minLength: {
+              value: 10,
+              message: "O usuário precisa ter no mínimo 10 caracteres",
+            },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
             <TextInput
@@ -257,7 +274,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.username && <Text>{errors.login?.username.message}</Text>}
+        {errors.login?.username && (
+          <Text>{errors.login?.username.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -292,7 +311,9 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.password && <Text>{errors.login?.password.message}</Text>}
+        {errors.login?.password && (
+          <Text>{errors.login?.password.message}</Text>
+        )}
 
         <Controller
           control={control}
@@ -301,7 +322,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             required: "Por favor, confirme sua senha",
             validate: {
               equalPasswords: (str) =>
-                watch("login.password") === str || "Sua senha não foi repetida corretamente!",
+                watch("login.password") === str ||
+                "Sua senha não foi repetida corretamente!",
             },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -326,15 +348,29 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-        <TouchableOpacity style={styles.photoPlaceholder}>
-          <Text style={styles.photoText}>Adicionar Foto</Text>
+        <TouchableOpacity
+          style={styles.photoPlaceholder}
+          onPress={() => handleImage(setImage)}
+        >
+          {image && <Image source={{ uri: image }} style={styles.photo} />}
+          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
       </View>
 
       <Button
         mode="contained"
         onPress={handleSubmit(async (completedFields) => {
+          const url_image = await submitData(
+            image,
+            storage,
+            "photo/users/" + Crypto.randomUUID() + "_image_user.jpeg",
+          )
+          if (!url_image) {
+            throw new Error("não tem url_imagem")
+          }
+          completedFields.person.picture_uid = url_image
           await onSubmit?.(completedFields, form)
+          setImage("")
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}
@@ -342,7 +378,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
         <Text>FAZER CADASTRO</Text>
       </Button>
     </View>
-  );
+  )
 }
 
 const makeStyles = (theme: MD3Theme) =>
@@ -388,9 +424,16 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photoPlaceholder: {
       width: "100%",
-      height: 150,
+      height: 200,
       backgroundColor: theme.colors.primaryContainer,
       borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photo: {
+      width: "100%",
+      height: 200,
+      borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
     },
@@ -412,4 +455,4 @@ const makeStyles = (theme: MD3Theme) =>
       fontFamily: "Roboto_Regular",
       fontWeight: "normal",
     },
-  });
+  })

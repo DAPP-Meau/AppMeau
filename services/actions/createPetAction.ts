@@ -13,17 +13,17 @@ export async function createPetAction(
   form: UseFormReturn<PetRegistrationFields>,
   db: Firestore,
   auth: Auth,
-) : Promise<void> {
+): Promise<void> {
   try {
     if (auth.currentUser === null) {
       throw new Error("No user logged in to create pet.");
     }
-    
+
     const ref = collection(db, collections.pets)
 
     fields.animal.picture_uid = ""
     fields.animal.owner_uid = auth.currentUser.uid
-    const data : PetRegistrationDocument = fields
+    const data: PetRegistrationDocument = fields
 
     await setDoc(doc(ref), data)
 
@@ -33,6 +33,7 @@ export async function createPetAction(
   } catch (error) {
     // TODO: tratar erros que possam ocorrer aqui.
     alert(error)
-    throw(error)
+    throw (error)
   }
 }
+

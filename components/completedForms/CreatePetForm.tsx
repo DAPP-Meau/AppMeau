@@ -1,16 +1,28 @@
-import React, { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Button, TextInput, useTheme } from "react-native-paper";
-import Colors from "@/constants/Colors";
-import { PetRegistrationFields } from "@/services/models";
-import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms";
-import { MD3Theme } from "react-native-paper/lib/typescript/types";
-import { Controller, Path, UseFormReturn, useForm } from "react-hook-form";
+import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms"
+import Colors from "@/constants/Colors"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { PetRegistrationFields } from "@/services/models"
+import { handleImage, submitData } from "@/services/selectPhoto"
+import { getStorage } from "firebase/storage"
+import { useContext, useState } from "react"
+import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
+import React, {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
+import { Button, TextInput, useTheme } from "react-native-paper"
+import { MD3Theme } from "react-native-paper/lib/typescript/types"
+
+import * as Crypto from "expo-crypto"
 
 export interface CreatePetFormProps {
   /**
    * Função callback quando for apertado o botão de enviar e os dados estão
    * corretos.
-   * 
+   *
    * @param fields - Campos completos e "corretos" do formulário. Ainda exige
    * tratamento para verificação no backend.
    * @param form - O Objeto resultante do uso do gancho useForm do
@@ -19,19 +31,22 @@ export interface CreatePetFormProps {
    */
   onSubmit?: (
     fields: PetRegistrationFields,
-    form: UseFormReturn<PetRegistrationFields>
-  ) => Promise<void>;
+    form: UseFormReturn<PetRegistrationFields>,
+  ) => Promise<void>
 }
 
 /**
  * Componente de formulário de adoção.
  *
  * @component
- * 
+ *
  */
 export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
-  const theme = useTheme();
-  const styles = makeStyles(theme);
+  const theme = useTheme()
+  const styles = makeStyles(theme)
+
+  const firebaseapp = useContext(FirebaseAppContext)
+  const storage = getStorage(firebaseapp)
 
   const form = useForm<PetRegistrationFields>({
     defaultValues: {
@@ -63,25 +78,27 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         requireHousePhoto: false,
         requireMonitoring: false,
         requirePreviousVisit: false,
-      }
+      },
     },
     mode: "onChange",
-  });
+  })
 
   const {
     control,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting, isValid },
-  } = form;
+  } = form
 
-  const watchSick = watch("health.sick");
+  const watchSick = watch("health.sick")
 
   // Essa função existe apenas pra poder aumentar reutilização de código
   // e para aproveitar a coerção de tipo correta no prop name.
-  function constructController(theName: Path<PetRegistrationFields>){
-    return({ control: control, name: theName })
+  function constructController(theName: Path<PetRegistrationFields>) {
+    return { control: control, name: theName }
   }
+
+  const [image, setImage] = useState("")
 
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
@@ -112,10 +129,15 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       {/* Botão de adicionar foto. */}
       {/* TODO: Adicionar funcionalidade para a foto */}
+
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity style={styles.photoPlaceholder}>
-          <Text style={styles.photoText}>Adicionar Fotos</Text>
+        <TouchableOpacity
+          style={styles.photoPlaceholder}
+          onPress={() => handleImage(setImage)}
+        >
+          {image && <Image source={{ uri: image }} style={styles.photo} />}
+          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
         </TouchableOpacity>
       </View>
 
@@ -316,7 +338,17 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       <Button
         mode="contained"
         onPress={handleSubmit(async (completedFields) => {
+          const url_image = await submitData(
+            image,
+            storage,
+            "photo/pets/" + Crypto.randomUUID() + "_image_pet.jpeg",
+          )
+          if (!url_image) {
+            throw new Error("não tem url_imagem")
+          }
+          completedFields.animal.picture_uid = url_image
           await onSubmit?.(completedFields, form)
+          setImage("")
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}
@@ -362,8 +394,15 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photoPlaceholder: {
       width: "100%",
-      height: 150,
+      height: 200,
       backgroundColor: theme.colors.primaryContainer,
+      borderRadius: 12,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photo: {
+      width: "100%",
+      height: 200,
       borderRadius: 12,
       justifyContent: "center",
       alignItems: "center",
@@ -391,4 +430,4 @@ const makeStyles = (theme: MD3Theme) =>
     checkBox: {
       width: "33%",
     },
-  });
+  })
