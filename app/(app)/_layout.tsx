@@ -46,6 +46,13 @@ function defaultScreen() {
             drawerItemStyle : {display: 'none'}
           }}
         />
+        <Drawer.Screen
+          name="logout"
+          options={{
+            drawerLabel: "Sair",
+            title: "Sair",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   )
