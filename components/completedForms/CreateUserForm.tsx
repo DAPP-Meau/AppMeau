@@ -9,7 +9,7 @@ import React, {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper"
+import { Button, Divider, MD3Theme, TextInput, useTheme } from "react-native-paper"
 
 export type PasswordConfirm = {
   passwordConfirm: string
@@ -360,7 +360,12 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             </TouchableOpacity>
           )}
         />
-        {errors.imageURI && <Text>{errors.imageURI.message}</Text>}
+        {errors.imageURI && (
+          <>
+            <Divider bold style={{backgroundColor:"red"}}/>
+            <Text>{errors.imageURI.message}</Text>
+          </>
+        )}
       </View>
 
       <Button

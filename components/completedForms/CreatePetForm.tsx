@@ -10,7 +10,7 @@ import React, {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Button, TextInput, useTheme } from "react-native-paper"
+import { Button, Divider, TextInput, useTheme } from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 
 
@@ -97,6 +97,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       {/* Dados da adoção */}
       <Text style={styles.sectionTitle}>Adoção</Text>
 
+      {/* Botão de adicionar foto. */}
       <Controller
         control={control}
         rules={{
@@ -117,10 +118,13 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         )}
         name="animal.name"
       />
-      {errors?.animal?.name && <Text>{errors?.animal?.name?.message}</Text>}
+      {errors?.animal?.name && (
+        <>
+          <Divider bold style={{backgroundColor:"red"}}/>
+          <Text>{errors?.animal?.name?.message}</Text>
+        </>
+      )}
 
-      {/* Botão de adicionar foto. */}
-      {/* TODO: Adicionar funcionalidade para a foto */}
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
