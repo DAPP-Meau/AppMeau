@@ -20,11 +20,10 @@ export async function createPetAction(
     }
 
     const ref = collection(db, collections.pets)
-    const data: PetRegistrationDocument = {
-      ...fields,
-      owner_uid: auth.currentUser.uid,
-      picture_uid: "null",
-    }
+
+    fields.animal.picture_uid = ""
+    fields.animal.owner_uid = auth.currentUser.uid
+    const data: PetRegistrationDocument = fields
 
     await setDoc(doc(ref), data)
 
