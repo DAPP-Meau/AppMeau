@@ -29,7 +29,7 @@ export default function PetRegistrationSuccess() {
           </View>
 
 
-          <Link push href="/(app)/" asChild>
+          <Link push href="/(app)/myPets" asChild>
             <Button mode="contained">
               <Text>Meus Pets</Text>
             </Button>

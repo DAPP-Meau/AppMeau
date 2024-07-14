@@ -3,16 +3,21 @@ import {
   AuthErrorCodes,
   UserCredential,
   createUserWithEmailAndPassword,
-} from "firebase/auth";
+  getAuth,
+} from "firebase/auth"
 import {
   UserRegistrationDocument,
   UserRegistrationForm,
-} from "@/services/models";
-import { Firestore, collection, doc, setDoc } from "firebase/firestore";
-import { router } from "expo-router";
-import { UseFormReturn } from "react-hook-form";
-import { PasswordConfirm } from "@/components/completedForms/CreateUserForm";
-import { collections } from "@/constants";
+} from "@/services/models"
+import { Firestore, collection, doc, getFirestore, setDoc } from "firebase/firestore"
+import { router } from "expo-router"
+import { UseFormReturn } from "react-hook-form"
+import { PasswordConfirm } from "@/components/completedForms/CreateUserForm"
+import { collections } from "@/constants"
+import { submitDataToStorage } from "./submitImageToStorage"
+import * as Crypto from "expo-crypto"
+import { FirebaseStorage, getStorage } from "firebase/storage"
+import { FirebaseApp } from "firebase/app"
 
 /**
  * Registra novo usuário no firebase.
@@ -26,26 +31,50 @@ import { collections } from "@/constants";
 export async function createUserAction(
   fields: UserRegistrationForm & PasswordConfirm,
   form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
-  auth: Auth,
-  db: Firestore
+  firebaseApp: FirebaseApp
 ): Promise<void> {
+  const auth = getAuth(firebaseApp)
+  const db = getFirestore(firebaseApp)
+  const storage = getStorage(firebaseApp)
+
   try {
     // Desestruturando somente variáveis úteis para esta função
     const {
       login: { email, password, username },
       person: { fullName },
-    } = fields;
+      imageURI,
+    } = fields
 
+    if (!imageURI) {
+      throw new Error("imageURI is empty.")
+    }
+
+
+    // Upando imagem para o Storage
+    const image_url = await submitDataToStorage(
+      imageURI,
+      storage,
+      "photo/users/" + Crypto.randomUUID() + "_image_user.jpeg",
+    )
+    if (!image_url) {
+      throw new Error("image_url is empty.")
+    }
+    fields.person.picture_uid = image_url
+
+
+    // Criando usuário no Firebase Auth
     // TODO: descobrir o que acontece quando createUserWithEmailAndPassword está
     // sem conexão.
     const data: UserCredential = await createUserWithEmailAndPassword(
-      auth, 
+      auth,
       email,
-      password
-    );
+      password,
+    )
 
-    const uid = data.user.uid;
-    const ref = collection(db, collections.users);
+
+    //Setando documento de usuário no Firestore
+    const uid = data.user.uid
+    const ref = collection(db, collections.users)
 
     // Criando o objeto a ser inserido no banco utilizando o tipo correto.
     const registrationDocument: UserRegistrationDocument = {
@@ -55,34 +84,38 @@ export async function createUserAction(
         email: email,
         username: username,
       },
-    };
-    // TODO: setDoc não resolve enquanto está sem internet. Como resolver
-    // esse problema?
-    setDoc(doc(ref, uid), registrationDocument),
+    }
 
+    // TODO: setDoc não resolve enquanto está sem internet.
+    await setDoc(doc(ref, uid), registrationDocument)
+
+
+    //Sucesso! Usuário criado no Firestore
     alert(
       fullName +
         ", Seu usuário: " +
         email +
-        " foi criado com sucesso. Faça o login!"
-    );
-    form.reset();
-    router.navigate("/(tabs)/login");
-  } catch (error: any) { // TODO: tratar outros erros que possam ocorrer.
+        " foi criado com sucesso. Faça o login!",
+    )
+
+    form.reset()
+    router.navigate("/login")
+  } catch (error: any) {
+    // TODO: tratar outros erros que possam ocorrer.
     if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
-      alert("Esse endereço de email já esta em uso!");
+      alert("Esse endereço de email já esta em uso!")
       form.setError("login.email", {
         type: "custom",
         message: "Este e-mail já está em uso.",
-      });
-      form.setFocus("login.email");
+      })
+      form.setFocus("login.email")
     } else if (error.code === AuthErrorCodes.INVALID_EMAIL) {
-      alert("Esse endereço de e-mail é inválido!");
+      alert("Esse endereço de e-mail é inválido!")
       form.setError("login.email", {
         type: "custom",
         message: "Este email é inválido.",
-      });
-      form.setFocus("login.email");
+      })
+      form.setFocus("login.email")
     } else {
       throw error
     }

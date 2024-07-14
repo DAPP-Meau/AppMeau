@@ -22,6 +22,7 @@ export type UserRegistrationForm = {
   person: Person
   address: Address
   login: Login
+  imageURI: string
 }
 
 // Usado para armazenamento no Firebase Database

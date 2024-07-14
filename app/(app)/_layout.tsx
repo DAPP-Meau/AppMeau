@@ -29,21 +29,21 @@ function defaultScreen() {
         <Drawer.Screen
           name="index"
           options={{
-            drawerLabel: "Listar pets",
+            drawerLabel: "Adotar um pet",
             title: "Adotar um pet",
           }}
         />
         <Drawer.Screen
           name="petRegistration"
           options={{
-            drawerLabel: "Registrar Pet",
-            title: "Cadastrar um Pet",
+            drawerLabel: "Registrar um Pet",
+            title: "Registrar Pet",
           }}
         />
         <Drawer.Screen
           name="petRegistrationSuccess"
           options={{
-            drawerItemStyle : {display: 'none'}
+            
           }}
         />
         <Drawer.Screen

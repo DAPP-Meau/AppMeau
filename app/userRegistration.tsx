@@ -4,18 +4,13 @@ import Colors from "@/constants/Colors"
 import { createUserAction } from "@/services/actions/createUserAction"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { Link, router } from "expo-router"
-import { getAuth } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
 import { useContext } from "react"
 import React, { Animated, StatusBar, StyleSheet, Text } from "react-native"
 import { Button, PaperProvider } from "react-native-paper"
 import ScrollView = Animated.ScrollView
 
 export default function userRegistration() {
-  const firebaseapp = useContext(FirebaseAppContext)
-  const auth = getAuth(firebaseapp)
-  const db = getFirestore(firebaseapp)
-
+  const firebaseApp = useContext(FirebaseAppContext)
   const isPresented = router.canGoBack()
 
   return (
@@ -33,7 +28,7 @@ export default function userRegistration() {
         <StatusBar backgroundColor={Colors.tintLight.blue1} />
         <CreateUserForm
           onSubmit={async (fields, form) => {
-            await createUserAction(fields, form, auth, db)
+            await createUserAction(fields, form, firebaseApp)
           }}
         />
       </ScrollView>
