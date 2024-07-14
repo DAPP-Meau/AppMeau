@@ -12,15 +12,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#88c9bf"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.unb.meauapp",
       "buildNumber": "1",
       "supportsTablet": true,
-      "googleServicesFile": "./google-services.json",
-      
+      "googleServicesFile": "./google-services.json"
     },
     "android": {
       "package": "com.unb.meauapp",
@@ -29,7 +26,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#88c9bf"
       },
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "./google-services.json"
       //"package": "com.icode.fontsrn"
     },
     "web": {
@@ -80,9 +77,20 @@
             "@/assets/fonts/Roboto-ThinItalic.otf"
           ]
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true
+          }
+        }
       ]
     ],
-    
+
     "experiments": {
       "typedRoutes": true
     }
