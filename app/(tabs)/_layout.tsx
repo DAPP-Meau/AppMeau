@@ -40,6 +40,13 @@ export default function TabLayout() {
             headerStyle: { backgroundColor: Colors.tintLight.yellow2 },
           }}
         />
+        <Drawer.Screen
+          name="pett"
+          options={{
+            title: "Ver Pet",
+            headerStyle: { backgroundColor: Colors.tintLight.yellow2 },
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
