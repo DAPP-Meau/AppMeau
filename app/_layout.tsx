@@ -1,39 +1,70 @@
-import { Stack } from "expo-router/stack";
-import { useFonts } from 'expo-font';
-import { fonts } from "@/assets";
-import { SplashScreen } from "expo-router";
-import React, { useEffect } from "react";
-import { PaperProvider } from "react-native-paper";
-import { lightModeYellowTheme } from "@/constants";
-import FirebaseAppProvider from "@/components/FirebaseAppProvider";
+import { fonts } from "@/assets"
+import FirebaseAppProvider from "@/components/FirebaseAppProvider"
+import { lightModeYellowTheme } from "@/constants"
+import { useFonts } from "expo-font"
+import { SplashScreen, Stack } from "expo-router"
+import React, { useEffect } from "react"
+import { PaperProvider } from "react-native-paper"
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 export default function AppLayout() {
-  const [fontsLoaded, error] = useFonts(fonts);
+  const [fontsLoaded, error] = useFonts(fonts)
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    if (error) throw error
+  }, [error])
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync()
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded])
 
   if (!fontsLoaded) {
-    return null;
+    return null
   }
 
   return (
     <PaperProvider theme={lightModeYellowTheme}>
       <FirebaseAppProvider>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="login"
+            options={{
+              presentation: "modal",
+              headerTitle: "Login"
+            }}
+          />
+          <Stack.Screen
+            name="userRegistration"
+            options={{
+              presentation: "modal",
+              headerTitle: "Cadastro"
+            }}
+          />
+          <Stack.Screen
+            name="erroLogin"
+            options={{
+              presentation: "modal",
+              headerTitle: "Erro"
+            }}
+          />
+          <Stack.Screen
+            name="(app)"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </FirebaseAppProvider>
     </PaperProvider>
-  );
+  )
 }

@@ -44,7 +44,8 @@ export interface PetRegistrationFields {
   health: Health
   temperament: Temperament
   adoptionRequirements: AdoptionRequirements
+  imageURI: string
 }
 
 // Usado para armazenamento no Firebase Database
-export type PetRegistrationDocument = PetRegistrationFields
+export type PetRegistrationDocument = Omit<PetRegistrationFields, "imageURI">
