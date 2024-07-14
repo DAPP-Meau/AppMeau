@@ -6,6 +6,7 @@ import {
 import { Firestore, collection, doc, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
+import { router } from "expo-router"
 
 export async function createPetAction(
   fields: PetRegistrationFields,
@@ -26,7 +27,7 @@ export async function createPetAction(
 
     await setDoc(doc(ref), data)
 
-    alert("Seu pet foi registrado para adoção com sucesso.")
+    router.navigate("(app)/petRegistrationSuccess")
     form.reset()
     // TODO: Navegar para tela de sucesso.
   } catch (error) {

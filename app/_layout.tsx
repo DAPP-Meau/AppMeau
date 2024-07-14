@@ -1,13 +1,10 @@
-import { useFonts } from "expo-font"
 import { fonts } from "@/assets"
-import { SplashScreen } from "expo-router"
-import { Drawer } from "expo-router/drawer";
+import FirebaseAppProvider from "@/components/FirebaseAppProvider"
+import { lightModeYellowTheme } from "@/constants"
+import { useFonts } from "expo-font"
+import { SplashScreen, Stack } from "expo-router"
 import React, { useEffect } from "react"
 import { PaperProvider } from "react-native-paper"
-import { lightModeYellowTheme } from "@/constants"
-import FirebaseAppProvider from "@/components/FirebaseAppProvider"
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Colors from "@/constants/Colors";
 
 SplashScreen.preventAutoHideAsync()
 
@@ -32,22 +29,41 @@ export default function AppLayout() {
   return (
     <PaperProvider theme={lightModeYellowTheme}>
       <FirebaseAppProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Drawer
-            screenOptions={{
-              headerTitleStyle: { fontFamily: "Roboto_Medium" },
-              headerStyle: { backgroundColor: Colors.background.default },
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
             }}
-          >
-            <Drawer.Screen
-              name="index"
-              options={{
-                drawerLabel: "Tela Inicial",
-                title: "",
-              }}
-            />
-          </Drawer>
-        </GestureHandlerRootView>
+          />
+          <Stack.Screen
+            name="login"
+            options={{
+              presentation: "modal",
+              headerTitle: "Login"
+            }}
+          />
+          <Stack.Screen
+            name="userRegistration"
+            options={{
+              presentation: "modal",
+              headerTitle: "Cadastro"
+            }}
+          />
+          <Stack.Screen
+            name="erroLogin"
+            options={{
+              presentation: "modal",
+              headerTitle: "Erro"
+            }}
+          />
+          <Stack.Screen
+            name="(app)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
       </FirebaseAppProvider>
     </PaperProvider>
   )

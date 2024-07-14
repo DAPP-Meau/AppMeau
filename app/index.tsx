@@ -1,69 +1,70 @@
-import React, { 
-  StyleSheet, 
-  TouchableOpacity, 
-  Text, 
-  View, 
-  Image, 
+import React, {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  View,
+  Image,
   ScrollView,
-} from "react-native";
+} from "react-native"
 
-import { StatusBar } from "expo-status-bar";
-import Colors from "@/constants/Colors";
-import { Link } from "expo-router";
-import { useContext } from "react";
-import { FirebaseAppContext } from "@/services/firebaseAppContext";
-import { getAuth } from "firebase/auth";
-
-
+import { StatusBar } from "expo-status-bar"
+import Colors from "@/constants/Colors"
+import { Link, Redirect } from "expo-router"
+import { useContext } from "react"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { getAuth } from "firebase/auth"
 
 export default function Introduction() {
   const firebaseApp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseApp)
 
-  return (
-    <ScrollView>
-    <View style={styles.container}>
-      <StatusBar backgroundColor={Colors.background.default} />
-      <Text style={styles.title}>Olá!</Text>
-      <View style={styles.flavor}>
-        <Text style={styles.flavorText}>Bem vindo ao Meau!</Text>
-        <Text style={styles.flavorText}>
-          Aqui você pode adotar, doar e ajudar cães e gatos com facilidade. Qual
-          o seu interesse?
-        </Text>
-      </View>
-      <View style={styles.buttonsView}>
+  // Caso o usuário esteja logado, ele não precisa ver essa página e então é
+  // navegado para /(app)/
+  if (auth.currentUser) {
+    return <Redirect href="/(app)/" />
+  } else {
+    return (
+      <ScrollView>
+        <View style={styles.container}>
+          <StatusBar backgroundColor={Colors.background.default} />
+          <Text style={styles.title}>Olá!</Text>
+          <View style={styles.flavor}>
+            <Text style={styles.flavorText}>Bem vindo ao Meau!</Text>
+            <Text style={styles.flavorText}>
+              Aqui você pode adotar, doar e ajudar cães e gatos com facilidade.
+            </Text>
+            <Text style={styles.flavorText}>
+              Registre-se gratuitamente!
+            </Text>
+          </View>
+          <View style={styles.buttonsView}>
 
-        <Link push href="/(app)/listPets" asChild>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>ADOTAR</Text>
-          </TouchableOpacity>
-        </Link>
+            <Link push href="/userRegistration" asChild>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>REGISTRE-SE JÁ</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
 
-        <Link push href="/(app)/petRegistration" asChild>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>CADASTRAR ANIMAL</Text>
-          </TouchableOpacity>
-        </Link>
+          <Link push href="/login" asChild>
+            <TouchableOpacity style={styles.login}>
+              <Text style={styles.loginText}>Login</Text>
+            </TouchableOpacity>
+          </Link>
 
-      </View>
-      
-      {/* Botão de Login apenas se o usuário estiver logado. */}
-      {!auth.currentUser &&
-        <Link push href="/login" asChild>
-          <TouchableOpacity style={styles.login}>
-            <Text style={styles.loginText}>Login</Text>
-          </TouchableOpacity>
-        </Link>
-      }
-
-      <Image
-        style={{ flex:1, height:null, width: '50%', resizeMode: "contain" }}
-        source={require("@/assets/images/Meau_marca_2.png")}
-      />
-    </View>
-    </ScrollView>
-  );
+          <Image
+            style={{
+              flex: 1,
+              height: null,
+              width: "50%",
+              resizeMode: "contain",
+            }}
+            source={require("@/assets/images/Meau_marca_2.png")}
+          />
+        </View>
+      </ScrollView>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -79,17 +80,18 @@ const styles = StyleSheet.create({
     fontSize: 72,
     paddingBottom: 52,
     color: Colors.tintLight.yellow1,
-    fontFamily: 'Courgette_Regular',
+    fontFamily: "Courgette_Regular",
   },
   flavor: {
     width: "100%",
     paddingBottom: 48,
+    gap: 12
   },
   flavorText: {
     width: "100%",
     fontSize: 16,
-    textAlign: "center",    
-    fontFamily: 'Roboto_Regular',
+    textAlign: "center",
+    fontFamily: "Roboto_Regular",
     color: Colors.text.gray1,
   },
   buttonsView: {
@@ -109,8 +111,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.text.gray2,
-    fontSize: 12,    
-    fontFamily: 'Roboto_Regular',
+    fontSize: 12,
+    fontFamily: "Roboto_Regular",
   },
   login: {
     width: "100%",
@@ -120,7 +122,6 @@ const styles = StyleSheet.create({
   loginText: {
     color: Colors.tintLight.blue1,
     fontSize: 16,
-    fontFamily: 'Roboto_Regular',
+    fontFamily: "Roboto_Regular",
   },
-  
-});
+})
