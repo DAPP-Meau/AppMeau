@@ -8,7 +8,12 @@ export default function ListPets() {
     <View>
       <Text>listPets</Text>
       <Text>TODO!</Text>
-      <Link push href="/(app)/petRegistration" asChild>
+      <Link push href="pets/QAfB10hEJooOZINPMTKq" asChild>
+        <Button mode="contained">
+          <Text>Ver animal</Text>
+        </Button>
+      </Link>
+      <Link push href="../petRegistration" asChild>
         <Button mode="contained">
           <Text>Adicionar animal</Text>
         </Button>

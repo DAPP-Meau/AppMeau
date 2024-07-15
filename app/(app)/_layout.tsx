@@ -4,6 +4,7 @@ import { Drawer } from "expo-router/drawer"
 import { getAuth } from "firebase/auth"
 import React, { useContext } from "react"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { Button, Text } from "react-native-paper"
 
 export default function TabLayout() {
   const firebaseApp = useContext(FirebaseAppContext)
@@ -51,6 +52,13 @@ function defaultScreen() {
           options={{
             drawerLabel: "Sair",
             title: "Sair",
+          }}
+        />
+        <Drawer.Screen
+          name="pets/[petID]"
+          options={{
+            drawerItemStyle: {display: "none"},
+            title: "Pet para adoção",
           }}
         />
       </Drawer>
