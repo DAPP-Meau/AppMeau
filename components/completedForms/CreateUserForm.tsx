@@ -1,9 +1,6 @@
 import Colors from "@/constants/Colors"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { UserRegistrationForm } from "@/services/models"
-import { handleImage, submitData } from "@/services/selectPhoto"
-import { getStorage } from "firebase/storage"
-import { useContext, useState } from "react"
+import selectImage from "@/services/selectImage"
 import { Controller, UseFormReturn, useForm } from "react-hook-form"
 import React, {
   Image,
@@ -12,8 +9,7 @@ import React, {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Button, MD3Theme, TextInput, useTheme } from "react-native-paper"
-import * as Crypto from "expo-crypto"
+import { Button, Divider, MD3Theme, TextInput, useTheme } from "react-native-paper"
 
 export type PasswordConfirm = {
   passwordConfirm: string
@@ -47,9 +43,6 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
-  const firebaseapp = useContext(FirebaseAppContext)
-  const storage = getStorage(firebaseapp)
-
   const form = useForm<UserRegistrationForm & PasswordConfirm>({
     defaultValues: {
       address: {
@@ -68,6 +61,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
         username: "",
       },
       passwordConfirm: "",
+      imageURI: "",
     },
     mode: "all",
   })
@@ -78,8 +72,6 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     watch,
     formState: { errors, isSubmitting, isValid },
   } = form
-
-  const [image, setImage] = useState("")
 
   return (
     <View style={styles.container}>
@@ -348,29 +340,38 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
-        <TouchableOpacity
-          style={styles.photoPlaceholder}
-          onPress={() => handleImage(setImage)}
-        >
-          {image && <Image source={{ uri: image }} style={styles.photo} />}
-          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
-        </TouchableOpacity>
+        <Controller
+          control={control}
+          name="imageURI"
+          rules={{
+            required: "Por favor, insira uma foto",
+          }}
+          render={({ field: { onChange, onBlur, ref, value, ...field } }) => (
+            <TouchableOpacity
+              {...field}
+              style={styles.photoPlaceholder}
+              onPress={() => selectImage(onChange)}
+              onBlur={onBlur}
+              ref={ref}
+            >
+              {value ? (<Image source={{ uri: value }} style={styles.photo} />) 
+                     : (<Text style={styles.photoText}> Adicionar Foto </Text>)
+              }
+            </TouchableOpacity>
+          )}
+        />
+        {errors.imageURI && (
+          <>
+            <Divider bold style={{backgroundColor:"red"}}/>
+            <Text>{errors.imageURI.message}</Text>
+          </>
+        )}
       </View>
 
       <Button
         mode="contained"
-        onPress={handleSubmit(async (completedFields) => {
-          const url_image = await submitData(
-            image,
-            storage,
-            "photo/users/" + Crypto.randomUUID() + "_image_user.jpeg",
-          )
-          if (!url_image) {
-            throw new Error("não tem url_imagem")
-          }
-          completedFields.person.picture_uid = url_image
-          await onSubmit?.(completedFields, form)
-          setImage("")
+        onPress={handleSubmit(async (fields) => {
+          await onSubmit?.(fields, form)
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}
@@ -385,7 +386,7 @@ const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     container: {
       width: "100%",
-      marginVertical: 42,
+      paddingBottom: 60,
       gap: 16,
     },
     infoText: {

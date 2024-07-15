@@ -1,4 +1,5 @@
 import { LoginFields } from "@/components/completedForms/LoginForm";
+import { router } from "expo-router";
 import {
   Auth,
   AuthErrorCodes,
@@ -28,6 +29,7 @@ export async function loginAction(
     alert("Bem vindo!");
     form.reset();
     // TODO: Navegação, permanência de credenciais, etc...
+    router.navigate("/(app)/")
   } catch (error: any) {
     if (
       error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS 

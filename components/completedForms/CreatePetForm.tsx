@@ -1,10 +1,7 @@
 import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms"
 import Colors from "@/constants/Colors"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { PetRegistrationFields } from "@/services/models"
-import { handleImage, submitData } from "@/services/selectPhoto"
-import { getStorage } from "firebase/storage"
-import { useContext, useState } from "react"
+import selectImage from "@/services/selectImage"
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
   Image,
@@ -13,10 +10,9 @@ import React, {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Button, TextInput, useTheme } from "react-native-paper"
+import { Button, Divider, TextInput, useTheme } from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 
-import * as Crypto from "expo-crypto"
 
 export interface CreatePetFormProps {
   /**
@@ -44,9 +40,6 @@ export interface CreatePetFormProps {
 export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
-
-  const firebaseapp = useContext(FirebaseAppContext)
-  const storage = getStorage(firebaseapp)
 
   const form = useForm<PetRegistrationFields>({
     defaultValues: {
@@ -79,6 +72,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         requireMonitoring: false,
         requirePreviousVisit: false,
       },
+      imageURI:""
     },
     mode: "onChange",
   })
@@ -98,13 +92,12 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     return { control: control, name: theName }
   }
 
-  const [image, setImage] = useState("")
-
   return (
     <View style={{ width: "100%", marginVertical: 16 }}>
       {/* Dados da adoção */}
       <Text style={styles.sectionTitle}>Adoção</Text>
 
+      {/* Botão de adicionar foto. */}
       <Controller
         control={control}
         rules={{
@@ -125,20 +118,36 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         )}
         name="animal.name"
       />
-      {errors?.animal?.name && <Text>{errors?.animal?.name?.message}</Text>}
+      {errors?.animal?.name && (
+        <>
+          <Divider bold style={{backgroundColor:"red"}}/>
+          <Text>{errors?.animal?.name?.message}</Text>
+        </>
+      )}
 
-      {/* Botão de adicionar foto. */}
-      {/* TODO: Adicionar funcionalidade para a foto */}
 
       <View style={styles.sectionView}>
         <Text style={styles.infoText}>Fotos do animal</Text>
-        <TouchableOpacity
-          style={styles.photoPlaceholder}
-          onPress={() => handleImage(setImage)}
-        >
-          {image && <Image source={{ uri: image }} style={styles.photo} />}
-          {!image && <Text style={styles.photoText}>Adicionar Foto</Text>}
-        </TouchableOpacity>
+        <Controller
+          control={control}
+          name="imageURI"
+          rules={{
+            required: "Por favor, insira uma foto",
+          }}
+          render={({ field: { onChange, onBlur, ref, value, ...field } }) => (
+            <TouchableOpacity
+              {...field}
+              style={styles.photoPlaceholder}
+              onPress={() => selectImage(onChange)}
+              onBlur={onBlur}
+              ref={ref}
+            >
+              {value ? (<Image source={{ uri: value }} style={styles.photo} />) 
+                     : (<Text style={styles.photoText}> Adicionar Foto </Text>)
+              }
+            </TouchableOpacity>
+          )}
+        />
       </View>
 
       <View style={styles.sectionView}>
@@ -337,18 +346,8 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 
       <Button
         mode="contained"
-        onPress={handleSubmit(async (completedFields) => {
-          const url_image = await submitData(
-            image,
-            storage,
-            "photo/pets/" + Crypto.randomUUID() + "_image_pet.jpeg",
-          )
-          if (!url_image) {
-            throw new Error("não tem url_imagem")
-          }
-          completedFields.animal.picture_uid = url_image
+        onPress={handleSubmit(async (completedFields) => {   
           await onSubmit?.(completedFields, form)
-          setImage("")
         })}
         loading={isSubmitting}
         disabled={isSubmitting || !isValid}

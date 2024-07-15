@@ -1,34 +1,59 @@
-import { Auth } from "firebase/auth"
+import { Auth, getAuth } from "firebase/auth"
 import {
   PetRegistrationDocument,
   PetRegistrationFields,
 } from "@/services/models"
-import { Firestore, collection, doc, setDoc } from "firebase/firestore"
+import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
+import { router } from "expo-router"
+import { submitDataToStorage } from "./submitDataToStorage"
+import { getStorage } from "firebase/storage"
+import * as Crypto from "expo-crypto"
+import { FirebaseApp } from "firebase/app"
 
 export async function createPetAction(
   fields: PetRegistrationFields,
   form: UseFormReturn<PetRegistrationFields>,
-  db: Firestore,
-  auth: Auth,
+  firebaseApp: FirebaseApp
 ): Promise<void> {
+
+  const auth = getAuth(firebaseApp)
+  const db = getFirestore(firebaseApp)
+  const storage = getStorage(firebaseApp)
+  
   try {
+    // Upando imagem para o Storage
+    const {imageURI} = fields
+    if (!imageURI) {
+      throw new Error("imageURI is empty.")
+    }
+    const url_image = await submitDataToStorage(
+      imageURI,
+      storage,
+      "photo/pets/" + Crypto.randomUUID() + "_image_pet.jpeg",
+    )
+    if (!url_image) {
+      throw new Error("image_url is empty.")
+    }
     if (auth.currentUser === null) {
       throw new Error("No user logged in to create pet.");
     }
-
-    const ref = collection(db, collections.pets)
-
-    fields.animal.picture_uid = ""
     fields.animal.owner_uid = auth.currentUser.uid
-    const data: PetRegistrationDocument = fields
+    fields.animal.picture_uid = url_image
 
+    // Upando dados no Firestore
+    const ref = collection(db, collections.pets)
+    const data: PetRegistrationDocument = {
+      animal: fields.animal,
+      temperament: fields.temperament,
+      health: fields.health,
+      adoptionRequirements: fields.adoptionRequirements
+    }
     await setDoc(doc(ref), data)
 
-    alert("Seu pet foi registrado para adoção com sucesso.")
+    router.navigate("(app)/petRegistrationSuccess")
     form.reset()
-    // TODO: Navegar para tela de sucesso.
   } catch (error) {
     // TODO: tratar erros que possam ocorrer aqui.
     alert(error)
