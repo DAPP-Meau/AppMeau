@@ -53,6 +53,13 @@ function defaultScreen() {
             title: "Sair",
           }}
         />
+        <Drawer.Screen
+          name="pets/[petID]"
+          options={{
+            drawerItemStyle: {display: "none"},
+            title: "Pet para adoção",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   )

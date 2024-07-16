@@ -16,6 +16,13 @@ export default function ListPets() {
         <RenderPetsList pets={pets} />
       </View>
       <Link push href="/(app)/petRegistration" asChild>
+      <Text>TODO!</Text>
+      <Link push href="pets/TAokyfjX7ZLQhpdDQVYf" asChild>
+        <Button mode="contained">
+          <Text>Ver animal</Text>
+        </Button>
+      </Link>
+      <Link push href="../petRegistration" asChild>
         <Button mode="contained">
           <Text>Adicionar animal</Text>
         </Button>
