@@ -15,10 +15,12 @@ import {
 import { Button, Card, Divider, MD3Theme, Paragraph, Title, useTheme } from "react-native-paper"
 import { ScrollView } from "react-native"
 import { Link } from "expo-router"
+import Colors from "@/constants/Colors"
 
 interface IPetCardsProps {
   pet?: PetRegistrationDocument
   owner?: UserRegistrationDocument
+  id?:string
 }
 
 interface TitleAndTextProps {
@@ -27,7 +29,7 @@ interface TitleAndTextProps {
   style?: StyleProp<ViewStyle>
 }
 
-export default function PetCard({ pet, owner }: IPetCardsProps) {
+export default function PetCard({ pet, owner, id }: IPetCardsProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
@@ -78,10 +80,10 @@ export default function PetCard({ pet, owner }: IPetCardsProps) {
     return (
       <ScrollView>
         <TouchableOpacity>
-          <Link href={`pets/TAokyfjX7ZLQhpdDQVYf`} asChild>
+          <Link href={`pets/${id}`} asChild>
             <Card style={{ margin: 16, borderRadius: 10 }}>
-              <Card.Content>
-                <Title>{pet.animal.name}</Title>
+              <Card.Content style={{  backgroundColor: Colors.tintLight.yellow1}}>
+                <Title >{pet.animal.name}</Title>
               </Card.Content>
               <Card.Cover
                 source={
@@ -90,7 +92,7 @@ export default function PetCard({ pet, owner }: IPetCardsProps) {
                     : require("@/assets/images/Meau_marca_2.png")
                 }
                 style={{ height: 150 }}
-                resizeMode="contain"
+                resizeMode="cover"
               />
               <Card.Content style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}>
                 <View style={{ gap: 16 }}>
