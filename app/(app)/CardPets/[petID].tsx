@@ -82,7 +82,7 @@ export default function ShowPet() {
   return (
     <View>
       { petData && ownerData 
-        ? <PetDetails pet={petData} owner={ownerData} />
+        ? <PetCard pet={petData} owner={ownerData} />
         : <ActivityIndicator />
       }
     </View>
