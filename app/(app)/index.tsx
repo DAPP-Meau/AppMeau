@@ -8,7 +8,14 @@ import {
   UserRegistrationDocument,
 } from "@/services/models"
 import { useLocalSearchParams } from "expo-router"
-import { collection, doc, getDoc, getDocs, getFirestore, query } from "firebase/firestore"
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+} from "firebase/firestore"
 import React, { useContext, useMemo, useState } from "react"
 import { View } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
@@ -65,43 +72,51 @@ const testeUser: UserRegistrationDocument = {
 
 export async function obterPetAction() {
   const list = []
-  const firebaseApp = useContext(FirebaseAppContext)    
+  const firebaseApp = useContext(FirebaseAppContext)
   const db = getFirestore(firebaseApp)
-  const q = query(collection(db, "pets"));
-  const querySnapshot = await getDocs(q);
+  const q = query(collection(db, "pets"))
+  const querySnapshot = await getDocs(q)
   querySnapshot.forEach((doc) => {
     list.push(doc.id)
-  });
+  })
 
   return list
 }
+
 export default function ShowPet() {
   //pegar todos os IDS do cloud e passar todos aqui
-  const [list, setList] = useState<Array<string>|undefined>()
+  const [list, setList] = useState<Array<string> | undefined>()
   const { petID } = useLocalSearchParams()
   const firebaseApp = useContext(FirebaseAppContext)
-  const [petData, setPetData] = useState<PetRegistrationDocument|undefined>()
-  const [ownerData, setOwnerData] = useState<UserRegistrationDocument|undefined>()
+  const [petData, setPetData] = useState<PetRegistrationDocument | undefined>()
+  const [ownerData, setOwnerData] = useState<
+    UserRegistrationDocument | undefined
+  >()
 
-  useMemo(async () => {    
-    const petlist = await obterPetAction() 
+  useMemo(async () => {
+    const petlist = await obterPetAction()
     setList(petlist)
     const pet = await getPetAction(petlist[7] as string, firebaseApp)
-    if(!pet) {return}
+    if (!pet) {
+      return
+    }
     setPetData(pet)
 
     const userData = await getUserAction(pet.animal.owner_uid, firebaseApp)
-    if(!userData) {return}
+    if (!userData) {
+      return
+    }
     setOwnerData(userData)
   }, [petID])
 
   // TODO: Tela de carregamento.
   return (
     <View>
-      { petData && ownerData 
-        ? <PetCard pet={petData} owner={ownerData} id={list[7]}  />
-        : <ActivityIndicator />
-      }
+      {petData && ownerData ? (
+        <PetCard pet={petData} owner={ownerData} id={list[7]} />
+      ) : (
+        <ActivityIndicator />
+      )}
     </View>
   )
 }
