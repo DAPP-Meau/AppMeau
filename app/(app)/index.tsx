@@ -1,6 +1,7 @@
 import PetCard from "@/components/elements/PetCard"
 import { collections } from "@/constants"
 import getPetAction from "@/services/actions/getPetAction"
+import { getPetListAction } from "@/services/actions/getPetListAction"
 import getUserAction from "@/services/actions/getUserAction"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import {
@@ -70,19 +71,6 @@ const testeUser: UserRegistrationDocument = {
   },
 }
 
-export async function obterPetAction() {
-  const list = []
-  const firebaseApp = useContext(FirebaseAppContext)
-  const db = getFirestore(firebaseApp)
-  const q = query(collection(db, "pets"))
-  const querySnapshot = await getDocs(q)
-  querySnapshot.forEach((doc) => {
-    list.push(doc.id)
-  })
-
-  return list
-}
-
 export default function ShowPet() {
   //pegar todos os IDS do cloud e passar todos aqui
   const [list, setList] = useState<Array<string> | undefined>()
@@ -94,7 +82,7 @@ export default function ShowPet() {
   >()
 
   useMemo(async () => {
-    const petlist = await obterPetAction()
+    const petlist = await getPetListAction(firebaseApp)
     setList(petlist)
     const pet = await getPetAction(petlist[7] as string, firebaseApp)
     if (!pet) {
