@@ -57,15 +57,17 @@ export function isSpeciesOptions(value: unknown): value is speciesOptions {
   return true
 }
 
-export function issexOptions(value: unknown): value is sexOptions {
+export function isSexOptions(value: unknown): value is sexOptions {
   if (value === "male" || value === "female") return true
   return false
 }
-export function issizeOptions(value: unknown): value is sizeOptions {
+
+export function isSizeOptions(value: unknown): value is sizeOptions {
   if (value === "small" || value === "medium" || value === "large") return true
   return false
 }
-export function isageOptions(value: unknown): value is ageOptions {
+
+export function isAgeOptions(value: unknown): value is ageOptions {
   if (value === "cub" || value === "adult" || value === "old") return true
   return false
 }
@@ -77,9 +79,9 @@ export function isAnimal(value: unknown): value is Animal {
   //Verificar se tem o prop
   if (!("name" in value && typeof value.name === "string")) return false
   if (!("species" in value && isSpeciesOptions(value.species))) return false
-  if (!("sex" in value && issexOptions(value.sex))) return false
-  if (!("size" in value && issizeOptions(value.size))) return false
-  if (!("age" in value && isageOptions(value.age))) return false
+  if (!("sex" in value && isSexOptions(value.sex))) return false
+  if (!("size" in value && isSizeOptions(value.size))) return false
+  if (!("age" in value && isAgeOptions(value.age))) return false
   if (!("owner_uid" in value && typeof value.owner_uid === "string"))
     return false
   if (!("picture_uid" in value && typeof value.picture_uid === "string"))
