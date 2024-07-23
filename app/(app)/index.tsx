@@ -38,7 +38,6 @@ export default function ShowPet() {
             />
           )}
           ListEmptyComponent={<Text>Não há pets aqui!</Text>}
-          ListFooterComponent={<Text>Fim</Text>}
         />
       )}
     </View>
