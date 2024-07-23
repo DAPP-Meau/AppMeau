@@ -13,7 +13,6 @@ export default async function getPetAction(
   const pet = await getDoc(petsRef)
   const data = <PetRegistrationDocument> pet.data()
   // TODO: assertar tipo correto
-  console.log({petData: data})
   if (data) return data as PetRegistrationDocument 
   else return undefined
   } catch (error) {

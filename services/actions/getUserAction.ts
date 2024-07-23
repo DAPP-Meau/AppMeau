@@ -13,11 +13,10 @@ export default async function getUserAction(
     const userDoc = await getDoc(userRef)
     const data = userDoc.data()
     // TODO: assertar tipo correto de data.
-    console.log({ userData: data }) 
     if (data) return data as UserRegistrationDocument
     else return undefined
   } catch (error) {
-    console.error("Error in getUserAction " + error)
+    console.error("Erro em getUserAction(" + userId + "): " + error)
     throw error
   }
 }
