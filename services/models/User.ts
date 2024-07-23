@@ -1,7 +1,7 @@
 export type Person = {
   fullName: string
   age: number
-  phone: string  
+  phone: string
   picture_uid: string
 }
 
@@ -17,7 +17,7 @@ export type Login = {
   password: string
 }
 
-// Usado no formulário
+/** Usado no formulário */
 export type UserRegistrationForm = {
   person: Person
   address: Address
@@ -25,9 +25,16 @@ export type UserRegistrationForm = {
   imageURI: string
 }
 
-// Usado para armazenamento no Firebase Database
+/** Usado para armazenamento no Firebase Database */
 export type UserRegistrationDocument = {
   person: Person
   address: Address
   login: Omit<Login, "password">
+}
+
+//TODO
+export function isUserRegistrationDocument(
+  value: unknown,
+): value is UserRegistrationDocument {
+  return true
 }

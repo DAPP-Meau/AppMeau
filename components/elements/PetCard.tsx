@@ -1,35 +1,17 @@
-import {
-  Image,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native"
-import React, { ReactNode } from "react"
-import {
-  PetRegistrationDocument,
-  UserRegistrationDocument,
-} from "@/services/models"
-import { Button, Card, Divider, MD3Theme, Paragraph, Title, useTheme } from "react-native-paper"
-import { ScrollView } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
+import React from "react"
+import { Address, PetRegistrationDocument } from "@/services/models"
+import { Card, MD3Theme, Title, useTheme } from "react-native-paper"
 import { Link } from "expo-router"
 import Colors from "@/constants/Colors"
 
 interface IPetCardsProps {
-  pet?: PetRegistrationDocument
-  owner?: UserRegistrationDocument
-  id?:string
+  pet: PetRegistrationDocument
+  address: Address
+  id: string
 }
 
-interface TitleAndTextProps {
-  title: string
-  children: ReactNode
-  style?: StyleProp<ViewStyle>
-}
-
-export default function PetCard({ pet, owner, id }: IPetCardsProps) {
+export default function PetCard({ pet, address, id }: IPetCardsProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
@@ -64,70 +46,49 @@ export default function PetCard({ pet, owner, id }: IPetCardsProps) {
     }
   }
 
-
-  const endereco = (owner: UserRegistrationDocument): string => {
-    return (
-      owner.address.fullAddress +
-      " - " +
-      owner.address.city +
-      ", " +
-      owner.address.state
-    )
+  const endereco = (address: Address): string => {
+    return address.fullAddress + " - " + address.city + ", " + address.state
   }
 
-  if (pet && owner) {
-
-    return (
-      <ScrollView>
-        <TouchableOpacity>
-          <Link href={`pets/${id}`} asChild>
-            <Card style={{ margin: 16, borderRadius: 10 }}>
-              <Card.Content style={{  backgroundColor: Colors.tintLight.yellow1}}>
-                <Title >{pet.animal.name}</Title>
-              </Card.Content>
-              <Card.Cover
-                source={
-                  pet.animal.picture_uid
-                    ? { uri: pet.animal.picture_uid }
-                    : require("@/assets/images/Meau_marca_2.png")
-                }
-                style={{ height: 150 }}
-                resizeMode="cover"
-              />
-              <Card.Content style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}>
-                <View style={{ gap: 16 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 50, }}>
-                    <Text>{machoFemea(pet)}</Text>
-                    <Text>{tamanho(pet)}</Text>
-                    <Text>{idade(pet)}</Text>
-                  </View>
-                  <View>
-                    <Text style={{ textAlign: 'center' }}>
-                      {endereco(owner)}
-                    </Text>
-                  </View>
-                </View>
-              </Card.Content>
-            </Card>
-          </Link>
-        </TouchableOpacity>
-
-      </ScrollView>
-    )
-  } else {
-    <View>
-      <Text>Erro</Text>
-    </View>
-  }
-}
-
-const TitleAndText = ({ title, children, style }: TitleAndTextProps) => {
-  const theme = useTheme()
   return (
-    <View style={style}>
-      <Title>{title}</Title>
-      <Paragraph>{children}</Paragraph>
-    </View>
+    <Link href={`pets/${id}`} asChild>
+      <Card style={{ margin: 16, borderRadius: 10 }}>
+        <Card.Content style={{ backgroundColor: Colors.tintLight.yellow1 }}>
+          <Title>{pet.animal.name}</Title>
+        </Card.Content>
+        <Card.Cover
+          source={
+            pet.animal.picture_uid
+              ? { uri: pet.animal.picture_uid }
+              // TODO imagem de carreamento
+              : require("@/assets/images/Meau_marca_2.png") 
+          }
+          style={{ height: 150 }}
+          resizeMode="cover"
+        />
+        <Card.Content
+          style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}
+        >
+          <View style={{ gap: 16 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 50,
+              }}
+            >
+              <Text>{machoFemea(pet)}</Text>
+              <Text>{tamanho(pet)}</Text>
+              <Text>{idade(pet)}</Text>
+            </View>
+            <View>
+              <Text style={{ textAlign: "center" }}>{endereco(address)}</Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+    </Link>
   )
 }
 
@@ -149,6 +110,6 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       height: 150,
-      width: "100%"
-    }
+      width: "100%",
+    },
   })
