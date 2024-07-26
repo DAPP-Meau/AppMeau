@@ -1,18 +1,45 @@
+import PetCard from "@/components/elements/PetCard"
+import { getPetListAction, GetPetListActionReturn } from "@/services/actions/"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Text, View } from "react-native"
-import React from "react"
-import { Button } from "react-native-paper"
-import { Link } from "expo-router"
+import { FlatList } from "react-native-gesture-handler"
+import { ActivityIndicator } from "react-native-paper"
 
-export default function ListPets() {
+export default function ShowPet() {
+  //pegar todos os IDS do cloud e passar todos aqui
+  const [loading, setLoading] = useState(true)
+  const [petList, setPetList] = useState<GetPetListActionReturn>()
+  const firebaseApp = useContext(FirebaseAppContext)
+
+  useMemo(() => {
+    setLoading(true)
+    getPetListAction(firebaseApp).then((result) => {
+      setPetList(result)
+      setLoading(false)
+    })
+  }, [])
+
+  // TODO: Tela de carregamento.
+
   return (
     <View>
-      <Text>listPets</Text>
-      <Text>TODO!</Text>
-      <Link push href="/(app)/petRegistration" asChild>
-        <Button mode="contained">
-          <Text>Adicionar animal</Text>
-        </Button>
-      </Link>
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={petList}
+          renderItem={({ item }) => (
+            <PetCard
+              key={item.pet.id}
+              address={item.user.data.address}
+              pet={item.pet.data}
+              id={item.pet.id}
+            />
+          )}
+          ListEmptyComponent={<Text>Não há pets aqui!</Text>}
+        />
+      )}
     </View>
   )
 }

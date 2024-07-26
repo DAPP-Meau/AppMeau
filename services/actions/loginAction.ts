@@ -17,7 +17,7 @@ import { UseFormReturn } from "react-hook-form";
 export async function loginAction(
   auth: Auth,
   fields: LoginFields,
-  form: UseFormReturn<LoginFields>
+  form?: UseFormReturn<LoginFields>
 ): Promise<void> {
   try {
     const { username, password } = fields;
@@ -27,7 +27,7 @@ export async function loginAction(
       password
     );
     alert("Bem vindo!");
-    form.reset();
+    form?.reset();
     // TODO: Navegação, permanência de credenciais, etc...
     router.navigate("/(app)/")
   } catch (error: any) {
