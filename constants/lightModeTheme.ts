@@ -20,7 +20,7 @@ const yellowThemeColors = {
     "errorContainer": "rgb(255, 218, 214)",
     "onErrorContainer": "rgb(65, 0, 2)",
     "background": "rgb(255, 251, 255)",
-    "onBackground": "rgb(30, 27, 22)",
+    "onBackground": "rgb(117, 117, 117)",
     "surface": "rgb(255, 251, 255)",
     "onSurface": "rgb(30, 27, 22)",
     "surfaceVariant": "rgb(236, 225, 207)",

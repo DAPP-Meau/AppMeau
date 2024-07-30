@@ -9,7 +9,6 @@ import {
   UserRegistrationForm,
 } from "@/services/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
-import { router } from "expo-router"
 import { UseFormReturn } from "react-hook-form"
 import { PasswordConfirm } from "@/components/completedForms/CreateUserForm"
 import { collections } from "@/constants"
@@ -30,7 +29,8 @@ import { FirebaseApp } from "firebase/app"
 export async function createUserAction(
   fields: UserRegistrationForm & PasswordConfirm,
   form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
-  firebaseApp: FirebaseApp
+  firebaseApp: FirebaseApp,
+  navigation: any
 ): Promise<void> {
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
@@ -98,7 +98,7 @@ export async function createUserAction(
     )
 
     form.reset()
-    router.navigate("/login")
+    navigation.navigate("login")
   } catch (error: any) {
     // TODO: tratar outros erros que possam ocorrer.
     if (error.code === AuthErrorCodes.EMAIL_EXISTS) {
