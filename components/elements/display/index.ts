@@ -1,1 +1,1 @@
-export * from "./PetDetails"
+export * from "../../../app/Screens/PetDetails"

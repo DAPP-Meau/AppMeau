@@ -3,12 +3,14 @@ import { StatusBar } from "expo-status-bar"
 import { Button, MD3Theme, useTheme } from "react-native-paper"
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
+import { LayoutParamList } from "../Navigation/Layout"
+import { StackNavigationProp } from "@react-navigation/stack"
 
 export default function Index() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<StackNavigationProp<LayoutParamList>>()
   const insets = useSafeAreaInsets()
   const theme = useTheme()
-  const styles = makeStyles(theme, insets)  
+  const styles = makeStyles(theme, insets)
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function Index() {
             </Button>
             <Button
               mode="text"
-              labelStyle={{textDecorationLine: "underline"}}
+              labelStyle={{ textDecorationLine: "underline" }}
               uppercase
               textColor={theme.colors.inversePrimary}
               onPress={() => navigation.navigate("login")}
@@ -41,11 +43,11 @@ export default function Index() {
               Login
             </Button>
           </View>
+          <Image
+            style={styles.imageStyle}
+            source={require("@/assets/images/Meau_marca_2.png")}
+          />
         </View>
-        <Image
-          style={styles.imageStyle}
-          source={require("@/assets/images/Meau_marca_2.png")}
-        />
       </View>
     </>
   )

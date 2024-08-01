@@ -1,4 +1,4 @@
-import { Auth, getAuth } from "firebase/auth"
+import { getAuth } from "firebase/auth"
 import {
   PetRegistrationDocument,
   PetRegistrationFields,
@@ -6,7 +6,6 @@ import {
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
-import { router } from "expo-router"
 import { submitDataToStorage } from "./submitDataToStorage"
 import { getStorage } from "firebase/storage"
 import * as Crypto from "expo-crypto"
@@ -15,7 +14,8 @@ import { FirebaseApp } from "firebase/app"
 export async function createPetAction(
   fields: PetRegistrationFields,
   form: UseFormReturn<PetRegistrationFields>,
-  firebaseApp: FirebaseApp
+  firebaseApp: FirebaseApp,
+  navigation: any
 ): Promise<void> {
 
   const auth = getAuth(firebaseApp)
@@ -52,7 +52,7 @@ export async function createPetAction(
     }
     await setDoc(doc(ref), data)
 
-    router.navigate("(app)/petRegistrationSuccess")
+    navigation.navigate("petRegistrationSuccess")
     form.reset()
   } catch (error) {
     // TODO: tratar erros que possam ocorrer aqui.
