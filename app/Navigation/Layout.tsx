@@ -5,6 +5,7 @@ import UserRegistration from "../Screens/UserRegistration"
 import Unauthorized from "../Screens/LoginError"
 import { createStackNavigator } from "@react-navigation/stack"
 import RootStack from "./RootStack"
+import CustomNavigationBar from "@/components/elements/display/CustomNavigationBar"
 
 export type LayoutParamList = {
   index: undefined
@@ -18,7 +19,10 @@ const Stack = createStackNavigator<LayoutParamList>()
 
 export default function Layout() {
   return (
-    <Stack.Navigator initialRouteName="index">
+    <Stack.Navigator
+      initialRouteName="index"
+      screenOptions={{ header: (props) => <CustomNavigationBar {...props} /> }}
+    >
       <Stack.Screen
         name="rootStack"
         component={RootStack}
