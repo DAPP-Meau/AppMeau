@@ -4,14 +4,14 @@ import Login from "../Screens/Login"
 import UserRegistration from "../Screens/UserRegistration"
 import Unauthorized from "../Screens/LoginError"
 import { createStackNavigator } from "@react-navigation/stack"
-import HomeDrawer from "./HomeDrawer"
+import RootStack from "./RootStack"
 
 export type LayoutParamList = {
-  homeLayout: undefined
   index: undefined
   login: undefined
   userRegistration: undefined
   unauthorized: undefined
+  rootStack: undefined
 }
 
 const Stack = createStackNavigator<LayoutParamList>()
@@ -20,9 +20,14 @@ export default function Layout() {
   return (
     <Stack.Navigator initialRouteName="index">
       <Stack.Screen
+        name="rootStack"
+        component={RootStack}
+        options={{ headerShown: false}}
+      />
+      <Stack.Screen
         name="index"
         component={Index}
-        options={{ headerShown: false, headerTitle: "Menu" }}
+        options={{ headerShown: false}}
       />
       <Stack.Screen
         name="login"
@@ -38,11 +43,6 @@ export default function Layout() {
         name="unauthorized"
         component={Unauthorized}
         options={{ headerTitle: "Acesso não Autorizado" }}
-      />
-      <Stack.Screen
-        name="homeLayout"
-        component={HomeDrawer}
-        options={{ headerShown: false, headerTitle: "Menu" }}
       />
     </Stack.Navigator>
   )

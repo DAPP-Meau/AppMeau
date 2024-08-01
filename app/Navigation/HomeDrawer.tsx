@@ -11,8 +11,6 @@ import { PetAndOwnerDocument } from "@/services/actions"
 export type HomeDrawerParamList = {
   petList: undefined
   addPets: undefined
-  addPetsSuccess: undefined
-  petDetails: { petAndOwner: PetAndOwnerDocument }
   logout: undefined
 }
 
@@ -49,24 +47,6 @@ export default function HomeDrawer() {
           title: "Sair",
         }}
         component={Logout}
-      />
-      <Drawer.Screen
-        name="addPetsSuccess"
-        options={{
-          drawerLabel: "Sucesso!",
-          title: "Sucesso!",
-          drawerItemStyle: { display: "none" },
-        }}
-        component={PetRegistrationSuccess}
-      />
-      <Drawer.Screen
-        name="petDetails"
-        component={PetDetails}
-        options={{
-          title: "Detalhes do pet",
-          drawerItemStyle: { display: "none" },
-          unmountOnBlur: true,
-        }}
       />
     </Drawer.Navigator>
   )

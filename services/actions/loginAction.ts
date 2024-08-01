@@ -30,7 +30,7 @@ export async function loginAction(
     alert("Bem vindo!");
     form?.reset();
     // TODO: Navegação, permanência de credenciais, etc...
-    navigation.navigate("homeLayout")
+    navigation.navigate("rootStack")
   } catch (error: any) {
     if (
       error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS 
