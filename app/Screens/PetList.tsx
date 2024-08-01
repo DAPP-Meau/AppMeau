@@ -31,10 +31,7 @@ export default function PetList() {
           data={petList}
           renderItem={({ item }) => (
             <PetCard
-              key={item.pet.id}
-              address={item.user.data.address}
-              pet={item.pet.data}
-              id={item.pet.id}
+              petAndOwner={item}
             />
           )}
           ListEmptyComponent={<Text>Não há pets aqui!</Text>}

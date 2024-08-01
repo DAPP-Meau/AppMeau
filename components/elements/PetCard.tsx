@@ -1,22 +1,21 @@
 import { StyleSheet, Text, View } from "react-native"
 import React from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
-import { Card, MD3Theme, Title, useTheme } from "react-native-paper"
+import { Card, MD3Theme, Title } from "react-native-paper"
 import Colors from "@/constants/Colors"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { HomeDrawerParamList } from "@/app/Navigation/HomeDrawer"
+import { PetAndOwnerDocument } from "@/services/actions"
 
 interface IPetCardsProps {
-  pet: PetRegistrationDocument
-  address: Address
-  id: string
+  petAndOwner: PetAndOwnerDocument
 }
 
-export default function PetCard({ pet, address, id }: IPetCardsProps) {
+export default function PetCard({ petAndOwner }: IPetCardsProps) {
+  const pet = petAndOwner.pet.data
+  const { address } = petAndOwner.user.data
   const navigation = useNavigation<StackNavigationProp<HomeDrawerParamList>>()
-  const theme = useTheme()
-  const styles = makeStyles(theme)
 
   const machoFemea = (pet: PetRegistrationDocument) => {
     switch (pet.animal.sex) {
@@ -57,7 +56,7 @@ export default function PetCard({ pet, address, id }: IPetCardsProps) {
     <Card
       style={{ margin: 16, borderRadius: 10 }}
       onPress={() => {
-        navigation.navigate("petDetails", {petId: id})
+        navigation.navigate("petDetails", {petAndOwner: petAndOwner})
       }}
     >
       <Card.Content style={{ backgroundColor: Colors.tintLight.yellow1 }}>
@@ -97,25 +96,3 @@ export default function PetCard({ pet, address, id }: IPetCardsProps) {
     </Card>
   )
 }
-
-const makeStyles = (theme: MD3Theme) =>
-  StyleSheet.create({
-    baseColor: {
-      color: theme.colors.onBackground,
-    },
-    sectionTitle: {
-      textTransform: "uppercase",
-      color: theme.colors.primary,
-      fontSize: 12,
-      fontWeight: "bold",
-    },
-    animalName: {
-      textTransform: "capitalize",
-      fontWeight: "bold",
-      fontSize: 16,
-    },
-    photo: {
-      height: 150,
-      width: "100%",
-    },
-  })

@@ -6,16 +6,13 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import React, { ReactNode, useContext, useMemo, useState } from "react"
+import React, { ReactNode, useEffect } from "react"
 import {
   PetRegistrationDocument,
   UserRegistrationDocument,
 } from "@/services/models"
 import { Button, Divider, MD3Theme, useTheme } from "react-native-paper"
 import { ScrollView } from "react-native"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import getPetAction from "@/services/actions/getPetAction"
-import getUserAction from "@/services/actions/getUserAction"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { HomeDrawerParamList } from "../Navigation/HomeDrawer"
 
@@ -28,28 +25,15 @@ interface TitleAndTextProps {
 }
 
 export default function PetDetails({ route, navigation }: Props) {
-  const petID = route.params.petId
   const theme = useTheme()
   const styles = makeStyles(theme)
-  const firebaseApp = useContext(FirebaseAppContext)
-  const [pet, setPetData] = useState<PetRegistrationDocument>()
-  const [owner, setOwnerData] = useState<UserRegistrationDocument>()
+  const pet = route.params.petAndOwner.pet.data
+  const owner = route.params.petAndOwner.user.data
 
-  useMemo(async () => {
-    const pet = await getPetAction(petID as string, firebaseApp)
-    if (!pet) {
-      return
-    }
-    setPetData(pet)
-
-    const userData = await getUserAction(pet.animal.owner_uid, firebaseApp)
-    if (!userData) {
-      return
-    }
-    setOwnerData(userData)
-
-    navigation.setOptions({ title: pet.animal.name })
-  }, [petID])
+  useEffect(() => {
+    navigation.setOptions({title: pet.animal.name})
+  }, [])
+  
 
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
