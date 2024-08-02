@@ -1,5 +1,4 @@
 import React, { StyleSheet, Text, View, Image } from "react-native"
-import { StatusBar } from "expo-status-bar"
 import { Button, MD3Theme, useTheme } from "react-native-paper"
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useNavigation } from "@react-navigation/native"
@@ -14,7 +13,6 @@ export default function Index() {
 
   return (
     <>
-      <StatusBar backgroundColor={theme.colors.primary} />
       <View style={styles.insetsPad}>
         <View style={styles.container}>
           <Text style={styles.title}>Olá!</Text>

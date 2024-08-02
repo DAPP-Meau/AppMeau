@@ -50,7 +50,7 @@ const blueThemeColors = {
   "colors": {
     "primary": "rgb(0, 106, 97)",
     "onPrimary": "rgb(255, 255, 255)",
-    "primaryContainer": "rgb(115, 248, 231)",
+    "primaryContainer": "rgb(136, 201, 191)",
     "onPrimaryContainer": "rgb(0, 32, 29)",
     "secondary": "rgb(56, 107, 1)",
     "onSecondary": "rgb(255, 255, 255)",

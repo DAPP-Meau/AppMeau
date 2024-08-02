@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import React from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
-import { Card, MD3Theme, Title } from "react-native-paper"
-import Colors from "@/constants/Colors"
+import { Card, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { HomeDrawerParamList } from "@/app/Navigation/HomeDrawer"
 import { PetAndOwnerDocument } from "@/services/actions"
+import { RootStackParamList } from "@/app/Navigation/RootStack"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -15,7 +14,8 @@ interface IPetCardsProps {
 export default function PetCard({ petAndOwner }: IPetCardsProps) {
   const pet = petAndOwner.pet.data
   const { address } = petAndOwner.user.data
-  const navigation = useNavigation<StackNavigationProp<HomeDrawerParamList>>()
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
+  const theme = useTheme()
 
   const machoFemea = (pet: PetRegistrationDocument) => {
     switch (pet.animal.sex) {
@@ -59,9 +59,7 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
         navigation.navigate("petDetails", {petAndOwner: petAndOwner})
       }}
     >
-      <Card.Content style={{ backgroundColor: Colors.tintLight.yellow1 }}>
-        <Title>{pet.animal.name}</Title>
-      </Card.Content>
+      <Card.Title title={pet.animal.name} style={{backgroundColor: theme.colors.primary}} />
       <Card.Cover
         source={
           pet.animal.picture_uid

@@ -1,20 +1,26 @@
 import CreateUserForm from "@/components/completedForms/CreateUserForm"
-import { lightModeBlueTheme } from "@/constants"
 import Colors from "@/constants/Colors"
 import { createUserAction } from "@/services/actions/createUserAction"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import { useContext } from "react"
-import React, { ScrollView, StatusBar, StyleSheet } from "react-native"
-import { PaperProvider } from "react-native-paper"
+import { useContext, useEffect } from "react"
+import React, { ScrollView, StyleSheet, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
+import { ColorSchemeContext } from "@/services/ColorSchemeContext"
 
 export default function UserRegistration() {
   const navigation = useNavigation()
   const firebaseApp = useContext(FirebaseAppContext)
+  const theme = useContext(ColorSchemeContext)
+
+  useEffect(() => {
+    theme.setColorScheme("blue")
+    return () => {
+      theme.setColorScheme("yellow")
+    }
+  }, [theme])
 
   return (
-    <PaperProvider theme={lightModeBlueTheme}>
-      <StatusBar backgroundColor={Colors.tintLight.blue1} />
+    <View>
       <ScrollView contentContainerStyle={styles.container}>
         <CreateUserForm
           onSubmit={async (fields, form) => {
@@ -22,7 +28,7 @@ export default function UserRegistration() {
           }}
         />
       </ScrollView>
-    </PaperProvider>
+    </View>
   )
 }
 
