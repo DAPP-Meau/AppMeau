@@ -14,8 +14,8 @@ function CustomDrawerHeaderBar({
 
   return (
     <Appbar.Header style={{ backgroundColor: theme.colors.primaryContainer }}>
-      <IconButton icon="menu" size={30} onPress={() => navigation.openDrawer()}/>
-      <Text variant="labelLarge">{title}</Text>
+      <IconButton icon="menu" size={24} onPress={() => navigation.openDrawer()}/>
+      <Text style={{fontSize:20}}>{title}</Text>
     </Appbar.Header>
   )
 }
