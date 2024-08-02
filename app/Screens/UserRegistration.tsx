@@ -2,25 +2,18 @@ import CreateUserForm from "@/components/completedForms/CreateUserForm"
 import Colors from "@/constants/Colors"
 import { createUserAction } from "@/services/actions/createUserAction"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import React, { ScrollView, StyleSheet, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import { ColorSchemeContext } from "@/services/ColorSchemeContext"
+import { BlueColorScreen } from "@/components/ScreenColorScheme"
 
 export default function UserRegistration() {
   const navigation = useNavigation()
   const firebaseApp = useContext(FirebaseAppContext)
-  const theme = useContext(ColorSchemeContext)
-
-  useEffect(() => {
-    theme.setColorScheme("blue")
-    return () => {
-      theme.setColorScheme("yellow")
-    }
-  }, [theme])
 
   return (
     <View>
+      <BlueColorScreen />
       <ScrollView contentContainerStyle={styles.container}>
         <CreateUserForm
           onSubmit={async (fields, form) => {

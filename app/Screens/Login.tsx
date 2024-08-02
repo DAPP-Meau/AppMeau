@@ -1,11 +1,11 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext } from "react"
 import { getAuth } from "firebase/auth"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { loginAction } from "@/services/actions"
 import LoginForm, { LoginFields } from "@/components/completedForms/LoginForm"
 import { Button, Text } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
-import { ColorSchemeContext } from "@/services/ColorSchemeContext"
+import { BlueColorScreen } from "@/components/ScreenColorScheme"
 
 export default function Login() {
   const navigation = useNavigation()
@@ -17,17 +17,9 @@ export default function Login() {
     password: "Isaac123*",
   }
 
-  const theme = useContext(ColorSchemeContext)
-
-  useEffect(() => {
-    theme.setColorScheme("blue")
-    return () => {
-      theme.setColorScheme("yellow")
-    }
-  }, [theme])
-
   return (
     <>
+      <BlueColorScreen />
       <LoginForm
         onSubmit={async (fields, form) => {
           return loginAction(auth, fields, form, navigation)
