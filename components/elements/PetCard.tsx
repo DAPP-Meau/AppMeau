@@ -56,10 +56,10 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
     <Card
       style={{ margin: 16, borderRadius: 10 }}
       onPress={() => {
-        navigation.navigate("petDetails", {petAndOwner: petAndOwner})
+        navigation.navigate("petDetails", { petAndOwner: petAndOwner })
       }}
     >
-      <Card.Title title={pet.animal.name} style={{backgroundColor: theme.colors.primary}} />
+      <Card.Title title={pet.animal.name} style={{backgroundColor: theme.colors.primaryContainer}} />
       <Card.Cover
         source={
           pet.animal.picture_uid
