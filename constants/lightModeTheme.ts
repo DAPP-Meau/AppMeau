@@ -1,5 +1,5 @@
 import { DefaultTheme } from "react-native-paper"
-import { ThemeProp } from "react-native-paper/lib/typescript/types"
+import { MD3Theme } from "react-native-paper/lib/typescript/types"
 
 const yellowThemeColors = {
   "colors": {
@@ -91,17 +91,17 @@ const blueThemeColors = {
   }
 }
 
-export const lightModeTheme: ThemeProp = {
+export const lightModeTheme: MD3Theme = {
   ...DefaultTheme,
   roundness: 1
 }
 
-export const lightModeYellowTheme: ThemeProp = {
+export const lightModeYellowTheme: MD3Theme = {
   ...lightModeTheme,
   colors: yellowThemeColors.colors,
 }
 
-export const lightModeBlueTheme: ThemeProp = {
+export const lightModeBlueTheme: MD3Theme = {
   ...lightModeTheme,
   colors: blueThemeColors.colors,
 }

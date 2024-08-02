@@ -5,9 +5,9 @@ import { lightModeBlueTheme, lightModeYellowTheme } from "@/constants"
 import { useFonts } from "expo-font"
 import { SplashScreen } from "expo-router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { PaperProvider } from "react-native-paper"
+import { adaptNavigationTheme, PaperProvider } from "react-native-paper"
 import Layout from "./Navigation/Layout"
-import { NavigationContainer } from "@react-navigation/native"
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native"
 import { registerRootComponent } from "expo"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import {
@@ -15,7 +15,21 @@ import {
   ColorSchemes,
 } from "@/services/ColorSchemeContext"
 import ColorSchemeProvider from "@/components/ColorSchemeProvider"
-import { StatusBar } from "react-native"
+import { Image, StatusBar, View } from "react-native"
+import merge from "deepmerge"
+
+const { LightTheme: LightYellowNavTheme } = adaptNavigationTheme({
+  reactNavigationLight: DefaultTheme,
+  materialLight: lightModeYellowTheme,
+})
+
+const { LightTheme: LightBlueNavTheme } = adaptNavigationTheme({
+  reactNavigationLight: DefaultTheme,
+  materialLight: lightModeBlueTheme,
+})
+
+const lightYellowTheme = merge(lightModeYellowTheme, LightYellowNavTheme)
+const LightBlueTheme = merge(lightModeBlueTheme, LightBlueNavTheme)
 
 export function App() {
   // Esperar carregar fontes
@@ -33,11 +47,11 @@ export function App() {
   let theme = undefined
   switch (colorSchemeState) {
     case "blue":
-      theme = lightModeBlueTheme
+      theme = LightBlueTheme
       break
     case "yellow":
     default:
-      theme = lightModeYellowTheme
+      theme = lightYellowTheme
       break
   }
 
@@ -57,12 +71,33 @@ export function App() {
   )
 
   if (!loaded && !error) {
-    return null
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: theme.colors?.primary,
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
+        <Image
+          style={{
+            flex: 1,
+            width: "50%",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            resizeMode: "contain",
+          }}
+          source={require("@/assets/images/Meau_marca.png")}
+        />
+      </View>
+    )
   } else {
     return (
       <ColorSchemeProvider value={colorSchemeProviderValue}>
         <PaperProvider theme={theme}>
-          <NavigationContainer>
+          <NavigationContainer theme={theme}>
             <FirebaseAppProvider>
               <SafeAreaProvider>
                 <StatusBar backgroundColor={theme.colors?.primary} />
