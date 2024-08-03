@@ -14,9 +14,9 @@ import {
 import { Button, Divider, MD3Theme, useTheme } from "react-native-paper"
 import { ScrollView } from "react-native"
 import { DrawerScreenProps } from "@react-navigation/drawer"
-import { HomeDrawerParamList } from "../Navigation/HomeDrawer"
+import { RootStackParamList } from "../Navigation/RootStack"
 
-type Props = DrawerScreenProps<HomeDrawerParamList, "petDetails">
+type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
 interface TitleAndTextProps {
   title: string
