@@ -15,10 +15,12 @@ import {
 } from "../models"
 import getUserAction from "./getUserAction"
 
-export type GetPetListActionReturn = Array<{
+export type PetAndOwnerDocument = {
   pet: { id: string; data: PetRegistrationDocument }
   user: { id: string; data: UserRegistrationDocument }
-}>
+}
+
+export type GetPetListActionReturn = Array<PetAndOwnerDocument>
 
 export async function getPetListAction(
   firebaseApp: FirebaseApp,

@@ -6,18 +6,17 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import React, { ReactNode } from "react"
+import React, { ReactNode, useEffect } from "react"
 import {
   PetRegistrationDocument,
   UserRegistrationDocument,
 } from "@/services/models"
 import { Button, Divider, MD3Theme, useTheme } from "react-native-paper"
 import { ScrollView } from "react-native"
+import { DrawerScreenProps } from "@react-navigation/drawer"
+import { RootStackParamList } from "../Navigation/RootStack"
 
-interface IPetDetailsProps {
-  pet?: PetRegistrationDocument
-  owner?: UserRegistrationDocument
-}
+type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
 interface TitleAndTextProps {
   title: string
@@ -25,9 +24,16 @@ interface TitleAndTextProps {
   style?: StyleProp<ViewStyle>
 }
 
-export default function PetDetails({ pet, owner }: IPetDetailsProps) {
+export default function PetDetails({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
+  const pet = route.params.petAndOwner.pet.data
+  const owner = route.params.petAndOwner.user.data
+
+  useEffect(() => {
+    navigation.setOptions({title: pet.animal.name})
+  }, [])
+  
 
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
@@ -123,7 +129,7 @@ export default function PetDetails({ pet, owner }: IPetDetailsProps) {
     )
   }
 
-  const endereco = (owner : UserRegistrationDocument): string => {
+  const endereco = (owner: UserRegistrationDocument): string => {
     return (
       owner.address.fullAddress +
       " - " +
@@ -139,12 +145,9 @@ export default function PetDetails({ pet, owner }: IPetDetailsProps) {
         <View style={{ gap: 16 }}>
           <View style={{ height: 150 }}>
             {pet.animal.picture_uid ? (
-              <Image
-                source={{uri: pet.animal.picture_uid}}
-                height={150}
-              />
+              <Image source={{ uri: pet.animal.picture_uid }} height={150} />
             ) : (
-              <Image 
+              <Image
                 source={require("@/assets/images/Meau_marca_2.png")}
                 style={styles.photo}
                 resizeMode="contain"
@@ -167,9 +170,7 @@ export default function PetDetails({ pet, owner }: IPetDetailsProps) {
               </View>
               <View>
                 <TitleAndText title="Localização" style={{ flex: 0 }}>
-                  <Text>
-                    {endereco(owner)}
-                  </Text>
+                  <Text>{endereco(owner)}</Text>
                 </TitleAndText>
               </View>
             </View>
@@ -222,7 +223,7 @@ export default function PetDetails({ pet, owner }: IPetDetailsProps) {
       </ScrollView>
     )
   } else {
-    <View>
+    ;<View>
       <Text>Erro</Text>
     </View>
   }
@@ -257,6 +258,6 @@ const makeStyles = (theme: MD3Theme) =>
     },
     photo: {
       height: 150,
-      width: "100%"
-    }
+      width: "100%",
+    },
   })

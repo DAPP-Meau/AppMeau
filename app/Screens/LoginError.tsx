@@ -10,7 +10,7 @@ import {
 } from "react-native"
 import { Button, MD3Theme, PaperProvider, useTheme } from "react-native-paper"
 
-export default function erroLogin() {
+export default function Unauthorized() {
   const theme = useTheme();
   const styles = makeStyles(theme);
 

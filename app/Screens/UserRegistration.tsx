@@ -3,32 +3,22 @@ import { lightModeBlueTheme } from "@/constants"
 import Colors from "@/constants/Colors"
 import { createUserAction } from "@/services/actions/createUserAction"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import { Link, router } from "expo-router"
 import { useContext } from "react"
-import React, { Animated, StatusBar, StyleSheet, Text } from "react-native"
-import { Button, PaperProvider } from "react-native-paper"
-import ScrollView = Animated.ScrollView
+import React, { ScrollView, StatusBar, StyleSheet } from "react-native"
+import { PaperProvider } from "react-native-paper"
+import { useNavigation } from "@react-navigation/native"
 
-export default function userRegistration() {
+export default function UserRegistration() {
+  const navigation = useNavigation()
   const firebaseApp = useContext(FirebaseAppContext)
-  const isPresented = router.canGoBack()
 
   return (
     <PaperProvider theme={lightModeBlueTheme}>
-      {/* Apresentar botão de cancelar caso essa tela apareça fora de uma pilha
-      de navegação */}
-      {!isPresented && (
-        <Link href="../" asChild>
-          <Button mode="contained">
-            <Text>Cancelar</Text>
-          </Button>
-        </Link>
-      )}
+      <StatusBar backgroundColor={Colors.tintLight.blue1} />
       <ScrollView contentContainerStyle={styles.container}>
-        <StatusBar backgroundColor={Colors.tintLight.blue1} />
         <CreateUserForm
           onSubmit={async (fields, form) => {
-            await createUserAction(fields, form, firebaseApp)
+            await createUserAction(fields, form, firebaseApp, navigation)
           }}
         />
       </ScrollView>
