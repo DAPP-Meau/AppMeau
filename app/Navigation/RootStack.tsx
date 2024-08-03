@@ -4,6 +4,7 @@ import HomeDrawer from "./HomeDrawer"
 import PetDetails from "../Screens/PetDetails"
 import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
 import { PetAndOwnerDocument } from "@/services/actions"
+import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
 
 export type RootStackParamList = {
   homeDrawer: undefined
@@ -15,7 +16,9 @@ const Stack = createStackNavigator<RootStackParamList>()
 
 export default function RootStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{ header: (props) => <CustomStackHeaderBar {...props} /> }}
+    >
       <Stack.Screen
         name="homeDrawer"
         component={HomeDrawer}

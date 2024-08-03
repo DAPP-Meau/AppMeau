@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import React from "react"
-import { Button, MD3Theme, PaperProvider, useTheme } from "react-native-paper"
-import { lightModeYellowTheme } from "@/constants"
+import { Button, MD3Theme, useTheme } from "react-native-paper"
 import { StatusBar } from "expo-status-bar"
 import { Link } from "expo-router"
 
@@ -11,10 +10,7 @@ export default function PetRegistrationSuccess() {
 
   return (
     <ScrollView>
-      <PaperProvider theme={lightModeYellowTheme}>
         <View style={styles.container}>
-          <StatusBar backgroundColor={theme.colors.secondary} />
-
           <Text style={styles.title}>Eba!</Text>
           <View style={styles.flavor}>
             <Text style={styles.flavorText}>
@@ -35,7 +31,6 @@ export default function PetRegistrationSuccess() {
             </Button>
           </Link>
         </View>
-      </PaperProvider>
     </ScrollView>
   )
 }

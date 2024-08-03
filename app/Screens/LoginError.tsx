@@ -1,6 +1,4 @@
-import { lightModeBlueTheme } from "@/constants"
 import { Link } from "expo-router"
-import { StatusBar } from "expo-status-bar"
 import React from "react"
 import {
   ScrollView,
@@ -8,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native"
-import { Button, MD3Theme, PaperProvider, useTheme } from "react-native-paper"
+import { Button, MD3Theme, useTheme } from "react-native-paper"
 
 export default function Unauthorized() {
   const theme = useTheme();
@@ -16,9 +14,7 @@ export default function Unauthorized() {
 
   return (
     <ScrollView>
-      <PaperProvider theme={lightModeBlueTheme}>
         <View style={styles.container}>
-          <StatusBar backgroundColor={theme.colors.secondary} />
           
           <Text style={styles.title}>Ops!</Text>
           <View style={styles.flavor}>
@@ -44,7 +40,6 @@ export default function Unauthorized() {
 
           </View>
         </View>
-      </PaperProvider>
     </ScrollView>
   )
 }

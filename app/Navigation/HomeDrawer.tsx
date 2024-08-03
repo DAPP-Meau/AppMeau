@@ -2,11 +2,8 @@ import React from "react"
 import { createDrawerNavigator } from "@react-navigation/drawer"
 import PetList from "../Screens/PetList"
 import PetRegistration from "../Screens/PetRegistration"
-import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
 import Logout from "../Screens/Logout"
-import PetDetails from "../Screens/PetDetails"
-import { Text } from "react-native"
-import { PetAndOwnerDocument } from "@/services/actions"
+import CustomDrawerHeaderBar from "@/components/elements/display/CustomDrawerHeaderBar"
 
 export type HomeDrawerParamList = {
   petList: undefined
@@ -21,6 +18,7 @@ export default function HomeDrawer() {
     <Drawer.Navigator
       screenOptions={{
         headerTitleStyle: { fontFamily: "Roboto_Medium" },
+        header: (props) => <CustomDrawerHeaderBar {...props} />
       }}
       initialRouteName="petList"
     >

@@ -4,25 +4,38 @@ import { Button } from "react-native-paper"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import { useNavigation } from "@react-navigation/native"
+import { BlueColorScreen } from "@/components/ScreenColorScheme"
+import { LayoutParamList } from "../Navigation/Layout"
+import { StackNavigationProp } from "@react-navigation/stack"
 
 export default function Logout() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<StackNavigationProp<LayoutParamList>>()
   const firebaseapp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseapp)
 
   return (
-    <View style={{flex:1, justifyContent: "center", paddingHorizontal:48, gap:15}}>
-      <Text>Deseja mesmo sair?</Text>
-      <Button
-        mode="contained"
-        uppercase
-        onPress={async () => {
-          await auth.signOut()
-          navigation.navigate("index")
+    <>
+      <BlueColorScreen />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          paddingHorizontal: 48,
+          gap: 15,
         }}
       >
-        Sair
-      </Button>
-    </View>
+        <Text>Deseja mesmo sair?</Text>
+        <Button
+          mode="contained"
+          uppercase
+          onPress={async () => {
+            await auth.signOut()
+            navigation.navigate("index")
+          }}
+        >
+          Sair
+        </Button>
+      </View>
+    </>
   )
 }
