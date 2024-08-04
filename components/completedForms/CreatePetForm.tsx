@@ -8,17 +8,21 @@ import React, {
   StyleSheet,
   TouchableOpacity,
   View,
-  Text
+  Text,
+  Alert,
 } from "react-native"
 import {
   Button,
+  Checkbox,
   HelperText,
   Icon,
+  List,
   TextInput,
   useTheme,
 } from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 import ErrorHelperText from "../elements/forms/ErrorHelperText"
+import { useState } from "react"
 
 export interface CreatePetFormProps {
   /**
@@ -46,6 +50,7 @@ export interface CreatePetFormProps {
 export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
+  const [hasMonitoring, setHasMonitoring] = useState(false)
 
   const form = useForm<PetRegistrationFields>({
     defaultValues: {
@@ -71,7 +76,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       adoptionRequirements: {
         requireAdoptionTerm: false,
         requireHousePhoto: false,
-        requireMonitoring: false,
+        requireMonitoring: 0,
         requirePreviousVisit: false,
       },
       imageURI: "",
@@ -79,7 +84,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     mode: "onChange",
   })
   const { control, handleSubmit, watch, formState, reset } = form
-  const { errors, isSubmitting, isValid } = formState
+  const { errors, isSubmitting } = formState
   const watchSick = watch("health.sick")
 
   // Essa função existe apenas pra poder aumentar reutilização de código
@@ -346,12 +351,37 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
             "adoptionRequirements.requirePreviousVisit",
           )}
         />
-        <CheckBoxGroup
-          title="Acompanhamento pós adoção"
-          controllerProps={constructController(
-            "adoptionRequirements.requireMonitoring",
-          )}
-        />
+        <View style={styles.wrapper}>
+          <Checkbox
+            status={hasMonitoring ? "checked" : "unchecked"}
+            onPress={() => {
+              setHasMonitoring(!hasMonitoring)
+            }}
+          />
+          <Text style={styles.text}>Acompanhamento?</Text>
+        </View>
+        {hasMonitoring && (
+          <View style={{marginLeft:25}}>
+            <RadioButtonGroup
+              control={control}
+              title="Duração do acompanhamento*"
+              name="adoptionRequirements.requireMonitoring"
+              rules={{
+                required: true,
+                validate: {
+                  mustBeDifferentThanZero: (x) =>
+                    x != 0 || "Selecione uma duração de acompanhamento",
+                },
+              }}
+              options={[
+                { text: "1 mês", value: 1 },
+                { text: "3 meses", value: 2 },
+                { text: "6 meses", value: 6 },
+              ]}
+              errors={errors.adoptionRequirements?.requireMonitoring?.message}
+            />
+          </View>
+        )}
       </View>
 
       <View style={styles.sectionView}>
@@ -389,7 +419,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
             await onSubmit?.(completedFields, form)
           })}
           loading={isSubmitting}
-          disabled={isSubmitting || !isValid}
+          disabled={isSubmitting}
         >
           <Text>COLOCAR PARA ADOÇÃO</Text>
         </Button>
@@ -409,6 +439,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
             {
               text: "Sim",
               onPress: () => {
+                setHasMonitoring(false)
                 reset()
               },
               style: "default",
@@ -493,11 +524,13 @@ const makeStyles = (theme: MD3Theme) =>
       fontFamily: "Roboto_Regular",
       fontWeight: "normal",
     },
-    sectionView: { gap: 16, paddingVertical: 24 },
+    sectionView: { paddingVertical: 24 },
     checkBox: {
       width: "50%",
     },
     errorText: {
       color: theme.colors.error,
     },
+    wrapper: { flexDirection: "row" },
+    text: { textAlignVertical: "center", flexShrink: 1 },
   })

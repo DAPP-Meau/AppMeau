@@ -31,10 +31,12 @@ export type Health = {
   sicknesses?: string
 }
 
+export type MonitoringLengthMonths = 0 | 1 | 2 | 6
+
 export type AdoptionRequirements = {
   requireAdoptionTerm: boolean
   requireHousePhoto: boolean
-  requireMonitoring: boolean
+  requireMonitoring: MonitoringLengthMonths
   requirePreviousVisit: boolean
 }
 
