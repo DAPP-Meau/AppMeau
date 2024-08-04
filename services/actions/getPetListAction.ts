@@ -5,7 +5,6 @@ import {
   collection,
   getDocs,
   getFirestore,
-  limit,
   query,
 } from "firebase/firestore"
 import {
@@ -22,21 +21,31 @@ export type PetAndOwnerDocument = {
 
 export type GetPetListActionReturn = Array<PetAndOwnerDocument>
 
+/** Buscar pets no banco de dados.
+ *
+ * @param firebaseApp Objeto de dados do firebase
+ * @param QueryConstraint Lista de QueryConstraints do firebase como o `where`
+ * ou `limit` a ser aplicados na pesquisa.
+ * @returns uma Promise com uma lista de {@link PetAndOwnerDocument} dos dados.
+ *
+ * @example
+ * const query = await getPetListAction(firebaseApp, where("animal.age", "==", "adult"), limit(100))
+ */
 export async function getPetListAction(
   firebaseApp: FirebaseApp,
-  filter: QueryConstraint[] = [limit(100)],
+  ...queryConstraints: QueryConstraint[]
 ): Promise<GetPetListActionReturn> {
   const petList: GetPetListActionReturn = []
   const db = getFirestore(firebaseApp)
   const petCollectionReference = collection(db, collections.pets)
-  const q = query(petCollectionReference, ...filter)
+  const q = query(petCollectionReference, ...queryConstraints)
   const querySnapshot = await getDocs(q)
 
   let skippedPets = 0
   let petSemDono = 0
-  for(const result of querySnapshot.docs){
+  for (const result of querySnapshot.docs) {
     const petData = result.data()
-    
+
     // Filtrar pets com tipo incorreto
     if (isPetRegistrationDocument(petData)) {
       // Encontrar dono do pet
@@ -54,7 +63,6 @@ export async function getPetListAction(
         pet: { id: result.id, data: petData },
         user: { id: userId, data: userData },
       })
-      
     } else {
       if (!skippedPets) {
         // Avisar apenas na primeira vez
@@ -68,6 +76,5 @@ export async function getPetListAction(
   if (skippedPets) console.warn(`${skippedPets} Pets ignorados.`)
   if (petSemDono) console.warn(`${petSemDono} Usuários ignorados.`)
 
-  console.log({listadePets: petList, sp: skippedPets, pd: petSemDono})
   return petList
 }
