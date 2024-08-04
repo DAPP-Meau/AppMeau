@@ -1,42 +1,47 @@
 import PetCard from "@/components/elements/PetCard"
 import { getPetListAction, GetPetListActionReturn } from "@/services/actions/"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import React, { useContext, useMemo, useState } from "react"
-import { Text, View } from "react-native"
-import { FlatList } from "react-native-gesture-handler"
-import { ActivityIndicator } from "react-native-paper"
+import { useNavigation } from "@react-navigation/native"
+import React, { useContext, useEffect, useState } from "react"
+import { Text } from "react-native"
+import { FlatList, RefreshControl } from "react-native-gesture-handler"
+import { IconButton } from "react-native-paper"
 
 export default function PetList() {
   //pegar todos os IDS do cloud e passar todos aqui
-  const [loading, setLoading] = useState(true)
+  const navigation = useNavigation()
+  const [refreshing, setRefreshing] = useState(true)
   const [petList, setPetList] = useState<GetPetListActionReturn>()
   const firebaseApp = useContext(FirebaseAppContext)
 
-  useMemo(() => {
-    setLoading(true)
+  useEffect(() => {
     getPetListAction(firebaseApp).then((result) => {
       setPetList(result)
-      setLoading(false)
+      setRefreshing(false)
     })
-  }, [])
+  }, [refreshing])
 
-  // TODO: Tela de carregamento.
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <IconButton icon="magnify" />, // Todo: filtro de pesquisa
+    })
+  }, [navigation])
 
   return (
-    <View>
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={petList}
-          renderItem={({ item }) => (
-            <PetCard
-              petAndOwner={item}
-            />
-          )}
-          ListEmptyComponent={<Text>Não há pets aqui!</Text>}
+    <FlatList
+      data={petList}
+      renderItem={({ item }) => <PetCard petAndOwner={item} />}
+      ListEmptyComponent={() => {
+        return refreshing ? null : <Text>Nadinha!</Text>
+      }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true)
+          }}
         />
-      )}
-    </View>
+      }
+    />
   )
 }
