@@ -5452,6 +5452,11 @@ expo-image-picker@~15.0.7:
   dependencies:
     expo-image-loader "~4.7.0"
 
+expo-image@~1.12.13:
+  version "1.12.13"
+  resolved "https://registry.npmjs.org/expo-image/-/expo-image-1.12.13.tgz"
+  integrity sha512-Dmuc5qmkIsl1nFj8C3Ux3wL2bN4QYW4dM9fkGA8kYiP5Fxf1lT36ldkHk2O2lPFRSFJDvLxT8Tz+7GTko5fzwQ==
+
 expo-json-utils@~0.13.0:
   version "0.13.1"
   resolved "https://registry.npmjs.org/expo-json-utils/-/expo-json-utils-0.13.1.tgz"

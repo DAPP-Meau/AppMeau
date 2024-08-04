@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { PetAndOwnerDocument } from "@/services/actions"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
+import { Image } from 'expo-image'
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -52,6 +53,9 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
     return address.fullAddress + " - " + address.city + ", " + address.state
   }
 
+  const blurhash =
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+
   return (
     <Card
       style={{ marginVertical: 5, marginHorizontal: 18 }}
@@ -76,15 +80,12 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
           />
         )}
       />
-      <Card.Cover
-        source={
-          pet.animal.picture_uid
-            ? { uri: pet.animal.picture_uid }
-            : // TODO imagem de carreamento
-              require("@/assets/images/Meau_marca_2.png")
-        }
+      <Image
         style={{ height: 150 }}
-        resizeMode="cover"
+        source={pet.animal.picture_uid}
+        placeholder={{ blurhash }}
+        contentFit="cover"
+        transition={1000}
       />
 
       <View style={{ padding: 10 }}>
