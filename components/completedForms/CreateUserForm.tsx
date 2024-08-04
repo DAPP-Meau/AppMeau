@@ -1,4 +1,3 @@
-import Colors from "@/constants/Colors"
 import { UserRegistrationForm } from "@/services/models"
 import selectImage from "@/services/selectImage"
 import { Controller, UseFormReturn, useForm } from "react-hook-form"
@@ -9,7 +8,15 @@ import React, {
   TouchableOpacity,
   View,
 } from "react-native"
-import { Button, Divider, MD3Theme, TextInput, useTheme } from "react-native-paper"
+import {
+  Button,
+  HelperText,
+  Icon,
+  MD3Theme,
+  TextInput,
+  useTheme,
+} from "react-native-paper"
+import ErrorHelperText from "../elements/forms/ErrorHelperText"
 
 export type PasswordConfirm = {
   passwordConfirm: string
@@ -51,7 +58,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
         state: "",
       },
       person: {
-        age: 0,
+        age: undefined,
         fullName: "",
         phone: "",
       },
@@ -65,13 +72,17 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
     },
     mode: "all",
   })
-
   const {
     control,
     handleSubmit,
     watch,
     formState: { errors, isSubmitting, isValid },
   } = form
+
+  // Pegar cor caso x for true.
+  const errorColor = (x: boolean) => {
+    return x ? theme.colors.error : "inherit"
+  }
 
   return (
     <View style={styles.container}>
@@ -104,9 +115,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.person?.fullName && (
-          <Text>{errors.person?.fullName.message}</Text>
-        )}
+        <ErrorHelperText
+          show={errors.person?.fullName}
+          message={errors.person?.fullName?.message}
+        />
 
         <Controller
           control={control}
@@ -123,12 +135,15 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
               onChangeText={onChange}
               onBlur={onBlur}
               error={errors.person?.age ? true : false}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               inputMode="numeric"
             />
           )}
         />
-        {errors.person?.age && <Text>{errors.person?.age.message}</Text>}
+        <ErrorHelperText
+          show={errors.person?.age}
+          message={errors.person?.age?.message}
+        />
 
         <Controller
           control={control}
@@ -148,7 +163,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.address?.state && <Text>{errors.address?.state.message}</Text>}
+        <ErrorHelperText
+          show={errors.address?.state}
+          message={errors.address?.state?.message}
+        />
 
         <Controller
           control={control}
@@ -168,7 +186,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.address?.city && <Text>{errors.address?.city.message}</Text>}
+        <ErrorHelperText
+          show={errors.address?.city}
+          message={errors.address?.city?.message}
+        />
 
         <Controller
           control={control}
@@ -188,9 +209,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.address?.fullAddress && (
-          <Text>{errors.address?.fullAddress.message}</Text>
-        )}
+        <ErrorHelperText
+          show={errors.address?.fullAddress}
+          message={errors.address?.fullAddress?.message}
+        />
 
         <Controller
           control={control}
@@ -212,7 +234,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.person?.phone && <Text>{errors.person?.phone.message}</Text>}
+        <ErrorHelperText
+          show={errors.person?.phone}
+          message={errors.person?.phone?.message}
+        />
       </View>
 
       {/* Informações de Perfil */}
@@ -242,16 +267,19 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.email && <Text>{errors.login?.email.message}</Text>}
+        <ErrorHelperText
+          show={errors.login?.email}
+          message={errors.login?.email?.message}
+        />
 
         <Controller
           control={control}
           name="login.username"
           rules={{
-            required: "Por favor, Digite o seu usuário",
+            required: "Por favor, Digite o seu nome de usuário",
             minLength: {
               value: 10,
-              message: "O usuário precisa ter no mínimo 10 caracteres",
+              message: "O nome de usuário precisa ter no mínimo 10 caracteres",
             },
           }}
           render={({ field: { onChange, onBlur, value, ...field } }) => (
@@ -266,9 +294,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.username && (
-          <Text>{errors.login?.username.message}</Text>
-        )}
+        <ErrorHelperText
+          show={errors.login?.username}
+          message={errors.login?.username?.message}
+        />
 
         <Controller
           control={control}
@@ -303,9 +332,10 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.login?.password && (
-          <Text>{errors.login?.password.message}</Text>
-        )}
+        <ErrorHelperText
+          show={errors.login?.password}
+          message={errors.login?.password?.message}
+        />
 
         <Controller
           control={control}
@@ -331,13 +361,13 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             />
           )}
         />
-        {errors.passwordConfirm && (
-          <Text>{errors.passwordConfirm.message}</Text>
-        )}
+        <ErrorHelperText
+          show={errors.passwordConfirm}
+          message={errors.passwordConfirm?.message}
+        />
       </View>
 
       {/* Botão de adicionar foto. */}
-      {/* TODO: Adicionar funcionalidade para a  foto */}
       <View style={{ gap: 8 }}>
         <Text style={styles.sectionTitle}>Foto de Perfil</Text>
         <Controller
@@ -354,30 +384,41 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
               onBlur={onBlur}
               ref={ref}
             >
-              {value ? (<Image source={{ uri: value }} style={styles.photo} />) 
-                     : (<Text style={styles.photoText}> Adicionar Foto </Text>)
-              }
+              {value ? (
+                <Image source={{ uri: value }} style={styles.photo} />
+              ) : (
+                <>
+                  <Icon
+                    source="plus-circle"
+                    size={28}
+                    color={errorColor(errors?.imageURI ? true : false)}
+                  />
+                  <Text style={styles.photoText}> Adicionar Foto </Text>
+                </>
+              )}
             </TouchableOpacity>
           )}
         />
-        {errors.imageURI && (
-          <>
-            <Divider bold style={{backgroundColor:"red"}}/>
-            <Text>{errors.imageURI.message}</Text>
-          </>
-        )}
+        <HelperText type="error" visible={errors?.imageURI && true}>
+          {errors?.imageURI?.message}
+        </HelperText>
       </View>
 
-      <Button
-        mode="contained"
-        onPress={handleSubmit(async (fields) => {
-          await onSubmit?.(fields, form)
-        })}
-        loading={isSubmitting}
-        disabled={isSubmitting || !isValid}
-      >
-        <Text>FAZER CADASTRO</Text>
-      </Button>
+      <View>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(async (fields) => {
+            await onSubmit?.(fields, form)
+          })}
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        >
+          <Text>FAZER CADASTRO</Text>
+        </Button>
+        <HelperText type="error" visible={Object.keys(errors).length != 0}>
+          Por favor resolva os erros acima antes de cadastrar.
+        </HelperText>
+      </View>
     </View>
   )
 }
@@ -415,7 +456,6 @@ const makeStyles = (theme: MD3Theme) =>
       borderRightWidth: 0,
       borderLeftWidth: 0,
       borderWidth: 0.8,
-      borderColor: Colors.text.gray3,
       padding: 10,
       marginBottom: 15,
       fontSize: 14,
@@ -444,14 +484,12 @@ const makeStyles = (theme: MD3Theme) =>
     button: {
       width: "80%",
       height: 40,
-      backgroundColor: Colors.tintLight.blue1,
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 2,
       elevation: 4,
     },
     buttonText: {
-      color: Colors.text.gray2,
       fontSize: 12,
       fontFamily: "Roboto_Regular",
       fontWeight: "normal",

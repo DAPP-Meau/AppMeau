@@ -6,13 +6,19 @@ import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
+  Text
 } from "react-native"
-import { Button, Divider, TextInput, useTheme } from "react-native-paper"
+import {
+  Button,
+  HelperText,
+  Icon,
+  TextInput,
+  useTheme,
+} from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
-
+import ErrorHelperText from "../elements/forms/ErrorHelperText"
 
 export interface CreatePetFormProps {
   /**
@@ -45,10 +51,6 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     defaultValues: {
       animal: {
         name: "",
-        species: "dog",
-        sex: "female",
-        size: "small",
-        age: "cub",
         story: "",
       },
       temperament: {
@@ -72,24 +74,25 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         requireMonitoring: false,
         requirePreviousVisit: false,
       },
-      imageURI:""
+      imageURI: "",
     },
     mode: "onChange",
   })
-
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting, isValid },
-  } = form
-
+  const { control, handleSubmit, watch, formState, reset } = form
+  const { errors, isSubmitting, isValid } = formState
   const watchSick = watch("health.sick")
 
   // Essa função existe apenas pra poder aumentar reutilização de código
   // e para aproveitar a coerção de tipo correta no prop name.
-  function constructController(theName: Path<PetRegistrationFields>) {
-    return { control: control, name: theName }
+  function constructController(
+    theName: Path<PetRegistrationFields>,
+    errorMsg?: string,
+  ) {
+    if (errorMsg) {
+      return { control: control, name: theName, rules: { required: errorMsg } }
+    } else {
+      return { control: control, name: theName }
+    }
   }
 
   return (
@@ -97,37 +100,46 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       {/* Dados da adoção */}
       <Text style={styles.sectionTitle}>Adoção</Text>
 
+      <View style={{ paddingVertical: 16 }}>
+        {/* Caixa de texto de nome */}
+        <Controller
+          control={control}
+          rules={{
+            required: "Por favor, insira um nome",
+            minLength: { value: 1, message: "Nome muito curto" },
+            maxLength: { value: 32, message: "Nome muito comprido" },
+          }}
+          render={({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              {...field}
+              label={"Nome do Animal*"}
+              placeholder="Digite o nome"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              error={errors?.animal?.name ? true : false}
+            />
+          )}
+          name="animal.name"
+        />
+        <ErrorHelperText
+          show={errors?.animal?.name}
+          message={errors?.animal?.name?.message}
+        />
+      </View>
+
       {/* Botão de adicionar foto. */}
-      <Controller
-        control={control}
-        rules={{
-          required: "Por favor, insira um nome",
-          minLength: { value: 1, message: "Nome muito curto" },
-          maxLength: { value: 32, message: "Nome muito comprido" },
-        }}
-        render={({ field: { onChange, onBlur, value, ...field } }) => (
-          <TextInput
-            {...field}
-            label={"Nome do Animal"}
-            placeholder="Digite o nome"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            error={errors?.animal?.name ? true : false}
-          />
-        )}
-        name="animal.name"
-      />
-      {errors?.animal?.name && (
-        <>
-          <Divider bold style={{backgroundColor:"red"}}/>
-          <Text>{errors?.animal?.name?.message}</Text>
-        </>
-      )}
-
-
-      <View style={styles.sectionView}>
-        <Text style={styles.infoText}>Fotos do animal</Text>
+      <View style={{ gap: 10 }}>
+        <Text
+          style={[
+            styles.infoText,
+            errors?.imageURI
+              ? { color: theme.colors.error }
+              : { color: theme.colors.primary },
+          ]}
+        >
+          Fotos do animal*
+        </Text>
         <Controller
           control={control}
           name="imageURI"
@@ -142,52 +154,76 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
               onBlur={onBlur}
               ref={ref}
             >
-              {value ? (<Image source={{ uri: value }} style={styles.photo} />) 
-                     : (<Text style={styles.photoText}> Adicionar Foto </Text>)
-              }
+              {value ? (
+                <Image source={{ uri: value }} style={styles.photo} />
+              ) : (
+                <>
+                  <Icon
+                    source="plus-circle"
+                    size={28}
+                    color={
+                      errors.imageURI
+                        ? theme.colors.error
+                        : theme.colors.onPrimaryContainer
+                    }
+                  />
+                  <Text style={styles.photoText}> Adicionar Foto </Text>
+                </>
+              )}
             </TouchableOpacity>
           )}
+        />
+        <ErrorHelperText
+          show={errors?.imageURI}
+          message={errors?.imageURI?.message}
         />
       </View>
 
       <View style={styles.sectionView}>
+        {/* Radio buttons de dados do animal */}
         <RadioButtonGroup
-          title="Espécie"
-          controllerProps={constructController("animal.species")}
+          title="Espécie*"
+          {...constructController("animal.species", "Escolha uma espécie")}
           options={[
             { text: "Cachorro", value: "dog" },
             { text: "Gato", value: "cat" },
           ]}
+          errors={errors.animal?.species?.message}
         />
-
         <RadioButtonGroup
-          title="Sexo"
-          controllerProps={constructController("animal.sex")}
+          title="Sexo*"
+          {...constructController("animal.sex", "Escolha o sexo do seu pet")}
           options={[
             { text: "Macho", value: "male" },
             { text: "Fêmea", value: "female" },
           ]}
+          errors={errors.animal?.sex?.message}
         />
-
         <RadioButtonGroup
-          title="Tamanho"
-          controllerProps={constructController("animal.size")}
+          title="Tamanho*"
+          {...constructController(
+            "animal.size",
+            "Escolha o tamanho do seu pet",
+          )}
           options={[
             { text: "Pequeno", value: "small" },
             { text: "Médio", value: "medium" },
             { text: "Grande", value: "large" },
           ]}
+          errors={errors.animal?.size?.message}
         />
         <RadioButtonGroup
-          title="Idade"
-          controllerProps={constructController("animal.age")}
+          title="Idade*"
+          {...constructController("animal.age", "Escolha a idade do seu pet")}
           options={[
             { text: "Filhote", value: "cub" },
             { text: "Adulto", value: "adult" },
             { text: "Idoso", value: "old" },
           ]}
+          errors={errors.animal?.age?.message}
         />
 
+        {/* CheckBoxes de dados do animal */}
         <Text style={styles.subSectionTitle}>Temperamento</Text>
         <View
           style={{
@@ -285,9 +321,9 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
           />
         )}
       />
-      {errors?.health?.sicknesses && (
-        <Text>{errors?.health?.sicknesses?.message}</Text>
-      )}
+      <HelperText type="error" visible={errors?.health?.sicknesses && true}>
+        {errors?.health?.sicknesses?.message}
+      </HelperText>
 
       {/* Termos de adoção */}
       <View style={styles.sectionView}>
@@ -341,19 +377,49 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
             />
           )}
         />
-        {errors?.animal?.story && <Text>{errors?.animal?.story.message}</Text>}
+        <HelperText type="error" visible={errors?.animal?.story && true}>
+          {errors?.animal?.story?.message}
+        </HelperText>
       </View>
 
-      <Button
-        mode="contained"
-        onPress={handleSubmit(async (completedFields) => {   
-          await onSubmit?.(completedFields, form)
-        })}
+      <View>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(async (completedFields) => {
+            await onSubmit?.(completedFields, form)
+          })}
+          loading={isSubmitting}
+          disabled={isSubmitting || !isValid}
+        >
+          <Text>COLOCAR PARA ADOÇÃO</Text>
+        </Button>
+        <HelperText type="error" visible={Object.keys(errors).length != 0}>
+          Por favor resolva os erros acima antes de cadastrar.
+        </HelperText>
+      </View>
+
+      {/* <Button
+        mode="text"
+        onPress={() => {
+          Alert.alert("Deseja mesmo limpar o formulário?", undefined, [
+            {
+              text: "Não",
+              style: "cancel",
+            },
+            {
+              text: "Sim",
+              onPress: () => {
+                reset()
+              },
+              style: "default",
+            },
+          ])
+        }}
         loading={isSubmitting}
-        disabled={isSubmitting || !isValid}
+        disabled={isSubmitting}
       >
-        <Text>CADASTRAR ANIMAL</Text>
-      </Button>
+        <Text>Limpar formulário</Text>
+      </Button> */}
     </View>
   )
 }
@@ -361,10 +427,13 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     sectionTitle: {
+      alignSelf: "flex-start",
+      marginTop: 20,
+      marginBottom: 10,
       fontSize: 16,
-      textTransform: "capitalize",
-      color: "#434343",
-      fontFamily: "Roboto_Medium",
+      textTransform: "uppercase",
+      color: theme.colors.secondary,
+      fontFamily: "Roboto_Regular",
     },
     subSectionTitle: {
       fontSize: 12,
@@ -374,7 +443,6 @@ const makeStyles = (theme: MD3Theme) =>
     infoText: {
       fontSize: 12,
       textTransform: "uppercase",
-      color: theme.colors.primary,
       fontFamily: "Roboto_Regular",
     },
     input: {
@@ -427,6 +495,9 @@ const makeStyles = (theme: MD3Theme) =>
     },
     sectionView: { gap: 16, paddingVertical: 24 },
     checkBox: {
-      width: "33%",
+      width: "50%",
+    },
+    errorText: {
+      color: theme.colors.error,
     },
   })
