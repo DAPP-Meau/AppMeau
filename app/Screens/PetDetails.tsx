@@ -11,7 +11,13 @@ import {
   PetRegistrationDocument,
   UserRegistrationDocument,
 } from "@/services/models"
-import { Button, Divider, MD3Theme, useTheme } from "react-native-paper"
+import {
+  Button,
+  Divider,
+  IconButton,
+  MD3Theme,
+  useTheme,
+} from "react-native-paper"
 import { ScrollView } from "react-native"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
@@ -31,9 +37,18 @@ export default function PetDetails({ route, navigation }: Props) {
   const owner = route.params.petAndOwner.user.data
 
   useEffect(() => {
-    navigation.setOptions({title: pet.animal.name})
-  }, [])
-  
+    navigation.setOptions({
+      title: pet.animal.name,
+      headerRight: () => (
+        <IconButton
+          icon="share-variant"
+          onPress={() => {
+            /* TODO: Botão de compartilhar pet*/
+          }}
+        />
+      ),
+    })
+  }, [navigation])
 
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
