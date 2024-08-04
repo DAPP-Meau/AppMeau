@@ -1,7 +1,7 @@
 import { Text, View } from "react-native"
 import React from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
-import { Card, useTheme } from "react-native-paper"
+import { Card, IconButton, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { PetAndOwnerDocument } from "@/services/actions"
@@ -54,12 +54,28 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
 
   return (
     <Card
-      style={{ margin: 16, borderRadius: 10 }}
+      style={{ marginVertical: 5, marginHorizontal: 18 }}
       onPress={() => {
         navigation.navigate("petDetails", { petAndOwner: petAndOwner })
       }}
     >
-      <Card.Title title={pet.animal.name} style={{backgroundColor: theme.colors.primaryContainer}} />
+      {/* O título do cartão não tem como diminuir a altura sem quebrar outras
+      coisas :( */}
+      <Card.Title
+        title={pet.animal.name}
+        style={{ backgroundColor: theme.colors.primaryContainer }}
+        right={(props) => (
+          <IconButton
+            {...props}
+            icon="heart-outline"
+            iconColor={theme.colors.onPrimaryContainer}
+            onPress={() => {
+              /*TODO função de favoritar*/
+            }}
+            size={20}
+          />
+        )}
+      />
       <Card.Cover
         source={
           pet.animal.picture_uid
@@ -70,27 +86,22 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
         style={{ height: 150 }}
         resizeMode="cover"
       />
-      <Card.Content
-        style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}
-      >
-        <View style={{ gap: 16 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 50,
-            }}
-          >
-            <Text>{machoFemea(pet)}</Text>
-            <Text>{tamanho(pet)}</Text>
-            <Text>{idade(pet)}</Text>
-          </View>
-          <View>
-            <Text style={{ textAlign: "center" }}>{endereco(address)}</Text>
-          </View>
+
+      <View style={{ padding: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text>{machoFemea(pet)}</Text>
+          <Text>{idade(pet)}</Text>
+          <Text>{tamanho(pet)}</Text>
         </View>
-      </Card.Content>
+        <View>
+          <Text style={{ textAlign: "center" }}>{endereco(address)}</Text>
+        </View>
+      </View>
     </Card>
   )
 }
