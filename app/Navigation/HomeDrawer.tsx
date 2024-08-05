@@ -33,8 +33,8 @@ export default function HomeDrawer() {
       <Drawer.Screen
         name="addPets"
         options={{
-          drawerLabel: "Adicionar seu pet",
-          title: "Adicione seu pet",
+          drawerLabel: "Registrar seu pet",
+          title: "Registrar seu pet",
         }}
         component={PetRegistration}
       />

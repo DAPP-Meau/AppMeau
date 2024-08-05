@@ -17,6 +17,7 @@ import {
 import ColorSchemeProvider from "@/components/ColorSchemeProvider"
 import { Image, StatusBar, View } from "react-native"
 import merge from "deepmerge"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 const { LightTheme: LightYellowNavTheme } = adaptNavigationTheme({
   reactNavigationLight: DefaultTheme,
@@ -96,16 +97,18 @@ export function App() {
   } else {
     return (
       <ColorSchemeProvider value={colorSchemeProviderValue}>
-        <PaperProvider theme={theme}>
-          <NavigationContainer theme={theme}>
-            <FirebaseAppProvider>
-              <SafeAreaProvider>
-                <StatusBar backgroundColor={theme.colors?.primary} />
-                <Layout />
-              </SafeAreaProvider>
-            </FirebaseAppProvider>
-          </NavigationContainer>
-        </PaperProvider>
+        <GestureHandlerRootView>
+          <PaperProvider theme={theme}>
+            <NavigationContainer theme={theme}>
+              <FirebaseAppProvider>
+                <SafeAreaProvider>
+                  <StatusBar backgroundColor={theme.colors?.primary} />
+                  <Layout />
+                </SafeAreaProvider>
+              </FirebaseAppProvider>
+            </NavigationContainer>
+          </PaperProvider>
+        </GestureHandlerRootView>
       </ColorSchemeProvider>
     )
   }

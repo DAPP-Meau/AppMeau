@@ -1,11 +1,12 @@
-import { Text, View } from "react-native"
+import { StyleSheet, Text, View } from "react-native"
 import React from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
-import { Card, useTheme } from "react-native-paper"
+import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { PetAndOwnerDocument } from "@/services/actions"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
+import { Image } from "expo-image"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -16,6 +17,7 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
   const { address } = petAndOwner.user.data
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const theme = useTheme()
+  const styles = makeStyles(theme)
 
   const machoFemea = (pet: PetRegistrationDocument) => {
     switch (pet.animal.sex) {
@@ -52,45 +54,72 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
     return address.fullAddress + " - " + address.city + ", " + address.state
   }
 
+  const blurhash =
+    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
+
   return (
     <Card
-      style={{ margin: 16, borderRadius: 10 }}
+      style={{
+        marginVertical: 5,
+        marginHorizontal: 18,
+        backgroundColor: theme.colors.surface,
+      }}
       onPress={() => {
         navigation.navigate("petDetails", { petAndOwner: petAndOwner })
       }}
     >
-      <Card.Title title={pet.animal.name} style={{backgroundColor: theme.colors.primaryContainer}} />
-      <Card.Cover
-        source={
-          pet.animal.picture_uid
-            ? { uri: pet.animal.picture_uid }
-            : // TODO imagem de carreamento
-              require("@/assets/images/Meau_marca_2.png")
-        }
-        style={{ height: 150 }}
-        resizeMode="cover"
-      />
-      <Card.Content
-        style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 20 }}
+      <View
+        style={{
+          backgroundColor: theme.colors.primaryContainer,
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 18,
+          justifyContent: "space-between",
+        }}
       >
-        <View style={{ gap: 16 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 50,
-            }}
-          >
-            <Text>{machoFemea(pet)}</Text>
-            <Text>{tamanho(pet)}</Text>
-            <Text>{idade(pet)}</Text>
-          </View>
-          <View>
-            <Text style={{ textAlign: "center" }}>{endereco(address)}</Text>
-          </View>
+        <Text style={{ fontSize: 18 }}>{pet.animal.name}</Text>
+        <IconButton
+          icon="heart-outline"
+          iconColor={theme.colors.onPrimaryContainer}
+          onPress={() => {
+            /*TODO função de favoritar*/
+          }}
+          size={20}
+        />
+      </View>
+      <Image
+        style={{ height: 150 }}
+        source={pet.animal.picture_uid}
+        placeholder={{ blurhash }}
+        contentFit="cover"
+        transition={1000}
+      />
+
+      <View style={{ padding: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text style={styles.text}>{machoFemea(pet)}</Text>
+          <Text style={styles.text}>{idade(pet)}</Text>
+          <Text style={styles.text}>{tamanho(pet)}</Text>
         </View>
-      </Card.Content>
+        <View>
+          <Text style={{ textAlign: "center", color: theme.colors.onSurface }}>
+            {endereco(address)}
+          </Text>
+        </View>
+      </View>
     </Card>
   )
 }
+
+const makeStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    text: {
+      textTransform: "uppercase",
+      color: theme.colors.onSurface,
+    },
+  })
