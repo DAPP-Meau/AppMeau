@@ -1,11 +1,4 @@
-import {
-  Image,
-  StyleProp,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from "react-native"
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
 import React, { ReactNode, useEffect } from "react"
 import {
   PetRegistrationDocument,
@@ -14,6 +7,7 @@ import {
 import {
   Button,
   Divider,
+  FAB,
   IconButton,
   MD3Theme,
   useTheme,
@@ -21,6 +15,7 @@ import {
 import { ScrollView } from "react-native"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
+import { Image } from "expo-image"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -154,21 +149,29 @@ export default function PetDetails({ route, navigation }: Props) {
     )
   }
 
+  const blurhash =
+    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
+
   if (pet && owner) {
     return (
       <ScrollView>
         <View style={{ gap: 16 }}>
           <View style={{ height: 150 }}>
-            {pet.animal.picture_uid ? (
-              <Image source={{ uri: pet.animal.picture_uid }} height={150} />
-            ) : (
-              <Image
-                source={require("@/assets/images/Meau_marca_2.png")}
-                style={styles.photo}
-                resizeMode="contain"
-              />
-            )}
+            <Image
+              style={{ height: 150 }}
+              source={pet.animal.picture_uid}
+              placeholder={{ blurhash }}
+              contentFit="cover"
+              transition={1000}
+            />
           </View>
+          <FAB
+            style={styles.fab}
+            icon="heart"
+            variant="surface"
+            size="medium"
+            onPress={() => {}}
+          />
           <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
             <Text style={styles.animalName}>{pet.animal.name}</Text>
             <View style={{ gap: 16 }}>
@@ -274,5 +277,13 @@ const makeStyles = (theme: MD3Theme) =>
     photo: {
       height: 150,
       width: "100%",
+    },
+    fab: {
+      position: "absolute",
+      margin: 15,
+      right: 0,
+      top: 115,
+      borderColor: "black",
+      borderWidth: 1
     },
   })
