@@ -23,7 +23,7 @@ export default function PetList() {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <IconButton icon="magnify" />, // Todo: filtro de pesquisa
+      headerRight: () => <IconButton icon="magnify" onPress={() => {}} />, // Todo: filtro de pesquisa
     })
   }, [navigation])
 
