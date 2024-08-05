@@ -1,5 +1,12 @@
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native"
-import React, { ReactNode, useEffect } from "react"
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native"
+import React, { ReactNode, useEffect, useState } from "react"
 import {
   PetRegistrationDocument,
   UserRegistrationDocument,
@@ -10,12 +17,14 @@ import {
   FAB,
   IconButton,
   MD3Theme,
-  useTheme,
+  Modal,
+  Portal, useTheme
 } from "react-native-paper"
 import { ScrollView } from "react-native"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { Image } from "expo-image"
+import { Zoomable } from "@likashefqet/react-native-image-zoom"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -30,6 +39,8 @@ export default function PetDetails({ route, navigation }: Props) {
   const styles = makeStyles(theme)
   const pet = route.params.petAndOwner.pet.data
   const owner = route.params.petAndOwner.user.data
+
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   useEffect(() => {
     navigation.setOptions({
@@ -154,16 +165,61 @@ export default function PetDetails({ route, navigation }: Props) {
 
   if (pet && owner) {
     return (
+      <>
+      {/* Modal de zoom da imagem */}
+      <Portal>
+        <Modal
+          visible={isImageModalOpen}
+          onDismiss={() => {
+            setIsImageModalOpen(false)
+          }}
+          contentContainerStyle={{
+            backgroundColor: "transparent",
+            alignSelf: "center",
+            alignItems: "center",
+            aspectRatio: 1,
+            maxWidth: "80%",
+            height:"40%",
+          }}
+          style={{elevation: 0}}
+        >
+          <Zoomable
+            isDoubleTapEnabled
+            doubleTapScale={2}
+          >
+            <Image
+              style={{
+                flex: 1,
+                alignSelf: "flex-end",
+                maxWidth: "100%",
+                aspectRatio: 1,
+              }}
+              source={pet.animal.picture_uid}
+              placeholder={{ blurhash }}
+              contentFit="scale-down"
+              transition={1000}
+            />
+          </Zoomable>
+        </Modal>
+      </Portal>
+
+      {/* Resto da tela */}
       <ScrollView>
         <View style={{ gap: 16 }}>
           <View style={{ height: 150 }}>
-            <Image
-              style={{ height: 150 }}
-              source={pet.animal.picture_uid}
-              placeholder={{ blurhash }}
-              contentFit="cover"
-              transition={1000}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                setIsImageModalOpen(true)
+              }}
+            >
+              <Image
+                style={{ height: 150 }}
+                source={pet.animal.picture_uid}
+                placeholder={{ blurhash }}
+                contentFit="cover"
+                transition={1000}
+              />
+            </TouchableOpacity>
           </View>
           <FAB
             style={styles.fab}
@@ -239,6 +295,7 @@ export default function PetDetails({ route, navigation }: Props) {
           </View>
         </View>
       </ScrollView>
+      </>
     )
   } else {
     ;<View>
@@ -284,6 +341,6 @@ const makeStyles = (theme: MD3Theme) =>
       right: 0,
       top: 115,
       borderColor: "black",
-      borderWidth: 1
+      borderWidth: 1,
     },
   })
