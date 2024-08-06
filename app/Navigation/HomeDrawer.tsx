@@ -51,8 +51,8 @@ export default function HomeDrawer() {
       <Drawer.Screen
       name="userPetList"
       options={{
-        drawerLabel: "Mesu Pets",
-        title: "Mesu Pets",
+        drawerLabel: "Meus Pets",
+        title: "Meus Pets",
       }}
       component={UserPetList}
       >        

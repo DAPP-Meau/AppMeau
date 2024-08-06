@@ -4,7 +4,7 @@ import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { getAuth } from "firebase/auth"
 import { where } from "firebase/firestore"
-import React, { useContext, useEffect, useId, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Text } from "react-native"
 import { FlatList, RefreshControl } from "react-native-gesture-handler"
 import { IconButton } from "react-native-paper"
@@ -16,15 +16,17 @@ export default function PetList() {
   const [petList, setPetList] = useState<GetPetListActionReturn>()
   const firebaseApp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseApp)
-  const user = auth.currentUser;
-  const uid = user?.uid;
+  const user = auth.currentUser
+  const uid = user?.uid
 
   useEffect(() => {
-    getPetListAction(firebaseApp, where("animal.owner_uid", "==", uid)).then((result) => {
-      setPetList(result)
-      setRefreshing(false)
-    })
-  }, [refreshing])
+    getPetListAction(firebaseApp, where("animal.owner_uid", "==", uid)).then(
+      (result) => {
+        setPetList(result)
+        setRefreshing(false)
+      },
+    )
+  }, [refreshing, uid])
 
   useEffect(() => {
     navigation.setOptions({
