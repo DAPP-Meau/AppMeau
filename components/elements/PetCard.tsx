@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native"
-import React from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
@@ -7,6 +7,8 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { PetAndOwnerDocument } from "@/services/actions"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { getAuth } from "firebase/auth"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -18,7 +20,16 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const theme = useTheme()
   const styles = makeStyles(theme)
-
+  const firebaseApp = useContext(FirebaseAppContext)
+  const auth = getAuth(firebaseApp)
+  const user = auth.currentUser;
+  const uid = user?.uid;
+  const [interesse, setinteresse] = useState(false);
+  useEffect(() => {
+    if (uid && pet.interested.includes(uid)) {
+      setinteresse(true);
+    }
+  }, [uid, pet]);
   const machoFemea = (pet: PetRegistrationDocument) => {
     switch (pet.animal.sex) {
       case "female":
@@ -79,7 +90,7 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
       >
         <Text style={{ fontSize: 18 }}>{pet.animal.name}</Text>
         <IconButton
-          icon="heart-outline"
+          icon={interesse ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
           onPress={() => {
             /*TODO função de favoritar*/

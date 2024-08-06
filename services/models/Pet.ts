@@ -40,6 +40,7 @@ export type AdoptionRequirements = {
   requirePreviousVisit: boolean
 }
 
+
 /** Usado no formulário */
 export interface PetRegistrationFields {
   animal: Animal
@@ -47,6 +48,7 @@ export interface PetRegistrationFields {
   temperament: Temperament
   adoptionRequirements: AdoptionRequirements
   imageURI: string
+  interested: Array<string>
 }
 
 /** Usado para armazenamento no Firebase Database */

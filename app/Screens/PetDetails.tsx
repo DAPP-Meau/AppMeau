@@ -1,4 +1,5 @@
 import {
+  Alert,
   StyleProp,
   StyleSheet,
   Text,
@@ -27,7 +28,7 @@ import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import { arrayUnion, collection, doc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
+import { arrayRemove, arrayUnion, collection, doc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 import { collections } from "@/constants"
 import { FirebaseApp } from "firebase/app"
@@ -50,10 +51,17 @@ export default function PetDetails({ route, navigation }: Props) {
   const user = auth.currentUser;
   const uid = user?.uid;
   const [dono, setDono] = useState(false);
-
   useEffect(() => {
     if (uid === pet.animal.owner_uid) {
       setDono(true);
+    }
+  }, [uid, pet]);
+
+  const [interesse, setinteresse] = useState(false);
+  useEffect(() => {
+
+    if (uid && pet.interested.includes(uid)) {
+      setinteresse(true);
     }
   }, [uid, pet]);
 
@@ -76,6 +84,57 @@ export default function PetDetails({ route, navigation }: Props) {
     })
   }, [navigation])
 
+  // Função para enviar UID para o Firebase
+  const handleFavorite = async () => {
+    //não esta tendo refresh da tela
+    const db = getFirestore(firebaseApp);
+    const idpet = route.params.petAndOwner.pet.id;
+    const ref = doc(db, collections.pets, idpet);
+    const data = uid;
+    if (uid && pet.interested.includes(uid)) {
+      try {
+        await updateDoc(ref, {
+          regions: arrayRemove(data)
+      });
+      //não esta removendo do bd
+      setinteresse(false);
+      Alert.alert(pet.animal.name + ' foi removida dos seus interesses');
+      } catch (error) {
+        console.error("Erro ao remover UID para o Firebase: ", error);
+      }
+    } else {
+      try {
+        await updateDoc(ref, {
+          interested: arrayUnion(data)
+        });
+        setinteresse(true);
+        Alert.alert(pet.animal.name + ' foi adicionada aos seus interesses')
+      } catch (error) {
+        console.error("Erro ao enviar UID para o Firebase: ", error);
+      }
+    }
+
+  };
+  const handleEditPet = async () => {
+    Alert.alert('função ainda não implementada')
+  }
+  const UserListInterested  = async () => {
+    Alert.alert('Tela ainda não implementada')
+  }
+  const PetRemove = async () => {
+    Alert.alert('Deseja realmente deletar o '+ pet.animal.name + 'do sistema?', undefined, [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: async () => {//TODO
+        },
+        style: "default",
+      },])
+    Alert.alert('função ainda não implementada')
+  }
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
   }
@@ -185,6 +244,8 @@ export default function PetDetails({ route, navigation }: Props) {
 
   if (pet && owner) {
 
+
+
     return (
       <>
         {/* Modal de zoom da imagem */}
@@ -244,10 +305,10 @@ export default function PetDetails({ route, navigation }: Props) {
             </View>
             <FAB
               style={styles.fab}
-              icon={dono ? "pencil" : "heart"}
+              icon={dono ? "pencil" : (interesse ? "heart" : "heart-outline")}
               variant="surface"
               size="medium"
-              //onPress={dono ? handleEditPet : handleFavorite} // Ação depende se é dono ou não}
+              onPress={dono ? handleEditPet : handleFavorite} // Ação depende se é dono ou não}
             />
             <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
               <Text style={styles.animalName}>{pet.animal.name}</Text>
@@ -312,10 +373,10 @@ export default function PetDetails({ route, navigation }: Props) {
               </View>
               {dono && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10 }}>
-                  <Button mode="contained" style={{ flex: 1 }} onPress={() => { /* TODO: Botão de Lista de Interessados*/ }} >
+                  <Button mode="contained" style={{ flex: 1 }}  onPress={() =>  UserListInterested(onChange) } >
                     <Text>Ver Interessados</Text>
                   </Button>
-                  <Button mode="contained" style={{ flex: 1 }} onPress={() => { /* TODO: Botão de Remover Pet*/ }} >
+                  <Button mode="contained" style={{ flex: 1 }} onPress={() => PetRemove(onChange) } >
                     <Text>Remover Pet</Text>
                   </Button>
                 </View>
