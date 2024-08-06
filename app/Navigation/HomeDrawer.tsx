@@ -4,11 +4,13 @@ import PetList from "../Screens/PetList"
 import PetRegistration from "../Screens/PetRegistration"
 import Logout from "../Screens/Logout"
 import CustomDrawerHeaderBar from "@/components/elements/display/CustomDrawerHeaderBar"
+import UserPetList from "../Screens/UserPetList"
 
 export type HomeDrawerParamList = {
   petList: undefined
   addPets: undefined
-  logout: undefined
+  logout: undefined  
+  userPetList: undefined
 }
 
 const Drawer = createDrawerNavigator<HomeDrawerParamList>()
@@ -46,6 +48,15 @@ export default function HomeDrawer() {
         }}
         component={Logout}
       />
+      <Drawer.Screen
+      name="userPetList"
+      options={{
+        drawerLabel: "Meus Pets",
+        title: "Meus Pets",
+      }}
+      component={UserPetList}
+      >        
+      </Drawer.Screen>
     </Drawer.Navigator>
   )
 }
