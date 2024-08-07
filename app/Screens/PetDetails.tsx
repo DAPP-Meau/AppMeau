@@ -103,7 +103,7 @@ export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
       //não esta removendo do bd
       setinteresse(false);
       Alert.alert(pet.animal.name + ' foi removida dos seus interesses');
-      //proOnRefresh();
+      proOnRefresh();
 
       } catch (error) {
         console.error("Erro ao remover UID para o Firebase: ", error);
@@ -115,7 +115,7 @@ export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
         });
         setinteresse(true);
         Alert.alert(pet.animal.name + ' foi adicionada aos seus interesses')
-        //proOnRefresh();
+        proOnRefresh();
 
       } catch (error) {
         console.error("Erro ao enviar UID para o Firebase: ", error);
