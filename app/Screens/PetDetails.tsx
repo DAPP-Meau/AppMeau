@@ -33,15 +33,16 @@ import { getStorage } from "firebase/storage"
 import { collections } from "@/constants"
 import { FirebaseApp } from "firebase/app"
 
-type Props = DrawerScreenProps<RootStackParamList, "petDetails">
+type Props = DrawerScreenProps<RootStackParamList, "petDetails"> & {proOnRefresh: ()=>void}
 
 interface TitleAndTextProps {
   title: string
   children: ReactNode
   style?: StyleProp<ViewStyle>
+  
 }
 
-export default function PetDetails({ route, navigation }: Props) {
+export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
   const pet = route.params.petAndOwner.pet.data
@@ -102,6 +103,8 @@ export default function PetDetails({ route, navigation }: Props) {
       //não esta removendo do bd
       setinteresse(false);
       Alert.alert(pet.animal.name + ' foi removida dos seus interesses');
+      //proOnRefresh();
+
       } catch (error) {
         console.error("Erro ao remover UID para o Firebase: ", error);
       }
@@ -112,6 +115,8 @@ export default function PetDetails({ route, navigation }: Props) {
         });
         setinteresse(true);
         Alert.alert(pet.animal.name + ' foi adicionada aos seus interesses')
+        //proOnRefresh();
+
       } catch (error) {
         console.error("Erro ao enviar UID para o Firebase: ", error);
       }
