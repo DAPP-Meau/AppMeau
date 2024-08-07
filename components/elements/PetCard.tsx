@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
@@ -9,6 +9,8 @@ import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
+import { arrayRemove, arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore"
+import { collections } from "@/constants"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -65,6 +67,37 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
     return address.fullAddress + " - " + address.city + ", " + address.state
   }
 
+  const handleFavorite = async () => {
+    //TODO:não esta tendo refresh da tela
+    
+    const db = getFirestore(firebaseApp);
+    const idpet = petAndOwner.pet.id;
+    const ref = doc(db, collections.pets, idpet);
+    const data = uid;
+    if (uid && pet.interested.includes(uid)) {
+      try {
+        await updateDoc(ref, {
+          regions: arrayRemove(data)
+      });
+      //não esta removendo do bd
+      setinteresse(false);
+      } catch (error) {
+        console.error("Erro ao remover UID para o Firebase: ", error);
+      }
+    } else {
+      try {
+        await updateDoc(ref, {
+          interested: arrayUnion(data)
+        });
+        setinteresse(true);
+        
+      } catch (error) {
+        console.error("Erro ao enviar UID para o Firebase: ", error);
+      }
+    }
+
+  };
+
   const blurhash =
     "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
@@ -92,9 +125,7 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
         <IconButton
           icon={interesse ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
-          onPress={() => {
-            /*TODO função de favoritar*/
-          }}
+          onPress={handleFavorite}
           size={20}
         />
       </View>

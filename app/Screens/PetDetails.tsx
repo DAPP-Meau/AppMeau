@@ -86,7 +86,7 @@ export default function PetDetails({ route, navigation }: Props) {
 
   // Função para enviar UID para o Firebase
   const handleFavorite = async () => {
-    //não esta tendo refresh da tela
+    //TODO:não esta tendo refresh da tela
     const db = getFirestore(firebaseApp);
     const idpet = route.params.petAndOwner.pet.id;
     const ref = doc(db, collections.pets, idpet);
