@@ -14,9 +14,11 @@ import { collections } from "@/constants"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
+  proOnRefresh: ()=>void
 }
 
-export default function PetCard({ petAndOwner }: IPetCardsProps) {
+
+export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
   const pet = petAndOwner.pet.data
   const { address } = petAndOwner.user.data
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
@@ -30,6 +32,9 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
   useEffect(() => {
     if (uid && pet.interested.includes(uid)) {
       setinteresse(true);
+    }
+    else{
+      setinteresse(false);
     }
   }, [uid, pet]);
   const machoFemea = (pet: PetRegistrationDocument) => {
@@ -77,10 +82,11 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
     if (uid && pet.interested.includes(uid)) {
       try {
         await updateDoc(ref, {
-          regions: arrayRemove(data)
+          interested: arrayRemove(data)
       });
       //não esta removendo do bd
       setinteresse(false);
+      proOnRefresh();
       } catch (error) {
         console.error("Erro ao remover UID para o Firebase: ", error);
       }
@@ -90,7 +96,7 @@ export default function PetCard({ petAndOwner }: IPetCardsProps) {
           interested: arrayUnion(data)
         });
         setinteresse(true);
-        
+        proOnRefresh();
       } catch (error) {
         console.error("Erro ao enviar UID para o Firebase: ", error);
       }

@@ -63,6 +63,9 @@ export default function PetDetails({ route, navigation }: Props) {
     if (uid && pet.interested.includes(uid)) {
       setinteresse(true);
     }
+    else{
+      setinteresse(false);
+    }
   }, [uid, pet]);
 
 
@@ -94,7 +97,7 @@ export default function PetDetails({ route, navigation }: Props) {
     if (uid && pet.interested.includes(uid)) {
       try {
         await updateDoc(ref, {
-          regions: arrayRemove(data)
+          interested: arrayRemove(data)
       });
       //não esta removendo do bd
       setinteresse(false);
