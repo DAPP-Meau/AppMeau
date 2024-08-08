@@ -18,14 +18,6 @@ import { Zoomable } from "@likashefqet/react-native-image-zoom"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getFirestore,
-  updateDoc,
-} from "firebase/firestore"
-import { collections } from "@/constants"
-import {
   exigências,
   boolToSimNao,
   machoFemea,
@@ -35,6 +27,7 @@ import {
   temperamento,
 } from "@/services/strings"
 import HeaderAndText from "@/components/HeaderAndText"
+import { HandleFavourite } from "@/services/handleFavourite"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -48,13 +41,8 @@ export default function PetDetails({ route, navigation }: Props) {
 
   const firebaseApp = useContext(FirebaseAppContext)
   const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
-  const [userIsOwner, setUserIsOwner] = useState(false)
 
-  useEffect(() => {
-    if (loggedInUserUID === ownerID) {
-      setUserIsOwner(true)
-    }
-  }, [loggedInUserUID, ownerID])
+  const userIsOwner = loggedInUserUID && ownerID === loggedInUserUID
 
   const [interested, setInterested] = useState(false)
   useEffect(() => {
@@ -77,29 +65,6 @@ export default function PetDetails({ route, navigation }: Props) {
       ),
     })
   }, [navigation])
-
-  // Função para enviar UID para o Firebase
-  const HandleFavourite = async () => {
-    //TODO:não esta tendo refresh da tela
-    const db = getFirestore(firebaseApp)
-    const petDocumentRef = doc(db, collections.pets, petID)
-    if (loggedInUserUID) {
-      if (pet.interested.includes(loggedInUserUID)) {
-        await updateDoc(petDocumentRef, {
-          interested: arrayRemove(loggedInUserUID),
-        })
-        setInterested(true)
-        Alert.alert(pet.animal.name + " foi adicionado ao seus interesses")
-      } else {
-        await updateDoc(petDocumentRef, {
-          interested: arrayUnion(loggedInUserUID),
-        })
-        setInterested(false)
-        Alert.alert(pet.animal.name + " foi removido dos seus interesses")
-      }
-      refreshList()
-    }
-  }
 
   const HandleEditPet = () => {
     Alert.alert("função ainda não implementada")
@@ -159,7 +124,22 @@ export default function PetDetails({ route, navigation }: Props) {
           icon={userIsOwner ? "pencil" : interested ? "heart" : "heart-outline"}
           variant="surface"
           size="medium"
-          onPress={userIsOwner ? HandleEditPet : HandleFavourite} // Ação depende se é dono ou não}
+          onPress={() => {
+            userIsOwner
+              ? HandleEditPet()
+              : HandleFavourite(firebaseApp, pet, petID, (value) => {
+                  setInterested(value)
+                  Alert.alert(
+                    pet.animal.name 
+                    + " foi " 
+                    + (value
+                      ? "removido dos"
+                      : "adicionado aos")
+                    + " seus interesses",
+                  )
+                  refreshList()
+                })
+          }} // Ação depende se é dono ou não}
         />
         <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
           <Text style={styles.animalName}>{pet.animal.name}</Text>

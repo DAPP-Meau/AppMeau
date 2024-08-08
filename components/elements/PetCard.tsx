@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
@@ -8,15 +8,8 @@ import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  getFirestore,
-  updateDoc,
-} from "firebase/firestore"
-import { collections } from "@/constants"
 import { endereco, idade, machoFemea, tamanho } from "@/services/strings"
+import { HandleFavourite } from "@/services/handleFavourite"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
@@ -28,40 +21,18 @@ export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
   const styles = makeStyles(theme)
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
-  const petData = petAndOwner.pet.data
+  const { id: petID, data: petData } = petAndOwner.pet
   const userData = petAndOwner.user.data
 
-  
   const firebaseApp = useContext(FirebaseAppContext)
   const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
-  
+
   const [interested, setInterested] = useState(false)
   useEffect(() => {
-    if (loggedInUserUID && petData.interested.includes(loggedInUserUID)) {
-      setInterested(true)
-    } else {
-      setInterested(false)
+    if (loggedInUserUID) {
+      setInterested(petData.interested.includes(loggedInUserUID))
     }
   }, [loggedInUserUID, petData])
-
-  const handleFavorite = async () => {
-    //TODO:não esta tendo refresh da tela
-    const db = getFirestore(firebaseApp)
-    const idpet = petAndOwner.pet.id
-    const ref = doc(db, collections.pets, idpet)
-    const data = loggedInUserUID
-    if (loggedInUserUID && petData.interested.includes(loggedInUserUID)) {
-      await updateDoc(ref, {
-        interested: arrayRemove(data),
-      })
-    } else {
-      await updateDoc(ref, {
-        interested: arrayUnion(data),
-      })
-    }
-    setInterested(true)
-    onRefresh()
-  }
 
   const blurhash =
     "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
@@ -93,7 +64,20 @@ export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
         <IconButton
           icon={interested ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
-          onPress={handleFavorite}
+          onPress={() => {
+            HandleFavourite(firebaseApp, petData, petID, (value) => {
+              setInterested(value)
+              Alert.alert(
+                petData.animal.name 
+                + " foi "
+                + (value
+                  ? "removido dos"
+                  : "adicionado aos") 
+                + " seus interesses",
+              )
+              onRefresh()
+            })
+          }}
           size={20}
         />
       </View>
