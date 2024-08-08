@@ -19,7 +19,8 @@ import {
   IconButton,
   MD3Theme,
   Modal,
-  Portal, useTheme
+  Portal,
+  useTheme,
 } from "react-native-paper"
 import { ScrollView } from "react-native"
 import { DrawerScreenProps } from "@react-navigation/drawer"
@@ -28,9 +29,14 @@ import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import { arrayRemove, arrayUnion,  doc, getFirestore,  updateDoc } from "firebase/firestore"
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getFirestore,
+  updateDoc,
+} from "firebase/firestore"
 import { collections } from "@/constants"
-
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -38,7 +44,6 @@ interface TitleAndTextProps {
   title: string
   children: ReactNode
   style?: StyleProp<ViewStyle>
-  
 }
 
 export default function PetDetails({ route, navigation }: Props) {
@@ -49,28 +54,23 @@ export default function PetDetails({ route, navigation }: Props) {
   const owner = route.params.petAndOwner.user.data
   const firebaseApp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseApp)
-  const user = auth.currentUser;
-  const uid = user?.uid;
-  const [dono, setDono] = useState(false);
+  const user = auth.currentUser
+  const uid = user?.uid
+  const [dono, setDono] = useState(false)
   useEffect(() => {
     if (uid === pet.animal.owner_uid) {
-      setDono(true);
+      setDono(true)
     }
-  }, [uid, pet]);
+  }, [uid, pet])
 
-  const [interesse, setinteresse] = useState(false);
+  const [interesse, setinteresse] = useState(false)
   useEffect(() => {
-
     if (uid && pet.interested.includes(uid)) {
-      setinteresse(true);
+      setinteresse(true)
+    } else {
+      setinteresse(false)
     }
-    else{
-      setinteresse(false);
-    }
-  }, [uid, pet]);
-
-
-
+  }, [uid, pet])
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
@@ -91,55 +91,58 @@ export default function PetDetails({ route, navigation }: Props) {
   // Função para enviar UID para o Firebase
   const handleFavorite = async () => {
     //TODO:não esta tendo refresh da tela
-    const db = getFirestore(firebaseApp);
-    const idpet = route.params.petAndOwner.pet.id;
-    const ref = doc(db, collections.pets, idpet);
-    const data = uid;
+    const db = getFirestore(firebaseApp)
+    const idpet = route.params.petAndOwner.pet.id
+    const ref = doc(db, collections.pets, idpet)
+    const data = uid
     if (uid && pet.interested.includes(uid)) {
       try {
         await updateDoc(ref, {
-          interested: arrayRemove(data)
-      });
-      //não esta removendo do bd
-      setinteresse(false);
-      Alert.alert(pet.animal.name + ' foi removida dos seus interesses');
-      proOnRefresh();
-
+          interested: arrayRemove(data),
+        })
+        //não esta removendo do bd
+        setinteresse(false)
+        Alert.alert(pet.animal.name + " foi removida dos seus interesses")
+        proOnRefresh()
       } catch (error) {
-        console.error("Erro ao remover UID para o Firebase: ", error);
+        console.error("Erro ao remover UID para o Firebase: ", error)
       }
     } else {
       try {
         await updateDoc(ref, {
-          interested: arrayUnion(data)
-        });
-        setinteresse(true);
-        Alert.alert(pet.animal.name + ' foi adicionada aos seus interesses')
-        proOnRefresh();
-
+          interested: arrayUnion(data),
+        })
+        setinteresse(true)
+        Alert.alert(pet.animal.name + " foi adicionada aos seus interesses")
+        proOnRefresh()
       } catch (error) {
-        console.error("Erro ao enviar UID para o Firebase: ", error);
+        console.error("Erro ao enviar UID para o Firebase: ", error)
       }
     }
-
-  };
+  }
   const handleEditPet = async () => {
-    Alert.alert('função ainda não implementada')
+    Alert.alert("função ainda não implementada")
   }
 
   const PetRemove = async () => {
-    Alert.alert('Deseja realmente deletar o '+ pet.animal.name + 'do sistema?', undefined, [
-      {
-        text: "Não",
-        style: "cancel",
-      },
-      {
-        text: "Sim",
-        onPress: async () => {//TODO
+    Alert.alert(
+      "Deseja realmente deletar o " + pet.animal.name + "do sistema?",
+      undefined,
+      [
+        {
+          text: "Não",
+          style: "cancel",
         },
-        style: "default",
-      },])
-    Alert.alert('função ainda não implementada')
+        {
+          text: "Sim",
+          onPress: async () => {
+            //TODO
+          },
+          style: "default",
+        },
+      ],
+    )
+    Alert.alert("função ainda não implementada")
   }
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
@@ -249,9 +252,6 @@ export default function PetDetails({ route, navigation }: Props) {
     "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
   if (pet && owner) {
-
-
-
     return (
       <>
         {/* Modal de zoom da imagem */}
@@ -271,10 +271,7 @@ export default function PetDetails({ route, navigation }: Props) {
             }}
             style={{ elevation: 0 }}
           >
-            <Zoomable
-              isDoubleTapEnabled
-              doubleTapScale={2}
-            >
+            <Zoomable isDoubleTapEnabled doubleTapScale={2}>
               <Image
                 style={{
                   flex: 1,
@@ -311,12 +308,14 @@ export default function PetDetails({ route, navigation }: Props) {
             </View>
             <FAB
               style={styles.fab}
-              icon={dono ? "pencil" : (interesse ? "heart" : "heart-outline")}
+              icon={dono ? "pencil" : interesse ? "heart" : "heart-outline"}
               variant="surface"
               size="medium"
               onPress={dono ? handleEditPet : handleFavorite} // Ação depende se é dono ou não}
             />
-            <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
+            <View
+              style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}
+            >
               <Text style={styles.animalName}>{pet.animal.name}</Text>
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: "row", gap: 50 }}>
@@ -378,18 +377,28 @@ export default function PetDetails({ route, navigation }: Props) {
                 </TitleAndText>
               </View>
               {dono && (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    gap: 10,
+                  }}
+                >
                   <Button
-                mode="contained"
-                onPress={() => {
-                  navigation.navigate('UserList', {
-                    petId: route.params.petAndOwner.pet.id,
-                  });
-                }}
-              >
-                Ver Interessados
-              </Button>
-                  <Button mode="contained" style={{ flex: 1 }} onPress={() => PetRemove() } >
+                    mode="contained"
+                    onPress={() => {
+                      navigation.navigate("UserList", {
+                        petId: route.params.petAndOwner.pet.id,
+                      })
+                    }}
+                  >
+                    Ver Interessados
+                  </Button>
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1 }}
+                    onPress={() => PetRemove()}
+                  >
                     <Text>Remover Pet</Text>
                   </Button>
                 </View>
@@ -400,7 +409,7 @@ export default function PetDetails({ route, navigation }: Props) {
       </>
     )
   } else {
-    ; <View>
+    ;<View>
       <Text>Erro</Text>
     </View>
   }

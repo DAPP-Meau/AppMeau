@@ -30,7 +30,14 @@ export default function PetList() {
   return (
     <FlatList
       data={petList}
-      renderItem={({ item }) => <PetCard petAndOwner={item} proOnRefresh={()=>{setRefreshing(true)}}/>}
+      renderItem={({ item }) => (
+        <PetCard
+          petAndOwner={item}
+          proOnRefresh={() => {
+            setRefreshing(true)
+          }}
+        />
+      )}
       ListEmptyComponent={() => {
         return refreshing ? null : <Text>Nadinha!</Text>
       }}

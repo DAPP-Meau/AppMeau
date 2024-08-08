@@ -16,14 +16,16 @@ export default function PetList() {
   const [petList, setPetList] = useState<GetPetListActionReturn>()
   const firebaseApp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseApp)
-  const user = auth.currentUser;
-  const uid = user?.uid;
+  const user = auth.currentUser
+  const uid = user?.uid
 
   useEffect(() => {
-    getPetListAction(firebaseApp, where("animal.owner_uid", "==", uid)).then((result) => {
-      setPetList(result)
-      setRefreshing(false)
-    })
+    getPetListAction(firebaseApp, where("animal.owner_uid", "==", uid)).then(
+      (result) => {
+        setPetList(result)
+        setRefreshing(false)
+      },
+    )
   }, [refreshing])
 
   useEffect(() => {
