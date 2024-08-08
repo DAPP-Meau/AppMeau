@@ -1,4 +1,5 @@
 import {
+  Alert,
   StyleProp,
   StyleSheet,
   Text,
@@ -6,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native"
-import React, { ReactNode, useEffect, useState } from "react"
+import React, { ReactNode, useContext, useEffect, useState } from "react"
 import {
   PetRegistrationDocument,
   UserRegistrationDocument,
@@ -25,6 +26,11 @@ import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
+import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { getAuth } from "firebase/auth"
+import { arrayRemove, arrayUnion,  doc, getFirestore,  updateDoc } from "firebase/firestore"
+import { collections } from "@/constants"
+
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -32,13 +38,39 @@ interface TitleAndTextProps {
   title: string
   children: ReactNode
   style?: StyleProp<ViewStyle>
+  
 }
 
 export default function PetDetails({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
+  const proOnRefresh = route.params.proOnRefresh
   const pet = route.params.petAndOwner.pet.data
   const owner = route.params.petAndOwner.user.data
+  const firebaseApp = useContext(FirebaseAppContext)
+  const auth = getAuth(firebaseApp)
+  const user = auth.currentUser;
+  const uid = user?.uid;
+  const [dono, setDono] = useState(false);
+  useEffect(() => {
+    if (uid === pet.animal.owner_uid) {
+      setDono(true);
+    }
+  }, [uid, pet]);
+
+  const [interesse, setinteresse] = useState(false);
+  useEffect(() => {
+
+    if (uid && pet.interested.includes(uid)) {
+      setinteresse(true);
+    }
+    else{
+      setinteresse(false);
+    }
+  }, [uid, pet]);
+
+
+
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
@@ -56,6 +88,59 @@ export default function PetDetails({ route, navigation }: Props) {
     })
   }, [navigation])
 
+  // Função para enviar UID para o Firebase
+  const handleFavorite = async () => {
+    //TODO:não esta tendo refresh da tela
+    const db = getFirestore(firebaseApp);
+    const idpet = route.params.petAndOwner.pet.id;
+    const ref = doc(db, collections.pets, idpet);
+    const data = uid;
+    if (uid && pet.interested.includes(uid)) {
+      try {
+        await updateDoc(ref, {
+          interested: arrayRemove(data)
+      });
+      //não esta removendo do bd
+      setinteresse(false);
+      Alert.alert(pet.animal.name + ' foi removida dos seus interesses');
+      proOnRefresh();
+
+      } catch (error) {
+        console.error("Erro ao remover UID para o Firebase: ", error);
+      }
+    } else {
+      try {
+        await updateDoc(ref, {
+          interested: arrayUnion(data)
+        });
+        setinteresse(true);
+        Alert.alert(pet.animal.name + ' foi adicionada aos seus interesses')
+        proOnRefresh();
+
+      } catch (error) {
+        console.error("Erro ao enviar UID para o Firebase: ", error);
+      }
+    }
+
+  };
+  const handleEditPet = async () => {
+    Alert.alert('função ainda não implementada')
+  }
+
+  const PetRemove = async () => {
+    Alert.alert('Deseja realmente deletar o '+ pet.animal.name + 'do sistema?', undefined, [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: async () => {//TODO
+        },
+        style: "default",
+      },])
+    Alert.alert('função ainda não implementada')
+  }
   function boolToSimNao(b: boolean) {
     return b ? "Sim" : "Não"
   }
@@ -164,141 +249,158 @@ export default function PetDetails({ route, navigation }: Props) {
     "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
   if (pet && owner) {
+
+
+
     return (
       <>
-      {/* Modal de zoom da imagem */}
-      <Portal>
-        <Modal
-          visible={isImageModalOpen}
-          onDismiss={() => {
-            setIsImageModalOpen(false)
-          }}
-          contentContainerStyle={{
-            backgroundColor: "transparent",
-            alignSelf: "center",
-            alignItems: "center",
-            aspectRatio: 1,
-            maxWidth: "80%",
-            height:"40%",
-          }}
-          style={{elevation: 0}}
-        >
-          <Zoomable
-            isDoubleTapEnabled
-            doubleTapScale={2}
+        {/* Modal de zoom da imagem */}
+        <Portal>
+          <Modal
+            visible={isImageModalOpen}
+            onDismiss={() => {
+              setIsImageModalOpen(false)
+            }}
+            contentContainerStyle={{
+              backgroundColor: "transparent",
+              alignSelf: "center",
+              alignItems: "center",
+              aspectRatio: 1,
+              maxWidth: "80%",
+              height: "40%",
+            }}
+            style={{ elevation: 0 }}
           >
-            <Image
-              style={{
-                flex: 1,
-                alignSelf: "flex-end",
-                maxWidth: "100%",
-                aspectRatio: 1,
-              }}
-              source={pet.animal.picture_uid}
-              placeholder={{ blurhash }}
-              contentFit="scale-down"
-              transition={1000}
-            />
-          </Zoomable>
-        </Modal>
-      </Portal>
-
-      {/* Resto da tela */}
-      <ScrollView>
-        <View style={{ gap: 16 }}>
-          <View style={{ height: 150 }}>
-            <TouchableOpacity
-              onPress={() => {
-                setIsImageModalOpen(true)
-              }}
+            <Zoomable
+              isDoubleTapEnabled
+              doubleTapScale={2}
             >
               <Image
-                style={{ height: 150 }}
+                style={{
+                  flex: 1,
+                  alignSelf: "flex-end",
+                  maxWidth: "100%",
+                  aspectRatio: 1,
+                }}
                 source={pet.animal.picture_uid}
                 placeholder={{ blurhash }}
-                contentFit="cover"
+                contentFit="scale-down"
                 transition={1000}
               />
-            </TouchableOpacity>
-          </View>
-          <FAB
-            style={styles.fab}
-            icon="heart"
-            variant="surface"
-            size="medium"
-            onPress={() => {}}
-          />
-          <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
-            <Text style={styles.animalName}>{pet.animal.name}</Text>
-            <View style={{ gap: 16 }}>
-              <View style={{ flexDirection: "row", gap: 50 }}>
-                <TitleAndText title="Sexo">
-                  <Text>{machoFemea(pet)}</Text>
-                </TitleAndText>
-                <TitleAndText title="Porte">
-                  <Text>{tamanho(pet)}</Text>
-                </TitleAndText>
-                <TitleAndText title="Idade">
-                  <Text>{idade(pet)}</Text>
-                </TitleAndText>
-              </View>
-              <View>
-                <TitleAndText title="Localização" style={{ flex: 0 }}>
-                  <Text>{endereco(owner)}</Text>
-                </TitleAndText>
-              </View>
-            </View>
-            <Divider />
-            <View style={{ gap: 8 }}>
-              <View
-                style={{ flexDirection: "row", justifyContent: "flex-start" }}
+            </Zoomable>
+          </Modal>
+        </Portal>
+
+        {/* Resto da tela */}
+        <ScrollView>
+          <View style={{ gap: 16 }}>
+            <View style={{ height: 150 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setIsImageModalOpen(true)
+                }}
               >
-                <TitleAndText title="Castrado">
-                  <Text>{boolToSimNao(pet.health.neutered)}</Text>
-                </TitleAndText>
-                <TitleAndText title="Vermifugado">
-                  <Text>{boolToSimNao(pet.health.dewormed)}</Text>
+                <Image
+                  style={{ height: 150 }}
+                  source={pet.animal.picture_uid}
+                  placeholder={{ blurhash }}
+                  contentFit="cover"
+                  transition={1000}
+                />
+              </TouchableOpacity>
+            </View>
+            <FAB
+              style={styles.fab}
+              icon={dono ? "pencil" : (interesse ? "heart" : "heart-outline")}
+              variant="surface"
+              size="medium"
+              onPress={dono ? handleEditPet : handleFavorite} // Ação depende se é dono ou não}
+            />
+            <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
+              <Text style={styles.animalName}>{pet.animal.name}</Text>
+              <View style={{ gap: 16 }}>
+                <View style={{ flexDirection: "row", gap: 50 }}>
+                  <TitleAndText title="Sexo">
+                    <Text>{machoFemea(pet)}</Text>
+                  </TitleAndText>
+                  <TitleAndText title="Porte">
+                    <Text>{tamanho(pet)}</Text>
+                  </TitleAndText>
+                  <TitleAndText title="Idade">
+                    <Text>{idade(pet)}</Text>
+                  </TitleAndText>
+                </View>
+                <View>
+                  <TitleAndText title="Localização" style={{ flex: 0 }}>
+                    <Text>{endereco(owner)}</Text>
+                  </TitleAndText>
+                </View>
+              </View>
+              <Divider />
+              <View style={{ gap: 8 }}>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "flex-start" }}
+                >
+                  <TitleAndText title="Castrado">
+                    <Text>{boolToSimNao(pet.health.neutered)}</Text>
+                  </TitleAndText>
+                  <TitleAndText title="Vermifugado">
+                    <Text>{boolToSimNao(pet.health.dewormed)}</Text>
+                  </TitleAndText>
+                </View>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "flex-start" }}
+                >
+                  <TitleAndText title="Vacinado">
+                    <Text>{boolToSimNao(pet.health.vaccinated)}</Text>
+                  </TitleAndText>
+                  <TitleAndText title="Doenças">
+                    <Text>{pet.health.sicknesses ? "" : "Nenhuma"}</Text>
+                  </TitleAndText>
+                </View>
+              </View>
+              <Divider />
+              <View style={{ flexDirection: "row" }}>
+                <TitleAndText title="Temperamento">
+                  <Text>{temperamento(pet)}</Text>
                 </TitleAndText>
               </View>
-              <View
-                style={{ flexDirection: "row", justifyContent: "flex-start" }}
+              <Divider />
+              <View style={{ flexDirection: "row" }}>
+                <TitleAndText title="Exigências do doador">
+                  <Text>{exigências(pet)}</Text>
+                </TitleAndText>
+              </View>
+              <Divider />
+              <View style={{ flexDirection: "row" }}>
+                <TitleAndText title={"Mais Sobre " + pet.animal.name}>
+                  <Text>{pet.animal.story}</Text>
+                </TitleAndText>
+              </View>
+              {dono && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10 }}>
+                  <Button
+                mode="contained"
+                onPress={() => {
+                  navigation.navigate('UserList', {
+                    petId: route.params.petAndOwner.pet.id,
+                  });
+                }}
               >
-                <TitleAndText title="Vacinado">
-                  <Text>{boolToSimNao(pet.health.vaccinated)}</Text>
-                </TitleAndText>
-                <TitleAndText title="Doenças">
-                  <Text>{pet.health.sicknesses ? "" : "Nenhuma"}</Text>
-                </TitleAndText>
-              </View>
+                Ver Interessados
+              </Button>
+                  <Button mode="contained" style={{ flex: 1 }} onPress={() => PetRemove() } >
+                    <Text>Remover Pet</Text>
+                  </Button>
+                </View>
+              )}
             </View>
-            <Divider />
-            <View style={{ flexDirection: "row" }}>
-              <TitleAndText title="Temperamento">
-                <Text>{temperamento(pet)}</Text>
-              </TitleAndText>
-            </View>
-            <Divider />
-            <View style={{ flexDirection: "row" }}>
-              <TitleAndText title="Exigências do doador">
-                <Text>{exigências(pet)}</Text>
-              </TitleAndText>
-            </View>
-            <Divider />
-            <View style={{ flexDirection: "row" }}>
-              <TitleAndText title={"Mais Sobre " + pet.animal.name}>
-                <Text>{pet.animal.story}</Text>
-              </TitleAndText>
-            </View>
-            <Button mode="contained">
-              <Text>Pretendo Adotar</Text>
-            </Button>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </>
     )
   } else {
-    ;<View>
+    ; <View>
       <Text>Erro</Text>
     </View>
   }
