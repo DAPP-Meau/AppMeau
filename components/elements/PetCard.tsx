@@ -115,7 +115,7 @@ export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
         backgroundColor: theme.colors.surface,
       }}
       onPress={() => {
-        navigation.navigate("petDetails", { petAndOwner: petAndOwner })
+        navigation.navigate("petDetails", { petAndOwner: petAndOwner, proOnRefresh: proOnRefresh })
       }}
     >
       <View

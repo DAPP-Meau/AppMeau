@@ -32,7 +32,7 @@ import { arrayRemove, arrayUnion,  doc, getFirestore,  updateDoc } from "firebas
 import { collections } from "@/constants"
 
 
-type Props = DrawerScreenProps<RootStackParamList, "petDetails"> & {proOnRefresh: ()=>void}
+type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
 interface TitleAndTextProps {
   title: string
@@ -41,9 +41,10 @@ interface TitleAndTextProps {
   
 }
 
-export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
+export default function PetDetails({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
+  const proOnRefresh = route.params.proOnRefresh
   const pet = route.params.petAndOwner.pet.data
   const owner = route.params.petAndOwner.user.data
   const firebaseApp = useContext(FirebaseAppContext)
