@@ -28,10 +28,9 @@ import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import { arrayRemove, arrayUnion, collection, doc, getFirestore, setDoc, updateDoc } from "firebase/firestore"
-import { getStorage } from "firebase/storage"
+import { arrayRemove, arrayUnion,  doc, getFirestore,  updateDoc } from "firebase/firestore"
 import { collections } from "@/constants"
-import { FirebaseApp } from "firebase/app"
+
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails"> & {proOnRefresh: ()=>void}
 
@@ -126,9 +125,7 @@ export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
   const handleEditPet = async () => {
     Alert.alert('função ainda não implementada')
   }
-  const UserListInterested  = async () => {
-    Alert.alert('Tela ainda não implementada')
-  }
+
   const PetRemove = async () => {
     Alert.alert('Deseja realmente deletar o '+ pet.animal.name + 'do sistema?', undefined, [
       {
@@ -381,10 +378,17 @@ export default function PetDetails({ route, navigation, proOnRefresh }: Props) {
               </View>
               {dono && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10 }}>
-                  <Button mode="contained" style={{ flex: 1 }}  onPress={() =>  UserListInterested(onChange) } >
-                    <Text>Ver Interessados</Text>
-                  </Button>
-                  <Button mode="contained" style={{ flex: 1 }} onPress={() => PetRemove(onChange) } >
+                  <Button
+                mode="contained"
+                onPress={() => {
+                  navigation.navigate('UserList', {
+                    petId: route.params.petAndOwner.pet.id,
+                  });
+                }}
+              >
+                Ver Interessados
+              </Button>
+                  <Button mode="contained" style={{ flex: 1 }} onPress={() => PetRemove() } >
                     <Text>Remover Pet</Text>
                   </Button>
                 </View>

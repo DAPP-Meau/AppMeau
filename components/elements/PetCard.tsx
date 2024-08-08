@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native"
+import {  StyleSheet, Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import { Address, PetRegistrationDocument } from "@/services/models"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"

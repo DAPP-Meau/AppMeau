@@ -5,6 +5,7 @@ import PetDetails from "../Screens/PetDetails"
 import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
 import { PetAndOwnerDocument } from "@/services/actions"
 import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
+import UserList from "../Screens/UserList"
 
 export type RootStackParamList = {
   homeDrawer: undefined
@@ -39,6 +40,7 @@ export default function RootStack() {
             title: "Detalhes do pet",
           }}
         />
+        <Stack.Screen name="UserList" component={UserList} />
       </Stack.Group>
     </Stack.Navigator>
   )
