@@ -5,14 +5,12 @@ import PetRegistration from "../Screens/PetRegistration"
 import Logout from "../Screens/Logout"
 import CustomDrawerHeaderBar from "@/components/elements/display/CustomDrawerHeaderBar"
 import UserPetList from "../Screens/UserPetList"
-import Chat from "../Screens/Chat"
 
 export type HomeDrawerParamList = {
   petList: undefined
   addPets: undefined
   logout: undefined
   userPetList: undefined
-  chat: undefined
 }
 
 const Drawer = createDrawerNavigator<HomeDrawerParamList>()
@@ -57,14 +55,6 @@ export default function HomeDrawer() {
           title: "Meus Pets",
         }}
         component={UserPetList}
-      />
-      <Drawer.Screen
-        name="chat"
-        options={{
-          drawerLabel: "chat",
-          title: "chat",
-        }}
-        component={Chat}
       />
     </Drawer.Navigator>
   )

@@ -9,10 +9,7 @@ import {
 } from "react-native"
 import { Image } from "expo-image"
 import React, { useContext, useEffect, useState } from "react"
-import {
-  MD3Theme,
-  useTheme,
-} from "react-native-paper"
+import { MD3Theme, useTheme } from "react-native-paper"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import {
@@ -30,12 +27,12 @@ import { RootStackParamList } from "../Navigation/RootStack"
 
 type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
-export default function UserList({ route }: Props) {
+export default function UserList({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
   const petId = route.params.petId
   const firebaseApp = useContext(FirebaseAppContext)
-  const [users, setUsers] = useState<UserRegistrationDocument[]>([])
+  const [users, setUsers] = useState<Array<UserRegistrationDocument & {id:string}>>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -52,37 +49,37 @@ export default function UserList({ route }: Props) {
       console.log("petId = " + petId)
       //const interestedQuery = query(
       //  collection(db, collections.pets,petId),
-        //where("id", "==", petId),
-        //where("interested", "array-contains", uid)
+      //where("id", "==", petId),
+      //where("interested", "array-contains", uid)
       //)
-      let interestedUserIds: string[] = [];
-      const interestedQuery = await getDocs(collection(db, collections.pets));
+      let interestedUserIds: string[] = []
+      const interestedQuery = await getDocs(collection(db, collections.pets))
       interestedQuery.forEach((docpet) => {
-        if (docpet.id ==  petId){
-            const interested = docpet.data().interested || [];
-            console.log(`${docpet.id} => `+JSON.stringify(docpet.data()));
-            console.log(`${docpet.id} => `+interested);
-            interestedUserIds = interested; 
+        if (docpet.id == petId) {
+          const interested = docpet.data().interested || []
+          console.log(`${docpet.id} => ` + JSON.stringify(docpet.data()))
+          console.log(`${docpet.id} => ` + interested)
+          interestedUserIds = interested
         }
-        });
-        if (interestedUserIds.length === 0) {
-            console.log('Nenhum usuário interessado encontrado.');
-            return;
-          }
-      console.log("passei2");
+      })
+      if (interestedUserIds.length === 0) {
+        console.log("Nenhum usuário interessado encontrado.")
+        return
+      }
+      console.log("passei2")
       try {
-        const userQuery = query(collection(db, 'users'), where(documentId(), 'in', interestedUserIds));
-        const userSnapshot = await getDocs(userQuery);
+        const userQuery = query(
+          collection(db, "users"),
+          where(documentId(), "in", interestedUserIds),
+        )
+        const userSnapshot = await getDocs(userQuery)
         //userSnapshot.forEach((doc) => {console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);});
-        const interestedUsers = userSnapshot.docs.map(doc => ({
-            
-            ...doc.data()
-            
-          }));
-          console.log(interestedUsers);
-          setUsers(interestedUsers as UserRegistrationDocument[]);  
-    } catch (error) {
-       
+        const interestedUsers = userSnapshot.docs.map((doc) => ({
+          ...doc.data(), id: doc.id
+        }))
+        console.log(interestedUsers)
+        setUsers(interestedUsers as Array<UserRegistrationDocument & {id:string}>)
+      } catch (error) {
         console.error("Erro ao buscar usuários interessados: ")
       } finally {
         setLoading(false)
@@ -100,17 +97,17 @@ export default function UserList({ route }: Props) {
     )
   }
   const blurhash =
-  "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
+    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
   return (
     <FlatList
       data={users}
       renderItem={({ item }) => (
         <View style={styles.item}>
-          <Image 
+          <Image
             style={styles.profileImage}
-          source={item.person.picture_uid }
-          placeholder={{ blurhash }}
+            source={item.person.picture_uid}
+            placeholder={{ blurhash }}
           />
           <View style={styles.textContainer}>
             <Text style={styles.name}>{item.person.fullName}</Text>
@@ -118,7 +115,7 @@ export default function UserList({ route }: Props) {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              // TODO: Implementar ação para contato com o usuário
+              navigation.navigate("chat", {userID:item.id, petID:petId})
             }}
           >
             <Text style={styles.buttonText}>Entrar em contato</Text>
@@ -131,7 +128,7 @@ export default function UserList({ route }: Props) {
         </Text>
       }
     />
-  );
+  )
 }
 
 const makeStyles = (theme: MD3Theme) =>
@@ -142,8 +139,8 @@ const makeStyles = (theme: MD3Theme) =>
       alignItems: "center",
     },
     item: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: 16,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.backdrop,
@@ -175,4 +172,4 @@ const makeStyles = (theme: MD3Theme) =>
       textAlign: "center",
       margin: 16,
     },
-  });
+  })

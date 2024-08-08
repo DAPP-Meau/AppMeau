@@ -6,12 +6,14 @@ import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
 import { PetAndOwnerDocument } from "@/services/actions"
 import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
 import UserList from "../Screens/UserList"
+import Chat from "../Screens/Chat"
 
 export type RootStackParamList = {
   homeDrawer: undefined
   addPetsSuccess: undefined
-  petDetails: { petAndOwner: PetAndOwnerDocument, proOnRefresh: () => void }
-  UserList: {petId:string}
+  petDetails: { petAndOwner: PetAndOwnerDocument; proOnRefresh: () => void }
+  UserList: { petId: string }
+  chat: { userID: string; petID: string }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -42,6 +44,13 @@ export default function RootStack() {
           }}
         />
         <Stack.Screen name="UserList" component={UserList} />
+        <Stack.Screen
+          name="chat"
+          options={{
+            title: "chat",
+          }}
+          component={Chat}
+        />
       </Stack.Group>
     </Stack.Navigator>
   )

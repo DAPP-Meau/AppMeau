@@ -1,7 +1,12 @@
+import { StackScreenProps } from "@react-navigation/stack"
 import React, { useState, useCallback, useEffect } from "react"
 import { GiftedChat, IMessage, InputToolbar } from "react-native-gifted-chat"
+import { RootStackParamList } from "../Navigation/RootStack"
 
-export default function Chat() {
+
+type Props = StackScreenProps<RootStackParamList, "chat">
+
+export default function Chat({ route, navigation }: Props) {
   const [messages, setMessages] = useState<Array<IMessage>>()
 
   useEffect(() => {
