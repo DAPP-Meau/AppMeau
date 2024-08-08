@@ -11,6 +11,7 @@ export type RootStackParamList = {
   homeDrawer: undefined
   addPetsSuccess: undefined
   petDetails: { petAndOwner: PetAndOwnerDocument }
+  UserList: {petId:string}
 }
 
 const Stack = createStackNavigator<RootStackParamList>()

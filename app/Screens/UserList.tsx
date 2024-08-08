@@ -28,9 +28,9 @@ import { UserRegistrationDocument } from "@/services/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 
-type Props = DrawerScreenProps<RootStackParamList, "petDetails">
+type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
-export default function UserList({ route, navigation }: Props) {
+export default function UserList({ route }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
   const petId = route.params.petId
