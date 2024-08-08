@@ -9,7 +9,7 @@ import UserPetList from "../Screens/UserPetList"
 export type HomeDrawerParamList = {
   petList: undefined
   addPets: undefined
-  logout: undefined  
+  logout: undefined
   userPetList: undefined
 }
 
@@ -20,7 +20,7 @@ export default function HomeDrawer() {
     <Drawer.Navigator
       screenOptions={{
         headerTitleStyle: { fontFamily: "Roboto_Medium" },
-        header: (props) => <CustomDrawerHeaderBar {...props} />
+        header: (props) => <CustomDrawerHeaderBar {...props} />,
       }}
       initialRouteName="petList"
     >
@@ -49,14 +49,13 @@ export default function HomeDrawer() {
         component={Logout}
       />
       <Drawer.Screen
-      name="userPetList"
-      options={{
-        drawerLabel: "Mesu Pets",
-        title: "Mesu Pets",
-      }}
-      component={UserPetList}
-      >        
-      </Drawer.Screen>
+        name="userPetList"
+        options={{
+          drawerLabel: "Meus Pets",
+          title: "Meus Pets",
+        }}
+        component={UserPetList}
+      />
     </Drawer.Navigator>
   )
 }
