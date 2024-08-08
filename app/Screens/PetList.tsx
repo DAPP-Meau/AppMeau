@@ -33,7 +33,7 @@ export default function PetList() {
       renderItem={({ item }) => (
         <PetCard
           petAndOwner={item}
-          proOnRefresh={() => {
+          onRefresh={() => {
             setRefreshing(true)
           }}
         />

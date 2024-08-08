@@ -10,7 +10,7 @@ import UserList from "../Screens/UserList"
 export type RootStackParamList = {
   homeDrawer: undefined
   addPetsSuccess: undefined
-  petDetails: { petAndOwner: PetAndOwnerDocument; proOnRefresh: () => void }
+  petDetails: { petAndOwner: PetAndOwnerDocument; refreshList: () => void }
   UserList: { petId: string }
 }
 
