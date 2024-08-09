@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#88c9bf"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.unb.meauapp",
       "buildNumber": "1",
@@ -27,7 +29,6 @@
         "backgroundColor": "#88c9bf"
       },
       "googleServicesFile": "./google-services.json"
-      //"package": "com.icode.fontsrn"
     },
     "web": {
       "bundler": "metro",
@@ -52,7 +53,6 @@
         {
           "photosPermission": "custom photos permission",
           "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
-
           "//": "Disables the microphone permission",
           "microphonePermission": false
         }
@@ -87,8 +87,16 @@
             "newArchEnabled": true
           }
         }
-      ]
+      ],
+      "expo-router"
     ],
-
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "52302002-e84f-4b99-8e28-ed83189c1738"
+      }
+    }
   }
 }
