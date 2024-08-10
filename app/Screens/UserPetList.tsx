@@ -37,7 +37,14 @@ export default function PetList() {
   return (
     <FlatList
       data={petList}
-      renderItem={({ item }) => <PetCard petAndOwner={item} />}
+      renderItem={({ item }) => (
+        <PetCard
+          petAndOwner={item}
+          onRefresh={() => {
+            setRefreshing(true)
+          }}
+        />
+      )}
       ListEmptyComponent={() => {
         return refreshing ? null : <Text>Nadinha!</Text>
       }}

@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useState, useCallback, useEffect, useContext } from "react"
-import { GiftedChat, IMessage, InputToolbar } from "react-native-gifted-chat"
+import { GiftedChat, IMessage } from "react-native-gifted-chat"
 import { RootStackParamList } from "../Navigation/RootStack"
 import {
   collection,
@@ -71,7 +71,6 @@ export default function Chat({ route, navigation }: Props) {
   return (
     <GiftedChat
       messages={messages}
-      renderInputToolbar={renderInputToolbar}
       onSend={(messages) => onSend(messages)}
       user={{
         _id: 1,
@@ -79,8 +78,4 @@ export default function Chat({ route, navigation }: Props) {
       }}
     />
   )
-}
-
-function renderInputToolbar(props) {
-  return <InputToolbar {...props} />
 }
