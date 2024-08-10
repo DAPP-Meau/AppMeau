@@ -1,6 +1,5 @@
-import {  StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
-import { Address, PetRegistrationDocument } from "@/services/models"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
@@ -9,100 +8,31 @@ import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
 import { FirebaseAppContext } from "@/services/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import { arrayRemove, arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore"
-import { collections } from "@/constants"
+import { endereco, idade, machoFemea, tamanho } from "@/services/strings"
+import { HandleFavourite } from "@/services/handleFavourite"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
-  proOnRefresh: ()=>void
+  onRefresh: () => void
 }
 
-
-export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
-  const pet = petAndOwner.pet.data
-  const { address } = petAndOwner.user.data
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
+export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
+  const { id: petID, data: petData } = petAndOwner.pet
+  const userData = petAndOwner.user.data
+
   const firebaseApp = useContext(FirebaseAppContext)
-  const auth = getAuth(firebaseApp)
-  const user = auth.currentUser;
-  const uid = user?.uid;
-  const [interesse, setinteresse] = useState(false);
+  const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
+
+  const [interested, setInterested] = useState(false)
   useEffect(() => {
-    if (uid && pet.interested.includes(uid)) {
-      setinteresse(true);
+    if (loggedInUserUID) {
+      setInterested(petData.interested.includes(loggedInUserUID))
     }
-    else{
-      setinteresse(false);
-    }
-  }, [uid, pet]);
-  const machoFemea = (pet: PetRegistrationDocument) => {
-    switch (pet.animal.sex) {
-      case "female":
-        return "Fêmea"
-      case "male":
-        return "Macho"
-    }
-  }
-
-  const tamanho = (pet: PetRegistrationDocument) => {
-    switch (pet.animal.size) {
-      case "large":
-        return "Grande"
-      case "medium":
-        return "Médio"
-      case "small":
-        return "Pequeno"
-    }
-  }
-
-  const idade = (pet: PetRegistrationDocument) => {
-    switch (pet.animal.age) {
-      case "adult":
-        return "Adulto"
-      case "cub":
-        return "Filhote"
-      case "old":
-        return "Idoso"
-    }
-  }
-
-  const endereco = (address: Address): string => {
-    return address.fullAddress + " - " + address.city + ", " + address.state
-  }
-
-  const handleFavorite = async () => {
-    //TODO:não esta tendo refresh da tela
-    
-    const db = getFirestore(firebaseApp);
-    const idpet = petAndOwner.pet.id;
-    const ref = doc(db, collections.pets, idpet);
-    const data = uid;
-    if (uid && pet.interested.includes(uid)) {
-      try {
-        await updateDoc(ref, {
-          interested: arrayRemove(data)
-      });
-      //não esta removendo do bd
-      setinteresse(false);
-      proOnRefresh();
-      } catch (error) {
-        console.error("Erro ao remover UID para o Firebase: ", error);
-      }
-    } else {
-      try {
-        await updateDoc(ref, {
-          interested: arrayUnion(data)
-        });
-        setinteresse(true);
-        proOnRefresh();
-      } catch (error) {
-        console.error("Erro ao enviar UID para o Firebase: ", error);
-      }
-    }
-
-  };
+  }, [loggedInUserUID, petData])
 
   const blurhash =
     "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
@@ -115,7 +45,10 @@ export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
         backgroundColor: theme.colors.surface,
       }}
       onPress={() => {
-        navigation.navigate("petDetails", { petAndOwner: petAndOwner, proOnRefresh: proOnRefresh })
+        navigation.navigate("petDetails", {
+          petAndOwner: petAndOwner,
+          refreshList: onRefresh,
+        })
       }}
     >
       <View
@@ -127,17 +60,30 @@ export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
           justifyContent: "space-between",
         }}
       >
-        <Text style={{ fontSize: 18 }}>{pet.animal.name}</Text>
+        <Text style={{ fontSize: 18 }}>{petData.animal.name}</Text>
         <IconButton
-          icon={interesse ? "heart" : "heart-outline"}
+          icon={interested ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
-          onPress={handleFavorite}
+          onPress={() => {
+            HandleFavourite(firebaseApp, petData, petID, (value) => {
+              setInterested(value)
+              Alert.alert(
+                petData.animal.name 
+                + " foi "
+                + (value
+                  ? "removido dos"
+                  : "adicionado aos") 
+                + " seus interesses",
+              )
+              onRefresh()
+            })
+          }}
           size={20}
         />
       </View>
       <Image
         style={{ height: 150 }}
-        source={pet.animal.picture_uid}
+        source={petData.animal.picture_uid}
         placeholder={{ blurhash }}
         contentFit="cover"
         transition={1000}
@@ -150,13 +96,13 @@ export default function PetCard({ petAndOwner, proOnRefresh }: IPetCardsProps) {
             justifyContent: "space-around",
           }}
         >
-          <Text style={styles.text}>{machoFemea(pet)}</Text>
-          <Text style={styles.text}>{idade(pet)}</Text>
-          <Text style={styles.text}>{tamanho(pet)}</Text>
+          <Text style={styles.text}>{machoFemea(petData)}</Text>
+          <Text style={styles.text}>{idade(petData)}</Text>
+          <Text style={styles.text}>{tamanho(petData)}</Text>
         </View>
         <View>
           <Text style={{ textAlign: "center", color: theme.colors.onSurface }}>
-            {endereco(address)}
+            {endereco(userData)}
           </Text>
         </View>
       </View>
