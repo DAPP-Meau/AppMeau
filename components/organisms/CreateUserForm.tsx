@@ -1,5 +1,5 @@
-import { UserRegistrationForm } from "@/services/models"
-import selectImage from "@/services/selectImage"
+import { UserRegistrationForm } from "@/models"
+import selectImage from "@/utils/selectImage"
 import { Controller, UseFormReturn, useForm } from "react-hook-form"
 import React, {
   Image,
@@ -16,7 +16,7 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper"
-import ErrorHelperText from "../elements/forms/ErrorHelperText"
+import ErrorHelperText from "../atoms/ErrorHelperText"
 
 export type PasswordConfirm = {
   passwordConfirm: string

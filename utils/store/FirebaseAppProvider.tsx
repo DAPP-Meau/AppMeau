@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { FirebaseAppContext } from '@/services/firebaseAppContext'
+import { FirebaseAppContext } from '@/utils/store/firebaseAppContext'
 import { firebaseAppConfig } from '@/constants/firebaseConfig'
 import { initializeApp } from 'firebase/app'
 

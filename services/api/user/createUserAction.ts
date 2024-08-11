@@ -7,12 +7,12 @@ import {
 import {
   UserRegistrationDocument,
   UserRegistrationForm,
-} from "@/services/models"
+} from "@/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
-import { PasswordConfirm } from "@/components/completedForms/CreateUserForm"
+import { PasswordConfirm } from "@/components/organisms/CreateUserForm"
 import { collections } from "@/constants"
-import { submitDataToStorage } from "./submitDataToStorage"
+import { submitDataToStorage } from "../storage/submitDataToStorage"
 import * as Crypto from "expo-crypto"
 import { getStorage } from "firebase/storage"
 import { FirebaseApp } from "firebase/app"

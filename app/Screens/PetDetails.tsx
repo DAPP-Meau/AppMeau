@@ -15,7 +15,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import {
   exigências,
@@ -25,9 +25,9 @@ import {
   idade,
   endereco,
   temperamento,
-} from "@/services/strings"
-import HeaderAndText from "@/components/HeaderAndText"
-import { HandleFavourite } from "@/services/handleFavourite"
+} from "@/utils/strings"
+import HeaderAndText from "@/components/atoms/HeaderAndText"
+import { HandleFavourite } from "@/utils/handleFavourite"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 

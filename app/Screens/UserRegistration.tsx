@@ -1,11 +1,11 @@
-import CreateUserForm from "@/components/completedForms/CreateUserForm"
+import CreateUserForm from "@/components/organisms/CreateUserForm"
 import Colors from "@/constants/Colors"
-import { createUserAction } from "@/services/actions/createUserAction"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { createUserAction } from "@/services/api/user/createUserAction"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { useContext } from "react"
 import React, { ScrollView, StyleSheet, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import { BlueColorScreen } from "@/components/ScreenColorScheme"
+import { BlueColorScreen } from "@/utils/store/ScreenColorScheme"
 
 export default function UserRegistration() {
   const navigation = useNavigation()

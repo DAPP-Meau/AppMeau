@@ -1,4 +1,4 @@
-import { LoginFields } from "@/components/completedForms/LoginForm";
+import { LoginFields } from "@/components/organisms/LoginForm";
 import { router } from "expo-router";
 import {
   Auth,

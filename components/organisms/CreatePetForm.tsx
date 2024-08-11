@@ -1,7 +1,8 @@
-import { CheckBoxGroup, RadioButtonGroup } from "@/components/elements/forms"
+import CheckBoxGroup from "../atoms/CheckBoxGroup"
+import RadioButtonGroup from "../atoms/RadioButtonGroup"
 import Colors from "@/constants/Colors"
-import { PetRegistrationFields } from "@/services/models"
-import selectImage from "@/services/selectImage"
+import { PetRegistrationFields } from "@/models"
+import selectImage from "@/utils/selectImage"
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
   Image,
@@ -21,7 +22,7 @@ import {
   useTheme,
 } from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
-import ErrorHelperText from "../elements/forms/ErrorHelperText"
+import ErrorHelperText from "../atoms/ErrorHelperText"
 import { useState } from "react"
 
 export interface CreatePetFormProps {

@@ -1,8 +1,8 @@
 import { FirebaseApp } from "firebase/app"
 import { arrayRemove, arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore"
-import { PetRegistrationDocument } from "./models"
-import { collections } from "@/constants"
+import { PetRegistrationDocument } from "@/models"
 import { getAuth } from "firebase/auth"
+import { collections } from "@/constants"
 
 /**
  * 

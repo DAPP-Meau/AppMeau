@@ -1,7 +1,7 @@
 import { collections } from "@/constants"
 import { FirebaseApp } from "firebase/app"
 import { doc, getDoc, getFirestore } from "firebase/firestore"
-import { UserRegistrationDocument } from "../models"
+import { UserRegistrationDocument } from "../../../models"
 
 export default async function getUserAction(
   userId: string,

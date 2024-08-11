@@ -2,11 +2,11 @@ import { getAuth } from "firebase/auth"
 import {
   PetRegistrationDocument,
   PetRegistrationFields,
-} from "@/services/models"
+} from "@/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { collections } from "@/constants"
-import { submitDataToStorage } from "./submitDataToStorage"
+import { submitDataToStorage } from "../storage/submitDataToStorage"
 import { getStorage } from "firebase/storage"
 import * as Crypto from "expo-crypto"
 import { FirebaseApp } from "firebase/app"

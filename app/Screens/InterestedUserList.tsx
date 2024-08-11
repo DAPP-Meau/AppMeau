@@ -10,7 +10,7 @@ import {
 import { Image } from "expo-image"
 import React, { useContext, useEffect, useState } from "react"
 import { MD3Theme, useTheme } from "react-native-paper"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import {
   getFirestore,
@@ -21,7 +21,7 @@ import {
   documentId,
 } from "firebase/firestore"
 import { collections } from "@/constants"
-import { UserRegistrationDocument } from "@/services/models"
+import { UserRegistrationDocument } from "@/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 

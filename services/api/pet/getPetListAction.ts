@@ -7,12 +7,9 @@ import {
   getFirestore,
   query,
 } from "firebase/firestore"
-import {
-  PetRegistrationDocument,
-  UserRegistrationDocument,
-  isPetRegistrationDocument,
-} from "../models"
-import getUserAction from "./getUserAction"
+
+import getUserAction from "../user/getUserAction"
+import { isPetRegistrationDocument, PetRegistrationDocument, UserRegistrationDocument } from "@/models"
 
 export type PetAndOwnerDocument = {
   pet: { id: string; data: PetRegistrationDocument }

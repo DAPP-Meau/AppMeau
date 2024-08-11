@@ -1,7 +1,7 @@
 import { collections } from "@/constants"
 import { FirebaseApp } from "firebase/app"
 import { doc, getDoc, getFirestore } from "firebase/firestore"
-import { PetRegistrationDocument } from "../models"
+import { PetRegistrationDocument } from "@/models"
 
 export default async function getPetAction(
   petId: string,

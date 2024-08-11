@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Card, MD3Theme, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
-import { FirebaseAppContext } from "@/services/firebaseAppContext";
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext";
 import { getFirestore, collection, query, getDocs } from "firebase/firestore";
-import { PetAndOwnerDocument } from "@/services/actions"
+import { PetAndOwnerDocument } from "@/services/api/pet/getPetListAction";
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument;

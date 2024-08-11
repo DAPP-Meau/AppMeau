@@ -1,11 +1,11 @@
 import React, { useContext } from "react"
 import { getAuth } from "firebase/auth"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
-import { loginAction } from "@/services/actions"
-import LoginForm, { LoginFields } from "@/components/completedForms/LoginForm"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { loginAction } from "@/services/api/auth/loginAction"
+import LoginForm, { LoginFields } from "@/components/organisms/LoginForm"
 import { Button, Text } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
-import { BlueColorScreen } from "@/components/ScreenColorScheme"
+import { BlueColorScreen } from "@/utils/store/ScreenColorScheme"
 import Constants from "expo-constants"
 
 export default function Login() {
@@ -42,7 +42,7 @@ export default function Login() {
               loginAction(auth, debugUser, undefined, navigation)
             }
           >
-            <Text>AUTO-LOGIN como Isaac123</Text>
+            <Text>AUTO-LOGIN como {debugUser.username}</Text>
           </Button>
         )}
     </>

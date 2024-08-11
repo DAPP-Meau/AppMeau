@@ -3,13 +3,13 @@ import React, { useContext, useEffect, useState } from "react"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { PetAndOwnerDocument } from "@/services/actions"
+import { PetAndOwnerDocument } from "@/services/api/pet/getPetListAction"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
-import { endereco, idade, machoFemea, tamanho } from "@/services/strings"
-import { HandleFavourite } from "@/services/handleFavourite"
+import { endereco, idade, machoFemea, tamanho } from "@/utils/strings"
+import { HandleFavourite } from "@/services/api/pet/handleFavourite"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument

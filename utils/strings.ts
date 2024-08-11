@@ -1,4 +1,4 @@
-import { PetRegistrationDocument, UserRegistrationDocument } from "./models"
+import { PetRegistrationDocument, UserRegistrationDocument } from "../models"
 
 export function boolToSimNao(b: boolean) {
   return b ? "Sim" : "Não"

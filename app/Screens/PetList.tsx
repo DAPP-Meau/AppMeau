@@ -1,6 +1,7 @@
-import PetCard from "@/components/elements/PetCard"
-import { getPetListAction, GetPetListActionReturn } from "@/services/actions/"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import PetCard from "@/components/molecules/PetCard"
+import { getPetListAction, GetPetListActionReturn } from "@/services/api/pet/getPetListAction"
+
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import React, { useContext, useEffect, useState } from "react"
 import { Text } from "react-native"

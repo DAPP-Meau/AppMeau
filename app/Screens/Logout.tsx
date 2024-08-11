@@ -1,10 +1,10 @@
 import { Text, View } from "react-native"
 import React, { useContext } from "react"
 import { Button } from "react-native-paper"
-import { FirebaseAppContext } from "@/services/firebaseAppContext"
+import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import { useNavigation } from "@react-navigation/native"
-import { BlueColorScreen } from "@/components/ScreenColorScheme"
+import { BlueColorScreen } from "@/utils/store/ScreenColorScheme"
 import { LayoutParamList } from "../Navigation/Layout"
 import { StackNavigationProp } from "@react-navigation/stack"
 
