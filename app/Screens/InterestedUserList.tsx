@@ -27,7 +27,7 @@ import { RootStackParamList } from "../Navigation/RootStack"
 
 type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
-export default function UserList({ route, navigation }: Props) {
+export default function InterestedUserList({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
   const petId = route.params.petId

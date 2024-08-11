@@ -5,7 +5,7 @@ import PetDetails from "../Screens/PetDetails"
 import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
 import { PetAndOwnerDocument } from "@/services/actions"
 import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
-import UserList from "../Screens/UserList"
+import InterestedUserList from "../Screens/InterestedUserList"
 import Chat from "../Screens/Chat"
 
 export type RootStackParamList = {
@@ -43,7 +43,7 @@ export default function RootStack() {
             title: "Detalhes do pet",
           }}
         />
-        <Stack.Screen name="UserList" component={UserList} />
+        <Stack.Screen name="UserList" component={InterestedUserList} />
         <Stack.Screen
           name="chat"
           options={{
