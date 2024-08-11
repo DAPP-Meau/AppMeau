@@ -6,15 +6,24 @@ import LoginForm, { LoginFields } from "@/components/completedForms/LoginForm"
 import { Button, Text } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { BlueColorScreen } from "@/components/ScreenColorScheme"
+import Constants from "expo-constants"
 
 export default function Login() {
   const navigation = useNavigation()
   const firebaseapp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseapp)
 
-  const debugUser: LoginFields = {
-    username: "Isaac123*@gmail.com",
-    password: "Isaac123*",
+  const isRunningInExpoGo = Constants.appOwnership === "expo"
+  let debugUser: LoginFields | undefined = undefined
+  if (
+    isRunningInExpoGo &&
+    process.env.EXPO_PUBLIC_DEBUG_USERNAME &&
+    process.env.EXPO_PUBLIC_DEBUG_PASSWORD
+  ) {
+    debugUser = {
+      username: process.env.EXPO_PUBLIC_DEBUG_USERNAME,
+      password: process.env.EXPO_PUBLIC_DEBUG_PASSWORD,
+    }
   }
 
   return (
@@ -25,14 +34,17 @@ export default function Login() {
           return loginAction(auth, fields, form, navigation)
         }}
       />
-      <Button
-        mode="outlined"
-        onPress={async () =>
-          loginAction(auth, debugUser, undefined, navigation)
-        }
-      >
-        <Text>AUTO-LOGIN como Isaac123</Text>
-      </Button>
+      {debugUser &&
+        isRunningInExpoGo && ( // Renderizar se tiver variável de login e no expo GO
+          <Button
+            mode="outlined"
+            onPress={async () =>
+              loginAction(auth, debugUser, undefined, navigation)
+            }
+          >
+            <Text>AUTO-LOGIN como Isaac123</Text>
+          </Button>
+        )}
     </>
   )
 }
