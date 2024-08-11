@@ -5,7 +5,7 @@ import { loginAction } from "@/services/api/auth/loginAction"
 import LoginForm, { LoginFields } from "@/components/organisms/LoginForm"
 import { Button, Text } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
-import { BlueColorScreen } from "@/utils/store/ScreenColorScheme"
+import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"
 import Constants from "expo-constants"
 
 export default function Login() {

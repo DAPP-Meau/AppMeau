@@ -5,7 +5,7 @@ import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { useContext } from "react"
 import React, { ScrollView, StyleSheet, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import { BlueColorScreen } from "@/utils/store/ScreenColorScheme"
+import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"
 
 export default function UserRegistration() {
   const navigation = useNavigation()
