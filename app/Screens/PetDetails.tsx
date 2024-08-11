@@ -27,7 +27,7 @@ import {
   temperamento,
 } from "@/utils/strings"
 import HeaderAndText from "@/components/atoms/HeaderAndText"
-import { HandleFavourite } from "@/utils/handleFavourite"
+import { HandleFavourite } from "@/services/api/pet/handleFavourite"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
