@@ -2,9 +2,9 @@ import { z } from "zod"
 
 export const personSchema = z.object({
   fullName: z.string(),
-  age: z.number().nonnegative(),
+  age: z.coerce.number().nonnegative(),
   phone: z.string(),
-  picture_uid: z.string(),
+  pictureURL: z.string(),
 })
 
 export type Person = z.infer<typeof personSchema>
@@ -19,7 +19,7 @@ export type Address = z.infer<typeof addressSchema>
 
 export const loginSchema = z.object({
   username: z.string(),
-  email: z.string().email(),
+  email: z.string(),
 })
 
 export type Login = z.infer<typeof loginSchema>

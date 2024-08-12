@@ -3,12 +3,14 @@ import Colors from "@/constants/Colors"
 import { createUserAction } from "@/services/api/user/createUserAction"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useContext } from "react"
-import React, { ScrollView, StyleSheet, View } from "react-native"
+import React, { Alert, ScrollView, StyleSheet, View } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"
+import { StackNavigationProp } from "@react-navigation/stack"
+import { LayoutParamList } from "../Navigation/Layout"
 
 export default function UserRegistration() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<StackNavigationProp<LayoutParamList>>()
   const firebaseApp = useContext(FirebaseAppContext)
 
   return (
@@ -16,8 +18,18 @@ export default function UserRegistration() {
       <BlueColorScreen />
       <ScrollView contentContainerStyle={styles.container}>
         <CreateUserForm
-          onSubmit={async (fields, form) => {
-            await createUserAction(fields, form, firebaseApp, navigation)
+          onSubmit={async (form) => {
+            createUserAction(form, firebaseApp)
+              .then(() => {
+                Alert.alert(
+                  "Seu usuário: foi criado com sucesso. Faça o login!",
+                )
+                navigation.navigate("login")
+                // form.reset()
+              })
+              .catch((e) => () => {
+                Alert.alert("Houve um erro na criação de usuário" + e)
+              })
           }}
         />
       </ScrollView>

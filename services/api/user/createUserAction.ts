@@ -4,50 +4,39 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
 } from "firebase/auth"
-import {
-  UserDocument,
-  UserRegistrationForm,
-} from "@/models"
+import { UserDocument, userDocumentSchema } from "@/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
-import { PasswordConfirm } from "@/components/organisms/CreateUserForm"
+import { UserRegistrationFields } from "@/components/organisms/CreateUserForm"
 import { collectionPaths } from "@/constants"
 import { submitDataToStorage } from "../storage/submitDataToStorage"
 import * as Crypto from "expo-crypto"
 import { getStorage } from "firebase/storage"
-import { FirebaseApp } from "firebase/app"
+import { FirebaseApp, FirebaseError } from "firebase/app"
 
 /**
  * Registra novo usuário no firebase.
- * @param {UserRegistrationForm & PasswordConfirm} fields - O objeto contendo os
- * dados do usuário a ser registrado.
- * @param {UseFormReturn<UserRegistrationForm & PasswordConfirm>} form -
- * O formulário gerado pelo gancho useHook do react-hook-form.
- * @param {Auth} auth - A interface de serviço de autorização do firebase.
- * @param {Firestore} db - A interface de serviço do Firestore.
+ *
+ * @param form Instância do formulário que gerou os dados
+ * @param firebaseApp Instância do app do firebase ativa
  */
 export async function createUserAction(
-  fields: UserRegistrationForm & PasswordConfirm,
-  form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
+  form: UseFormReturn<UserRegistrationFields>,
   firebaseApp: FirebaseApp,
-  navigation: any
 ): Promise<void> {
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
   const storage = getStorage(firebaseApp)
 
   try {
+    const fields = form.getValues()
+
     // Desestruturando somente variáveis úteis para esta função
     const {
-      login: { email, password, username },
-      person: { fullName },
+      login: { email, username },
       imageURI,
+      password,
     } = fields
-
-    if (!imageURI) {
-      throw new Error("imageURI is empty.")
-    }
-
 
     // Upando imagem para o Storage
     const image_url = await submitDataToStorage(
@@ -58,8 +47,6 @@ export async function createUserAction(
     if (!image_url) {
       throw new Error("image_url is empty.")
     }
-    fields.person.picture_uid = image_url
-
 
     // Criando usuário no Firebase Auth
     // TODO: descobrir o que acontece quando createUserWithEmailAndPassword está
@@ -70,35 +57,25 @@ export async function createUserAction(
       password,
     )
 
-
     //Setando documento de usuário no Firestore
     const uid = data.user.uid
     const ref = collection(db, collectionPaths.users)
 
+    fields.person.age = Number(fields.person.age)
+
     // Criando o objeto a ser inserido no banco utilizando o tipo correto.
-    const registrationDocument: UserDocument = {
+    const registrationDocument: UserDocument = userDocumentSchema.parse({
+      person: { ...fields.person, pictureURL: image_url },
       address: fields.address,
-      person: fields.person,
       login: {
         email: email,
         username: username,
       },
-    }
+    })
 
     // TODO: setDoc não resolve enquanto está sem internet.
     await setDoc(doc(ref, uid), registrationDocument)
-
-
     //Sucesso! Usuário criado no Firestore
-    alert(
-      fullName +
-        ", Seu usuário: " +
-        email +
-        " foi criado com sucesso. Faça o login!",
-    )
-
-    form.reset()
-    navigation.navigate("login")
   } catch (error: any) {
     // TODO: tratar outros erros que possam ocorrer.
     if (error.code === AuthErrorCodes.EMAIL_EXISTS) {

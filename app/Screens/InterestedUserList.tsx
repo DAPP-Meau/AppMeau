@@ -103,7 +103,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
         <View style={styles.item}>
           <Image
             style={styles.profileImage}
-            source={item.person.picture_uid}
+            source={item.person.pictureURL}
             placeholder={{ blurhash }}
           />
           <View style={styles.textContainer}>

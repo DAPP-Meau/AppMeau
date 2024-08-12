@@ -431,7 +431,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         <Text>{JSON.stringify(errors)}</Text>
       </View>
 
-      <Button
+      {/* <Button
         mode="text"
         onPress={() => {
           Alert.alert("Deseja mesmo limpar o formulário?", undefined, [
@@ -453,7 +453,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         disabled={isSubmitting}
       >
         <Text>Limpar formulário</Text>
-      </Button>
+      </Button> */}
     </View>
   )
 }

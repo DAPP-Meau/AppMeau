@@ -1,4 +1,3 @@
-import { UserRegistrationForm } from "@/models"
 import selectImage from "@/utils/selectImage"
 import { Controller, UseFormReturn, useForm } from "react-hook-form"
 import React, {
@@ -17,9 +16,16 @@ import {
   useTheme,
 } from "react-native-paper"
 import ErrorHelperText from "../atoms/ErrorHelperText"
+import { Person, UserDocument } from "@/models"
 
-export type PasswordConfirm = {
+export type NewPerson = Omit<Person, "pictureURL">
+
+export type UserRegistrationFields = Omit<UserDocument, "person"> & {
+  person: NewPerson
+} & {
+  password: string
   passwordConfirm: string
+  imageURI: string
 }
 
 export interface CreateUserProps {
@@ -34,10 +40,7 @@ export interface CreateUserProps {
    * react-hook-form neste componente.
    *
    */
-  onSubmit?: (
-    fields: UserRegistrationForm & PasswordConfirm,
-    form: UseFormReturn<UserRegistrationForm & PasswordConfirm>,
-  ) => Promise<void>
+  onSubmit?: (form: UseFormReturn<UserRegistrationFields>) => Promise<void>
 }
 
 /**
@@ -50,7 +53,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
-  const form = useForm<UserRegistrationForm & PasswordConfirm>({
+  const form = useForm<UserRegistrationFields>({
     defaultValues: {
       address: {
         fullAddress: "",
@@ -64,20 +67,22 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       },
       login: {
         email: "",
-        password: "",
         username: "",
       },
+      password: "",
       passwordConfirm: "",
       imageURI: "",
     },
-    mode: "all",
+    mode: "onChange",
   })
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = form
+
+  const passwordWatch = watch("password")
 
   // Pegar cor caso x for true.
   const errorColor = (x: boolean) => {
@@ -131,7 +136,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
               {...field}
               label="Idade"
               placeholder="Digite a sua idade"
-              value={String(value)}
+              value={String(value ?? "")}
               onChangeText={onChange}
               onBlur={onBlur}
               error={errors.person?.age ? true : false}
@@ -301,7 +306,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
 
         <Controller
           control={control}
-          name="login.password"
+          name="password"
           rules={{
             required: "Por favor, crie uma senha",
             validate: {
@@ -327,14 +332,14 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={errors.login?.password ? true : false}
+              error={errors.password ? true : false}
               secureTextEntry
             />
           )}
         />
         <ErrorHelperText
-          show={errors.login?.password}
-          message={errors.login?.password?.message}
+          show={errors.password}
+          message={errors.password?.message}
         />
 
         <Controller
@@ -344,7 +349,7 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
             required: "Por favor, confirme sua senha",
             validate: {
               equalPasswords: (str) =>
-                watch("login.password") === str ||
+                passwordWatch === str ||
                 "Sua senha não foi repetida corretamente!",
             },
           }}
@@ -407,8 +412,8 @@ export default function CreateUserForm({ onSubmit }: CreateUserProps) {
       <View>
         <Button
           mode="contained"
-          onPress={handleSubmit(async (fields) => {
-            await onSubmit?.(fields, form)
+          onPress={handleSubmit(async () => {
+            await onSubmit?.(form)
           })}
           loading={isSubmitting}
           disabled={isSubmitting}
