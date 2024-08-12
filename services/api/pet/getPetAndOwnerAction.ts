@@ -20,7 +20,7 @@ export default async function getPetAndOwnerAction(
     if (userDocument) {
       return {
         pet: { id: petId, data: petDocument },
-        user: { id: petDocument.owner_uid, data: userDocument },
+        user: { ...userDocument },
       }
     }
   }

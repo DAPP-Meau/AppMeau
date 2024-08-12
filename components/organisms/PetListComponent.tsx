@@ -5,9 +5,12 @@ import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { QueryConstraint } from "firebase/firestore"
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { Alert, Text, View } from "react-native"
+import { Alert } from "react-native"
 import { FlatList, RefreshControl } from "react-native-gesture-handler"
-import { ActivityIndicator, Icon, IconButton, ProgressBar } from "react-native-paper"
+import {
+  IconButton
+} from "react-native-paper"
+import ListEmpty from "../atoms/ListEmpty"
 
 export interface IPetListProps {
   query?: QueryConstraint[]
@@ -61,7 +64,12 @@ export default function PetListComponent({ query }: IPetListProps) {
             onFavourite={onFavourite}
           />
         )}
-        ListEmptyComponent={() => <ListEmpty loading={refreshing} />}
+        ListEmptyComponent={() => (
+          <ListEmpty
+            loading={refreshing}
+            message="Não encontramos pets com esses critérios"
+          />
+        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -73,17 +81,3 @@ export default function PetListComponent({ query }: IPetListProps) {
   )
 }
 
-function ListEmpty({ loading }: { loading: boolean }) {
-  return (
-    <View >
-      {loading ? (
-        <ProgressBar indeterminate/>
-      ) : (
-        <View style={{margin:20, alignItems: "center" }}>
-          <Icon source="alert-circle-outline" size={40} />
-          <Text>Não encontramos pets com esses critérios</Text>
-        </View >
-      )}
-    </View>
-  )
-}

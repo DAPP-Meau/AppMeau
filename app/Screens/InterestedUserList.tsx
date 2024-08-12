@@ -1,113 +1,58 @@
 import {
-  Alert,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native"
 import { Image } from "expo-image"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useMemo, useState } from "react"
 import { MD3Theme, useTheme } from "react-native-paper"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
-import { getAuth } from "firebase/auth"
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-  documentId,
-} from "firebase/firestore"
-import { collectionPaths } from "@/constants"
-import { UserDocument } from "@/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { blurhash } from "@/constants/blurhash"
+import { getInterestedUsersInPetAction } from "@/services/api/user/getInterestedUsersInPetAction"
+import { GetUserActionReturn } from "@/services/api/user/getUserAction"
+import { RefreshControl } from "react-native-gesture-handler"
+import ListEmpty from "@/components/atoms/ListEmpty"
 
 type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
 export default function InterestedUserList({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
-  const petId = route.params.petId
   const firebaseApp = useContext(FirebaseAppContext)
-  const [users, setUsers] = useState<
-    Array<UserDocument & { id: string }>
-  >([])
-  const [loading, setLoading] = useState(true)
+  const petId = route.params.petId
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const db = getFirestore(firebaseApp)
-      const auth = getAuth(firebaseApp)
-      const user = auth.currentUser
-      const uid = user?.uid
+  const [interestedUsers, setInterestedUsers] = useState<GetUserActionReturn[]>(
+    [],
+  )
+  const [refreshing, setRefreshing] = useState(true)
 
-      if (!uid) {
-        Alert.alert("Usuário não autenticado.")
-        return
-      }
-      console.log("petId = " + petId)
-      //const interestedQuery = query(
-      //  collection(db, collections.pets,petId),
-      //where("id", "==", petId),
-      //where("interested", "array-contains", uid)
-      //)
-      let interestedUserIds: string[] = []
-      const interestedQuery = await getDocs(
-        collection(db, collectionPaths.pets),
-      )
-      interestedQuery.forEach((docpet) => {
-        if (docpet.id == petId) {
-          const interested = docpet.data().interested || []
-          console.log(`${docpet.id} => ` + JSON.stringify(docpet.data()))
-          console.log(`${docpet.id} => ` + interested)
-          interestedUserIds = interested
-        }
+  useMemo(() => {
+    getInterestedUsersInPetAction(petId, firebaseApp)
+      .then((result) => {
+        console.info({result: result})
+        setInterestedUsers(result)
       })
-      if (interestedUserIds.length === 0) {
-        console.log("Nenhum usuário interessado encontrado.")
-        return
-      }
-      console.log("passei2")
-      try {
-        const userQuery = query(
-          collection(db, "users"),
-          where(documentId(), "in", interestedUserIds),
-        )
-        const userSnapshot = await getDocs(userQuery)
-        //userSnapshot.forEach((doc) => {console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);});
-        const interestedUsers = userSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
-        console.log(interestedUsers)
-        setUsers(
-          interestedUsers as Array<UserDocument & { id: string }>,
-        )
-      } catch (error) {
-        console.error("Erro ao buscar usuários interessados: ")
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchUsers()
-  }, [petId, firebaseApp])
+      .finally(() => {
+        setRefreshing(false)
+      })
+  }, [refreshing])
 
   return (
     <FlatList
-      data={users}
+      data={interestedUsers}
       renderItem={({ item }) => (
         <View style={styles.item}>
           <Image
             style={styles.profileImage}
-            source={item.person.pictureURL}
+            source={item.data.person.pictureURL}
             placeholder={{ blurhash }}
           />
           <View style={styles.textContainer}>
-            <Text style={styles.name}>{item.person.fullName}</Text>
+            <Text style={styles.name}>{item.data.person.fullName}</Text>
           </View>
           <TouchableOpacity
             style={styles.button}
@@ -119,10 +64,17 @@ export default function InterestedUserList({ route, navigation }: Props) {
           </TouchableOpacity>
         </View>
       )}
-      ListEmptyComponent={
-        <Text style={styles.emptyText}>
-          Nenhum usuário interessado encontrado.
-        </Text>
+      ListEmptyComponent={() => (
+        <ListEmpty
+          loading={refreshing}
+          message="Não tem ninguém interessado no seu pet"
+        />
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => setRefreshing(true)}
+        />
       }
     />
   )

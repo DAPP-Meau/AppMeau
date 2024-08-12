@@ -1,7 +1,6 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import {
-  ActivityIndicator,
   Button,
   Divider,
   FAB,
@@ -77,19 +76,19 @@ export default function PetDetails({ route, navigation }: Props) {
   }, [navigation, petAndOwner])
 
   const HandleEditPet = () => {
-    Alert.alert("função ainda não implementada")
+    Alert.alert("Editar: função ainda não implementada")
   }
 
   const PetRemove = () => {
-    Alert.alert("função ainda não implementada")
+    Alert.alert("Remover: função ainda não implementada")
   }
 
   const SharePet = () => {
-    Alert.alert("função ainda não implementada")
+    Alert.alert("Compartilhar: função ainda não implementada")
   }
 
   const TogglePetFavourite = () => {
-    Alert.alert("função ainda não implementada")
+    Alert.alert("Favoritar: função ainda não implementada")
   }
 
   const [interstSnackbarVisible, setInterstSnackbarVisible] = useState(false)
@@ -184,24 +183,13 @@ export default function PetDetails({ route, navigation }: Props) {
               />
             </TouchableOpacity>
           </View>
-          {userIsOwner ? ( // Usuário é dono
-            <FAB
-              style={styles.fab}
-              icon={"pencil"}
-              variant="surface"
-              size="medium"
-              onPress={HandleEditPet}
-            />
-          ) : (
-            // Usuário não é dono
-            <FAB
-              style={styles.fab}
-              icon={"heart-outline"}
-              variant="secondary"
-              size="medium"
-              onPress={TogglePetFavourite}
-            />
-          )}
+          <FAB
+            style={styles.fab}
+            icon={userIsOwner ? "pencil" : "heart-outline"}
+            variant="secondary"
+            size="medium"
+            onPress={userIsOwner ? HandleEditPet : TogglePetFavourite}
+          />
 
           <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
             <Text style={styles.animalName}>{pet.animal.name}</Text>

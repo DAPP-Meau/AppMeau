@@ -87,4 +87,4 @@ export type PetAndOwnerDocument = {
   user: { id: string; data: UserDocument }
 }
 
-export type GetPetListActionReturn = Array<PetAndOwnerDocument>
+export type GetPetListActionReturn = PetAndOwnerDocument[]

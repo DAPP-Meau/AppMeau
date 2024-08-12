@@ -18,8 +18,9 @@ const setUninterested = async (
   pet: PetDocument,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
-) : Promise<string[]> => {
-  const interestedUserList : Pick<PetDocument, "interestedUsersList"> = {
+): Promise<string[]> => {
+  const interestedUserList: Pick<PetDocument, "interestedUsersList"> = {
+    // @ts-expect-error  2322
     interestedUsersList: arrayRemove(loggedInUserUID),
   }
   // Atualizar documento no firebase
@@ -33,8 +34,9 @@ const setInterested = async (
   pet: PetDocument,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
-) : Promise<string[]> => {
-  const interestedUserList : Pick<PetDocument, "interestedUsersList"> = {
+): Promise<string[]> => {
+  const interestedUserList: Pick<PetDocument, "interestedUsersList"> = {
+    // @ts-expect-error  2322
     interestedUsersList: arrayUnion(loggedInUserUID),
   }
   // Atualizar documento no firebase
@@ -48,7 +50,7 @@ const setInterested = async (
  *
  * @param firebaseApp Objeto do firebase
  * @param petID Id do documento do pet
- * 
+ *
  * @returns Documento do pet atualizado
  *
  * @throws {Error} caso não haja usuário logado, ou o documento petID não exista
@@ -69,23 +71,23 @@ export async function toggleInterestedInPet(
 
   const pet = await getPetAction(petID, firebaseApp)
   if (!pet) {
-    throw new Error(
-      "The pet that uses this petID does not exist!",
-    )
+    throw new Error("The pet that uses this petID does not exist!")
   }
 
-  console.log({pet: pet.interestedUsersList})
-
-  const interested = isInterestedInPet(
-    pet.interestedUsersList,
-    loggedInUserUID,
-  )
+  const interested = isInterestedInPet(pet.interestedUsersList, loggedInUserUID)
   let newInterestedList = []
-  console.log(interested)
   if (interested) {
-    newInterestedList = await setUninterested(pet, petDocumentRef, loggedInUserUID)
+    newInterestedList = await setUninterested(
+      pet,
+      petDocumentRef,
+      loggedInUserUID,
+    )
   } else {
-    newInterestedList = await setInterested(pet, petDocumentRef, loggedInUserUID)
+    newInterestedList = await setInterested(
+      pet,
+      petDocumentRef,
+      loggedInUserUID,
+    )
   }
 
   pet.interestedUsersList = newInterestedList
