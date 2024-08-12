@@ -10,6 +10,7 @@ import React, {
   TouchableOpacity,
   View,
   Text,
+  Alert,
 } from "react-native"
 import {
   Button,
@@ -22,7 +23,6 @@ import {
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 import ErrorHelperText from "../atoms/ErrorHelperText"
 import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
 export const petRegistrationFieldsSchema = petDocumentSchema
@@ -92,9 +92,8 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       imageURI: "",
     },
     mode: "onChange",
-    resolver: zodResolver(petDocumentSchema),
   })
-  const { control, handleSubmit, watch, formState } = form
+  const { control, handleSubmit, watch, formState, reset } = form
   const { errors, isSubmitting } = formState
   const watchSick = watch("health.sick")
 
@@ -437,9 +436,10 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         <HelperText type="error" visible={Object.keys(errors).length != 0}>
           Por favor resolva os erros acima antes de cadastrar.
         </HelperText>
+        <Text>{JSON.stringify(errors)}</Text>
       </View>
 
-      {/* <Button
+      <Button
         mode="text"
         onPress={() => {
           Alert.alert("Deseja mesmo limpar o formulário?", undefined, [
@@ -461,7 +461,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
         disabled={isSubmitting}
       >
         <Text>Limpar formulário</Text>
-      </Button> */}
+      </Button>
     </View>
   )
 }

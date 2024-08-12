@@ -46,6 +46,8 @@ const setInterested = async (
  *
  * @param firebaseApp Objeto do firebase
  * @param petID Id do documento do pet
+ * 
+ * @returns Documento do pet atualizado
  *
  * @throws {Error} caso não haja usuário logado, ou o documento petID não exista
  */

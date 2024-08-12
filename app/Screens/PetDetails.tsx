@@ -1,6 +1,7 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
+  ActivityIndicator,
   Button,
   Divider,
   FAB,
@@ -16,7 +17,6 @@ import { RootStackParamList } from "../Navigation/RootStack"
 import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
 import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
-import { getAuth } from "firebase/auth"
 import {
   exigências,
   boolToSimNao,
@@ -27,63 +27,62 @@ import {
   temperamento,
 } from "@/utils/strings"
 import HeaderAndText from "@/components/atoms/HeaderAndText"
+import getPetAndOwnerAction from "@/services/api/pet/getPetAndOwnerAction"
+import { PetAndOwnerDocument } from "@/models"
+import getCurrentUserUID from "@/utils/getCurrentUser"
+import { blurhash } from "@/constants/blurhash"
 import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
-import { isInterestedInPet } from "@/utils/isInterestedInPet"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
 export default function PetDetails({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
-
-  const refreshList = route.params.refreshList
-  const { id: petID } = route.params.petAndOwner.pet
-  let { data: pet } = route.params.petAndOwner.pet
-  const { id: ownerID, data: owner } = route.params.petAndOwner.user
-
   const firebaseApp = useContext(FirebaseAppContext)
-  const loggedInUserID = getAuth(firebaseApp).currentUser?.uid
+  const loggedInUserID = getCurrentUserUID(firebaseApp)
 
-  const userIsOwner = loggedInUserID && ownerID === loggedInUserID
-
-  const [interested, setInterested] = useState(false)
-  // Trocar estado do interesse do usuário no pet.
+  const [loading, setLoading] = useState(true)
+  const [petAndOwner, setPetAndOwner] = useState<
+    PetAndOwnerDocument | undefined
+  >(undefined)
+  // Pegar dados do banco
   useEffect(() => {
-    if (loggedInUserID) {
-      setInterested(pet.interestedUsersList?.includes(loggedInUserID) ?? false)
+    setLoading(true)
+    getPetAndOwnerAction(route.params.petID, firebaseApp)
+      .then((value) => {
+        setPetAndOwner(value)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [loading, route])
+
+  const [userIsOwner, setUserIsOwner] = useState(false)
+  const [interested, setInterested] = useState(false)
+  // Trocar estado do interesse do usuário e de usuário é dono
+  useEffect(() => {
+    if (loggedInUserID && petAndOwner) {
+      setInterested(
+        petAndOwner.pet.data.interestedUsersList?.includes(loggedInUserID) ??
+          false,
+      )
+      setUserIsOwner(loggedInUserID === petAndOwner.user.id)
     }
-  }, [loggedInUserID, pet])
+  }, [loggedInUserID, petAndOwner])
 
   // Função para setar botão de compartilhar no cabeçalho
   useEffect(() => {
     navigation.setOptions({
-      title: pet.animal.name,
-      headerRight: () => (
-        <IconButton
-          icon="share-variant"
-          onPress={() => {
-            /* TODO: Botão de compartilhar pet*/
-          }}
-        />
-      ),
+      headerRight: () => <IconButton icon="share-variant" onPress={SharePet} />,
     })
   }, [navigation])
 
-  const handerToggleInterest = useCallback(() => {
-    const myfunc = async () => {
-        pet = await toggleInterestedInPet(firebaseApp, pet, petID)
-        const value = isInterestedInPet(pet.interestedUsersList, loggedInUserID)
-        Alert.alert(
-          pet.animal.name +
-            " foi " +
-            (value ? "adicionado dos" : "removido aos") +
-            " seus interesses",
-        )
-        refreshList()
-    }
-    
-    return myfunc
-  }, [loggedInUserID])
+  // Função para setar título no cabeçalho
+  useEffect(() => {
+    navigation.setOptions({
+      title: petAndOwner?.pet.data.animal.name ?? "Carregando...",
+    })
+  }, [navigation, petAndOwner])
 
   const HandleEditPet = () => {
     Alert.alert("função ainda não implementada")
@@ -93,135 +92,160 @@ export default function PetDetails({ route, navigation }: Props) {
     Alert.alert("função ainda não implementada")
   }
 
+  const SharePet = () => {
+    Alert.alert("função ainda não implementada")
+  }
+
+  const TogglePetFavourite = () => {
+    Alert.alert("função ainda não implementada")
+  }
+
+  const [loadingToggleInterest, setLoadingToggleInterest] = useState(false)
+  const TogglePetInterest = () => {
+    if (petAndOwner) {
+      setLoadingToggleInterest(true)
+      // Lidar com o valor no servidor
+      toggleInterestedInPet(petAndOwner.pet.id, firebaseApp)
+        .then((pet) => {
+          petAndOwner.pet.data = pet
+          setPetAndOwner(petAndOwner)
+        })
+        .finally(() => {
+          setLoadingToggleInterest(false)
+        })
+    }
+  }
+
   const [isImageZoomModalOpen, setIsImageZoomModalOpen] = useState(false)
-  const blurhash =
-    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
-  return (
-    <ScrollView>
-      {/* Modal de zoom da imagem */}
-      <Portal>
-        <Modal
-          visible={isImageZoomModalOpen}
-          onDismiss={() => {
-            setIsImageZoomModalOpen(false)
-          }}
-          contentContainerStyle={styles.modalContent}
-          style={{ elevation: 0 }}
-        >
-          <Zoomable isDoubleTapEnabled doubleTapScale={2}>
-            <Image
-              style={styles.image}
-              source={pet.picture_url}
-              placeholder={{ blurhash }}
-              contentFit="scale-down"
-              transition={1000}
-            />
-          </Zoomable>
-        </Modal>
-      </Portal>
-
-      {/* Resto da tela */}
-      <View style={{ gap: 16 }}>
-        <View style={{ height: 150 }}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsImageZoomModalOpen(true)
+  if (!petAndOwner || loading) {
+    return <ActivityIndicator />
+  } else {
+    const pet = petAndOwner.pet.data
+    const owner = petAndOwner.user.data
+    return (
+      <ScrollView>
+        {/* Modal de zoom da imagem */}
+        <Portal>
+          <Modal
+            visible={isImageZoomModalOpen}
+            onDismiss={() => {
+              setIsImageZoomModalOpen(false)
             }}
+            contentContainerStyle={styles.modalContent}
+            style={{ elevation: 0 }}
           >
-            <Image
-              style={{ height: 150 }}
-              source={pet.picture_url}
-              placeholder={{ blurhash }}
-              contentFit="cover"
-              transition={1000}
-            />
-          </TouchableOpacity>
-        </View>
-        {userIsOwner ? ( // Usuário é dono
-          <FAB
-            style={styles.fab}
-            icon={"pencil"}
-            variant="surface"
-            size="medium"
-            onPress={() => {
-              HandleEditPet()
-            }}
-          />
-        ) : (
-          // Usuário não é dono
-          <FAB
-            style={styles.fab}
-            icon={interested ? "heart" : "heart-outline"}
-            variant="surface"
-            size="medium"
-            loading={}
-            onPress={() => {}}
-          />
-        )}
+            <Zoomable isDoubleTapEnabled doubleTapScale={2}>
+              <Image
+                style={styles.image}
+                source={pet.picture_url}
+                placeholder={{ blurhash }}
+                contentFit="scale-down"
+                transition={1000}
+              />
+            </Zoomable>
+          </Modal>
+        </Portal>
 
-        <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
-          <Text style={styles.animalName}>{pet.animal.name}</Text>
-          <View style={{ gap: 16 }}>
-            <View style={{ flexDirection: "row", gap: 50 }}>
-              <HeaderAndText title="Sexo">
-                <Text>{machoFemea(pet)}</Text>
-              </HeaderAndText>
-              <HeaderAndText title="Porte">
-                <Text>{tamanho(pet)}</Text>
-              </HeaderAndText>
-              <HeaderAndText title="Idade">
-                <Text>{idade(pet)}</Text>
-              </HeaderAndText>
-            </View>
-            <View>
-              <HeaderAndText title="Localização" style={{ flex: 0 }}>
-                <Text>{endereco(owner)}</Text>
-              </HeaderAndText>
-            </View>
-          </View>
-          <Divider />
-          <View style={{ gap: 8 }}>
-            <View
-              style={{ flexDirection: "row", justifyContent: "flex-start" }}
+        {/* Resto da tela */}
+        <View style={{ gap: 16 }}>
+          <View style={{ height: 150 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsImageZoomModalOpen(true)
+              }}
             >
-              <HeaderAndText title="Castrado">
-                <Text>{boolToSimNao(pet.health.neutered)}</Text>
-              </HeaderAndText>
-              <HeaderAndText title="Vermifugado">
-                <Text>{boolToSimNao(pet.health.dewormed)}</Text>
+              <Image
+                style={{ height: 150 }}
+                source={pet.picture_url}
+                placeholder={{ blurhash }}
+                contentFit="cover"
+                transition={1000}
+              />
+            </TouchableOpacity>
+          </View>
+          {userIsOwner ? ( // Usuário é dono
+            <FAB
+              style={styles.fab}
+              icon={"pencil"}
+              variant="surface"
+              size="medium"
+              onPress={() => {
+                HandleEditPet()
+              }}
+            />
+          ) : (
+            // Usuário não é dono
+            <FAB
+              style={styles.fab}
+              icon={interested ? "heart" : "heart-outline"}
+              variant="surface"
+              size="medium"
+              onPress={TogglePetFavourite}
+            />
+          )}
+
+          <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
+            <Text style={styles.animalName}>{pet.animal.name}</Text>
+            <View style={{ gap: 16 }}>
+              <View style={{ flexDirection: "row", gap: 50 }}>
+                <HeaderAndText title="Sexo">
+                  <Text>{machoFemea(pet)}</Text>
+                </HeaderAndText>
+                <HeaderAndText title="Porte">
+                  <Text>{tamanho(pet)}</Text>
+                </HeaderAndText>
+                <HeaderAndText title="Idade">
+                  <Text>{idade(pet)}</Text>
+                </HeaderAndText>
+              </View>
+              <View>
+                <HeaderAndText title="Localização" style={{ flex: 0 }}>
+                  <Text>{endereco(owner)}</Text>
+                </HeaderAndText>
+              </View>
+            </View>
+            <Divider />
+            <View style={{ gap: 8 }}>
+              <View
+                style={{ flexDirection: "row", justifyContent: "flex-start" }}
+              >
+                <HeaderAndText title="Castrado">
+                  <Text>{boolToSimNao(pet.health.neutered)}</Text>
+                </HeaderAndText>
+                <HeaderAndText title="Vermifugado">
+                  <Text>{boolToSimNao(pet.health.dewormed)}</Text>
+                </HeaderAndText>
+              </View>
+              <View
+                style={{ flexDirection: "row", justifyContent: "flex-start" }}
+              >
+                <HeaderAndText title="Vacinado">
+                  <Text>{boolToSimNao(pet.health.vaccinated)}</Text>
+                </HeaderAndText>
+                <HeaderAndText title="Doenças">
+                  <Text>{pet.health.sicknesses ? "" : "Nenhuma"}</Text>
+                </HeaderAndText>
+              </View>
+            </View>
+            <Divider />
+            <View style={{ flexDirection: "row" }}>
+              <HeaderAndText title="Temperamento">
+                <Text>{temperamento(pet)}</Text>
               </HeaderAndText>
             </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "flex-start" }}
-            >
-              <HeaderAndText title="Vacinado">
-                <Text>{boolToSimNao(pet.health.vaccinated)}</Text>
-              </HeaderAndText>
-              <HeaderAndText title="Doenças">
-                <Text>{pet.health.sicknesses ? "" : "Nenhuma"}</Text>
+            <Divider />
+            <View style={{ flexDirection: "row" }}>
+              <HeaderAndText title="Exigências do doador">
+                <Text>{exigências(pet)}</Text>
               </HeaderAndText>
             </View>
-          </View>
-          <Divider />
-          <View style={{ flexDirection: "row" }}>
-            <HeaderAndText title="Temperamento">
-              <Text>{temperamento(pet)}</Text>
-            </HeaderAndText>
-          </View>
-          <Divider />
-          <View style={{ flexDirection: "row" }}>
-            <HeaderAndText title="Exigências do doador">
-              <Text>{exigências(pet)}</Text>
-            </HeaderAndText>
-          </View>
-          <Divider />
-          <View style={{ flexDirection: "row" }}>
-            <HeaderAndText title={"Mais Sobre " + pet.animal.name}>
-              <Text>{pet.animal.story}</Text>
-            </HeaderAndText>
-          </View>
-          {userIsOwner && (
+            <Divider />
+            <View style={{ flexDirection: "row" }}>
+              <HeaderAndText title={"Mais Sobre " + pet.animal.name}>
+                <Text>{pet.animal.story}</Text>
+              </HeaderAndText>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -229,29 +253,42 @@ export default function PetDetails({ route, navigation }: Props) {
                 gap: 10,
               }}
             >
-              <Button
-                mode="contained"
-                onPress={() => {
-                  navigation.navigate("UserList", {
-                    petId: route.params.petAndOwner.pet.id,
-                  })
-                }}
-              >
-                Ver Interessados
-              </Button>
-              <Button
-                mode="contained"
-                style={{ flex: 1 }}
-                onPress={() => PetRemove()}
-              >
-                <Text>Remover Pet</Text>
-              </Button>
+              {userIsOwner ? (
+                <>
+                  <Button
+                    mode="contained"
+                    onPress={() => {
+                      navigation.navigate("UserList", {
+                        petId: petAndOwner?.pet.id,
+                      })
+                    }}
+                  >
+                    Ver Interessados
+                  </Button>
+                  <Button
+                    mode="contained"
+                    style={{ flex: 1 }}
+                    onPress={() => PetRemove()}
+                  >
+                    <Text>Remover Pet</Text>
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  mode="contained"
+                  style={{ flex: 1 }}
+                  onPress={TogglePetInterest}
+                  loading={loadingToggleInterest}
+                >
+                  <Text>Estou interessado</Text>
+                </Button>
+              )}
             </View>
-          )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
-  )
+      </ScrollView>
+    )
+  }
 }
 
 const makeStyles = (theme: MD3Theme) =>

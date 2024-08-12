@@ -1,7 +1,9 @@
 /**
+ * Remove valor da lista caso seja diferente de undefined
+ * * Sempre retorna uma lista, mesmo que vazia.
  *
- * @param list in
- * @param value
+ * @param list lista a ser trabalhada
+ * @param value valor a ser inserido
  */
 export function listRemove<T>(list: Array<T> | undefined, value: T): Array<T> {
   if (!list) {
@@ -17,12 +19,13 @@ export function listRemove<T>(list: Array<T> | undefined, value: T): Array<T> {
 }
 
 /**
- * Insira valor na lista caso ela seja diferente de undefined
+ * Insira valor na lista caso seja diferente de undefined
+ * Sempre retorna uma lista, mesmo que vazia.
  *
  * @param list lista a ser trabalhada
  * @param value valor a ser inserido
  */
-export function listUnion<T>(list: Array<T> | undefined, value: T) {
+export function listUnion<T>(list: Array<T> | undefined, value: T): Array<T> {
   if (list) {
     list.push(value)
   } else {

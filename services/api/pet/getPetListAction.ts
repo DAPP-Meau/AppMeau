@@ -12,15 +12,8 @@ import getUserAction from "../user/getUserAction"
 import {
   petDocumentSchema,
   PetDocument,
-  UserRegistrationDocument,
+  GetPetListActionReturn,
 } from "@/models"
-
-export type PetAndOwnerDocument = {
-  pet: { id: string; data: PetDocument }
-  user: { id: string; data: UserRegistrationDocument }
-}
-
-export type GetPetListActionReturn = Array<PetAndOwnerDocument>
 
 /** Buscar pets no banco de dados.
  *

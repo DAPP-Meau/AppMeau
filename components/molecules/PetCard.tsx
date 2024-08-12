@@ -1,25 +1,27 @@
-import { Alert, StyleSheet, Text, View } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import { StyleSheet, Text, View } from "react-native"
+import React, { useContext } from "react"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { PetAndOwnerDocument } from "@/services/api/pet/getPetListAction"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
 import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import { endereco, idade, machoFemea, tamanho } from "@/utils/strings"
-import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
 import { isInterestedInPet } from "@/utils/isInterestedInPet"
+import { PetAndOwnerDocument } from "@/models"
+import { blurhash } from "@/constants/blurhash"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
-  onChangeInterest: (newData: PetAndOwnerDocument) => Promise<void>
+  onFavourite?: () => void
+  loadingInterest?: boolean
 }
 
 export default function PetCard({
   petAndOwner,
-  onChangeInterest,
+  onFavourite,
+  loadingInterest
 }: IPetCardsProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
@@ -31,14 +33,7 @@ export default function PetCard({
   const firebaseApp = useContext(FirebaseAppContext)
   const loggedInUserID = getAuth(firebaseApp).currentUser?.uid
 
-  const [interested, setInterested] = useState(false)
-  // Trocar estado do interesse do usuário no pet.
-  useEffect(() => {
-    const isInterested = isInterestedInPet(petData.interestedUsersList, loggedInUserID)
-    setInterested(isInterested)
-  }, [loggedInUserID, petData.interestedUsersList])
-
-  const [isLoadingToggleInterest, setIsLoadingToggleInterest] = useState(false)
+  const interested = isInterestedInPet(petData.interestedUsersList, loggedInUserID)
   
   return (
     <Card
@@ -64,10 +59,8 @@ export default function PetCard({
         <IconButton
           icon={interested ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
-          onPress={async () => {
-            setIsLoadingToggleInterest(true)
-            await toggleInterestedInPet(firebaseApp, petData, petID)
-          }}
+          loading={loadingInterest}
+          onPress={onFavourite}
           size={20}
         />
       </View>
@@ -99,9 +92,6 @@ export default function PetCard({
     </Card>
   )
 }
-
-const blurhash =
-  "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
