@@ -1,4 +1,4 @@
-import PetListComponent from "@/components/molecules/PetListComponent"
+import PetListComponent from "@/components/organisms/PetListComponent"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { where } from "firebase/firestore"

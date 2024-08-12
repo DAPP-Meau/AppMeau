@@ -7,22 +7,24 @@ import * as Crypto from "expo-crypto"
 import { FirebaseApp } from "firebase/app"
 import { PetRegistrationFields } from "@/components/organisms/CreatePetForm"
 import { PetDocument } from "@/models"
+import { UseFormReturn } from "react-hook-form"
 
 /** Cria novo pet usando o usuário logado 
  *
- * @param fields Instância do formulário que criou os dados
+ * @param form Instância do formulário que criou os dados
  * @param firebaseApp Instẫncia do firebase a ser utilizada
  * 
  * @throws {Error} Se não tiver usuário logado
  */
 export async function createPetAction(
-  fields: PetRegistrationFields,
+  form: UseFormReturn<PetRegistrationFields>,
   firebaseApp: FirebaseApp,
 ): Promise<void> {
   const auth = getAuth(firebaseApp)
   const db = getFirestore(firebaseApp)
   const storage = getStorage(firebaseApp)
 
+  const fields = form.getValues()
   // Upando imagem para o Storage
   const { imageURI } = fields
   const image_url = await submitDataToStorage(
@@ -44,7 +46,6 @@ export async function createPetAction(
     owner_uid: auth.currentUser.uid,
     picture_url: image_url,
   }
-  // TODO: setDoc pode nunca terminar. É necessário criar um timeout.
+
   await setDoc(doc(ref), data)
-  // TODO: bloco try catch com erros que possam acontecer 
 }
