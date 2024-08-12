@@ -9,7 +9,7 @@ import {
   addDoc,
   serverTimestamp,
 } from "firebase/firestore"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 

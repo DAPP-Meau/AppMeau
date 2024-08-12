@@ -16,7 +16,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { Image } from "expo-image"
 import { Zoomable } from "@likashefqet/react-native-image-zoom"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import {
   exigências,
   boolToSimNao,

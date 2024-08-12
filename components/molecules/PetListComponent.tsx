@@ -1,7 +1,7 @@
 import PetCard from "@/components/molecules/PetCard"
 import { GetPetListActionReturn } from "@/models"
 import { getPetListAction } from "@/services/api/pet/getPetListAction"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { QueryConstraint } from "firebase/firestore"
 import React, { useContext, useEffect, useMemo, useState } from "react"

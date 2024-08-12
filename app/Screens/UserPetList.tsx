@@ -1,6 +1,6 @@
 import PetListComponent from "@/components/molecules/PetListComponent"
 import getCurrentUserUID from "@/utils/getCurrentUser"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { where } from "firebase/firestore"
 import React, { useContext } from "react"
 

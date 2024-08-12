@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 import { getAuth } from "firebase/auth"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { loginAction } from "@/services/api/auth/loginAction"
 import LoginForm, { LoginFields } from "@/components/organisms/LoginForm"
 import { Button, Text } from "react-native-paper"

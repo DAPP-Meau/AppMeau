@@ -1,7 +1,7 @@
 import CreatePetForm from "@/components/organisms/CreatePetForm"
 import Colors from "@/constants/Colors"
 import { createPetAction } from "@/services/api/pet/createPetAction"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { useContext } from "react"

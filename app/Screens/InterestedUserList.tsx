@@ -9,7 +9,7 @@ import {
 import { Image } from "expo-image"
 import React, { useContext, useEffect, useState } from "react"
 import { MD3Theme, useTheme } from "react-native-paper"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import {
   getFirestore,

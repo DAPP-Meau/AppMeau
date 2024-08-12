@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { ColorSchemeContext, ColorSchemeContextProps } from "@/utils/store/ColorSchemeContext"
+import { ColorSchemeContext, ColorSchemeContextProps } from "@/services/store/ColorSchemeContext"
 
 interface Props {
   value: ColorSchemeContextProps

@@ -1,7 +1,7 @@
 import { Text, View } from "react-native"
 import React, { useContext } from "react"
 import { Button } from "react-native-paper"
-import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
+import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import { useNavigation } from "@react-navigation/native"
 import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"

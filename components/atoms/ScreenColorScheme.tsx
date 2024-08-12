@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native"
-import { ColorSchemeContext, ColorSchemes } from "@/utils/store/ColorSchemeContext"
+import { ColorSchemeContext, ColorSchemes } from "@/services/store/ColorSchemeContext"
 
 interface ColorSchemeComponentProps {
   theme: ColorSchemes
