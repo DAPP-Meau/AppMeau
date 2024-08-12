@@ -5,7 +5,7 @@ import {
   getAuth,
 } from "firebase/auth"
 import {
-  UserRegistrationDocument,
+  UserDocument,
   UserRegistrationForm,
 } from "@/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
@@ -76,7 +76,7 @@ export async function createUserAction(
     const ref = collection(db, collectionPaths.users)
 
     // Criando o objeto a ser inserido no banco utilizando o tipo correto.
-    const registrationDocument: UserRegistrationDocument = {
+    const registrationDocument: UserDocument = {
       address: fields.address,
       person: fields.person,
       login: {

@@ -20,7 +20,7 @@ import {
   documentId,
 } from "firebase/firestore"
 import { collectionPaths } from "@/constants"
-import { UserRegistrationDocument } from "@/models"
+import { UserDocument } from "@/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { blurhash } from "@/constants/blurhash"
@@ -33,7 +33,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
   const petId = route.params.petId
   const firebaseApp = useContext(FirebaseAppContext)
   const [users, setUsers] = useState<
-    Array<UserRegistrationDocument & { id: string }>
+    Array<UserDocument & { id: string }>
   >([])
   const [loading, setLoading] = useState(true)
 
@@ -84,7 +84,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
         }))
         console.log(interestedUsers)
         setUsers(
-          interestedUsers as Array<UserRegistrationDocument & { id: string }>,
+          interestedUsers as Array<UserDocument & { id: string }>,
         )
       } catch (error) {
         console.error("Erro ao buscar usuários interessados: ")

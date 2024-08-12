@@ -1,40 +1,34 @@
-export type Person = {
-  fullName: string
-  age: number
-  phone: string
-  picture_uid: string
-}
+import { z } from "zod"
 
-export type Address = {
-  state: string
-  city: string
-  fullAddress: string
-}
+export const personSchema = z.object({
+  fullName: z.string(),
+  age: z.number().nonnegative(),
+  phone: z.string(),
+  picture_uid: z.string(),
+})
 
-export type Login = {
-  username: string
-  email: string
-  password: string
-}
+export type Person = z.infer<typeof personSchema>
 
-/** Usado no formulário */
-export type UserRegistrationForm = {
-  person: Person
-  address: Address
-  login: Login
-  imageURI: string
-}
+export const addressSchema = z.object({
+  state: z.string(),
+  city: z.string(),
+  fullAddress: z.string(),
+})
 
-/** Usado para armazenamento no Firebase Database */
-export type UserRegistrationDocument = {
-  person: Person
-  address: Address
-  login: Omit<Login, "password">
-}
+export type Address = z.infer<typeof addressSchema>
 
-//TODO
-export function isUserRegistrationDocument(
-  value: unknown,
-): value is UserRegistrationDocument {
-  return true
-}
+export const loginSchema = z.object({
+  username: z.string(),
+  email: z.string().email(),
+})
+
+export type Login = z.infer<typeof loginSchema>
+
+export const userDocumentSchema = z.object({
+  person: personSchema,
+  address: addressSchema,
+  login: loginSchema,
+})
+
+/** Usado para armazenamento de dados do usuário no Firestore */
+export type UserDocument = z.infer<typeof userDocumentSchema>

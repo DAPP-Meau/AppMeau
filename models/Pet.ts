@@ -1,5 +1,5 @@
 import z from "zod"
-import { UserRegistrationDocument } from "./User"
+import { UserDocument } from "./User"
 
 export const speciesOptionsEnum = z.enum(["cat", "dog"])
 export const sexOptionsEnum = z.enum(["male", "female"])
@@ -84,7 +84,7 @@ export type PetDocument = z.infer<typeof petDocumentSchema>
 
 export type PetAndOwnerDocument = {
   pet: { id: string; data: PetDocument }
-  user: { id: string; data: UserRegistrationDocument }
+  user: { id: string; data: UserDocument }
 }
 
 export type GetPetListActionReturn = Array<PetAndOwnerDocument>

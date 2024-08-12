@@ -1,4 +1,4 @@
-import { PetDocument, UserRegistrationDocument } from "../models"
+import { PetDocument, UserDocument } from "../models"
 
 export function boolToSimNao(b: boolean) {
   return b ? "Sim" : "Não"
@@ -108,6 +108,7 @@ export const exigências = (pet: PetDocument): string => {
   )
 }
 
-export const endereco = ({ address }: UserRegistrationDocument): string => {
-  return address.fullAddress + " - " + address.city + ", " + address.state
+export const endereco = ({ address }: UserDocument): string => {
+  const { fullAddress, city, state } = address
+  return fullAddress + " - " + city + ", " + state
 }
