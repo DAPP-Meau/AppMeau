@@ -7,9 +7,7 @@ import { QueryConstraint } from "firebase/firestore"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Alert } from "react-native"
 import { FlatList, RefreshControl } from "react-native-gesture-handler"
-import {
-  IconButton
-} from "react-native-paper"
+import { IconButton } from "react-native-paper"
 import ListEmpty from "../atoms/ListEmpty"
 
 export interface IPetListProps {
@@ -54,30 +52,27 @@ export default function PetListComponent({ query }: IPetListProps) {
   }
 
   return (
-    <>
-      <FlatList
-        data={petList}
-        renderItem={({ item }) => (
-          <PetCard
-            petAndOwner={item}
-            key={item.pet.id}
-            onFavourite={onFavourite}
-          />
-        )}
-        ListEmptyComponent={() => (
-          <ListEmpty
-            loading={refreshing}
-            message="Não encontramos pets com esses critérios"
-          />
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => setRefreshing(true)}
-          />
-        }
-      />
-    </>
+    <FlatList
+      data={petList}
+      renderItem={({ item }) => (
+        <PetCard
+          petAndOwner={item}
+          key={item.pet.id}
+          onFavourite={onFavourite}
+        />
+      )}
+      ListEmptyComponent={() => (
+        <ListEmpty
+          loading={refreshing}
+          message="Não encontramos pets com esses critérios"
+        />
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => setRefreshing(true)}
+        />
+      }
+    />
   )
 }
-

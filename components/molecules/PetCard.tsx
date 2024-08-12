@@ -1,14 +1,11 @@
 import { StyleSheet, Text, View } from "react-native"
-import React, { useContext } from "react"
+import React from "react"
 import { Card, IconButton, MD3Theme, useTheme } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
-import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
-import { getAuth } from "firebase/auth"
 import { endereco, idade, machoFemea, tamanho } from "@/utils/strings"
-import { isInterestedInPet } from "@/utils/isInterestedInPet"
 import { PetAndOwnerDocument } from "@/models"
 import { blurhash } from "@/constants/blurhash"
 
@@ -29,11 +26,6 @@ export default function PetCard({
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const { id: petID, data: petData } = petAndOwner.pet
   const ownerData = petAndOwner.user.data
-
-  const firebaseApp = useContext(FirebaseAppContext)
-  const loggedInUserID = getAuth(firebaseApp).currentUser?.uid
-
-  const interested = isInterestedInPet(petData.interestedUsersList, loggedInUserID)
   
   return (
     <Card
@@ -57,7 +49,7 @@ export default function PetCard({
       >
         <Text style={{ fontSize: 18 }}>{petData.animal.name}</Text>
         <IconButton
-          icon={interested ? "heart" : "heart-outline"}
+          icon={"heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
           loading={loadingInterest}
           onPress={onFavourite}
