@@ -1,7 +1,7 @@
 import CheckBoxGroup from "../atoms/CheckBoxGroup"
 import RadioButtonGroup from "../atoms/RadioButtonGroup"
 import Colors from "@/constants/Colors"
-import { PetRegistrationFields } from "@/models"
+import { petDocumentSchema } from "@/models"
 import selectImage from "@/utils/selectImage"
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
@@ -10,20 +10,32 @@ import React, {
   TouchableOpacity,
   View,
   Text,
-  Alert,
 } from "react-native"
 import {
   Button,
   Checkbox,
   HelperText,
   Icon,
-  List,
   TextInput,
   useTheme,
 } from "react-native-paper"
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 import ErrorHelperText from "../atoms/ErrorHelperText"
 import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+
+export const petRegistrationFieldsSchema = petDocumentSchema
+  .omit({
+    interestedUsersList: true,
+    owner_uid: true,
+    picture_url: true,
+  })
+  .extend({
+    imageURI: z.string(),
+  })
+
+export type PetRegistrationFields = z.infer<typeof petRegistrationFieldsSchema>
 
 export interface CreatePetFormProps {
   /**
@@ -36,10 +48,7 @@ export interface CreatePetFormProps {
    * react-hook-form neste componente.
    *
    */
-  onSubmit?: (
-    fields: PetRegistrationFields,
-    form: UseFormReturn<PetRegistrationFields>,
-  ) => Promise<void>
+  onSubmit?: (form: UseFormReturn<PetRegistrationFields>) => Promise<void>
 }
 
 /**
@@ -83,8 +92,9 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       imageURI: "",
     },
     mode: "onChange",
+    resolver: zodResolver(petDocumentSchema),
   })
-  const { control, handleSubmit, watch, formState, reset } = form
+  const { control, handleSubmit, watch, formState } = form
   const { errors, isSubmitting } = formState
   const watchSick = watch("health.sick")
 
@@ -362,7 +372,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
           <Text style={styles.text}>Acompanhamento?</Text>
         </View>
         {hasMonitoring && (
-          <View style={{marginLeft:25}}>
+          <View style={{ marginLeft: 25 }}>
             <RadioButtonGroup
               control={control}
               title="Duração do acompanhamento*"
@@ -416,8 +426,8 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
       <View>
         <Button
           mode="contained"
-          onPress={handleSubmit(async (completedFields) => {
-            await onSubmit?.(completedFields, form)
+          onPress={handleSubmit(async () => {
+            await onSubmit?.(form)
           })}
           loading={isSubmitting}
           disabled={isSubmitting}

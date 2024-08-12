@@ -9,34 +9,37 @@ import { Image } from "expo-image"
 import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { getAuth } from "firebase/auth"
 import { endereco, idade, machoFemea, tamanho } from "@/utils/strings"
-import { HandleFavourite } from "@/services/api/pet/handleFavourite"
+import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
+import { isInterestedInPet } from "@/utils/isInterestedInPet"
 
 interface IPetCardsProps {
   petAndOwner: PetAndOwnerDocument
-  onRefresh: () => void
+  onChangeInterest: (newData: PetAndOwnerDocument) => Promise<void>
 }
 
-export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
+export default function PetCard({
+  petAndOwner,
+  onChangeInterest,
+}: IPetCardsProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const { id: petID, data: petData } = petAndOwner.pet
-  const userData = petAndOwner.user.data
+  const ownerData = petAndOwner.user.data
 
   const firebaseApp = useContext(FirebaseAppContext)
-  const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
+  const loggedInUserID = getAuth(firebaseApp).currentUser?.uid
 
   const [interested, setInterested] = useState(false)
+  // Trocar estado do interesse do usuário no pet.
   useEffect(() => {
-    if (loggedInUserUID) {
-      setInterested(petData.interested.includes(loggedInUserUID))
-    }
-  }, [loggedInUserUID, petData])
+    const isInterested = isInterestedInPet(petData.interestedUsersList, loggedInUserID)
+    setInterested(isInterested)
+  }, [loggedInUserID, petData.interestedUsersList])
 
-  const blurhash =
-    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
-
+  const [isLoadingToggleInterest, setIsLoadingToggleInterest] = useState(false)
+  
   return (
     <Card
       style={{
@@ -45,10 +48,7 @@ export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
         backgroundColor: theme.colors.surface,
       }}
       onPress={() => {
-        navigation.navigate("petDetails", {
-          petAndOwner: petAndOwner,
-          refreshList: onRefresh,
-        })
+        navigation.navigate("petDetails", { petID: petID })
       }}
     >
       <View
@@ -64,26 +64,16 @@ export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
         <IconButton
           icon={interested ? "heart" : "heart-outline"}
           iconColor={theme.colors.onPrimaryContainer}
-          onPress={() => {
-            HandleFavourite(firebaseApp, petData, petID, (value) => {
-              setInterested(value)
-              Alert.alert(
-                petData.animal.name 
-                + " foi "
-                + (value
-                  ? "removido dos"
-                  : "adicionado aos") 
-                + " seus interesses",
-              )
-              onRefresh()
-            })
+          onPress={async () => {
+            setIsLoadingToggleInterest(true)
+            await toggleInterestedInPet(firebaseApp, petData, petID)
           }}
           size={20}
         />
       </View>
       <Image
         style={{ height: 150 }}
-        source={petData.animal.picture_uid}
+        source={petData.picture_url}
         placeholder={{ blurhash }}
         contentFit="cover"
         transition={1000}
@@ -102,13 +92,16 @@ export default function PetCard({ petAndOwner, onRefresh }: IPetCardsProps) {
         </View>
         <View>
           <Text style={{ textAlign: "center", color: theme.colors.onSurface }}>
-            {endereco(userData)}
+            {endereco(ownerData)}
           </Text>
         </View>
       </View>
     </Card>
   )
 }
+
+const blurhash =
+  "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({

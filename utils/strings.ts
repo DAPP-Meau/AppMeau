@@ -1,10 +1,10 @@
-import { PetRegistrationDocument, UserRegistrationDocument } from "../models"
+import { PetDocument, UserRegistrationDocument } from "../models"
 
 export function boolToSimNao(b: boolean) {
   return b ? "Sim" : "Não"
 }
 
-export const machoFemea = (pet: PetRegistrationDocument) => {
+export const machoFemea = (pet: PetDocument) => {
   switch (pet.animal.sex) {
     case "female":
       return "Fêmea"
@@ -13,7 +13,7 @@ export const machoFemea = (pet: PetRegistrationDocument) => {
   }
 }
 
-export const tamanho = (pet: PetRegistrationDocument) => {
+export const tamanho = (pet: PetDocument) => {
   switch (pet.animal.size) {
     case "large":
       return "Grande"
@@ -24,7 +24,7 @@ export const tamanho = (pet: PetRegistrationDocument) => {
   }
 }
 
-export const idade = (pet: PetRegistrationDocument) => {
+export const idade = (pet: PetDocument) => {
   switch (pet.animal.age) {
     case "adult":
       return "Adulto"
@@ -64,7 +64,7 @@ export function createTextFromList<T>(
   ) // Capitalizar primeiro caractere
 }
 
-export const temperamento = (pet: PetRegistrationDocument): string => {
+export const temperamento = (pet: PetDocument): string => {
   return createTextFromList(
     [
       pet.temperament.calm ? "calmo" : "",
@@ -78,7 +78,7 @@ export const temperamento = (pet: PetRegistrationDocument): string => {
   )
 }
 
-export const exigências = (pet: PetRegistrationDocument): string => {
+export const exigências = (pet: PetDocument): string => {
   return createTextFromList(
     [
       pet.adoptionRequirements.requireAdoptionTerm ? "Termo de adoção" : "",
@@ -94,12 +94,12 @@ export const exigências = (pet: PetRegistrationDocument): string => {
   )
 }
 
-export const endereco = (owner: UserRegistrationDocument): string => {
+export const endereco = ({address}: UserRegistrationDocument): string => {
   return (
-    owner.address.fullAddress +
+    address.fullAddress +
     " - " +
-    owner.address.city +
+    address.city +
     ", " +
-    owner.address.state
+    address.state
   )
 }

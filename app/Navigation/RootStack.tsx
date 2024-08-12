@@ -11,7 +11,7 @@ import Chat from "../Screens/Chat"
 export type RootStackParamList = {
   homeDrawer: undefined
   addPetsSuccess: undefined
-  petDetails: { petAndOwner: PetAndOwnerDocument; refreshList: () => void }
+  petDetails: { petID: string }
   UserList: { petId: string }
   chat: { userID: string; petID: string }
 }

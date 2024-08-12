@@ -3,18 +3,23 @@ import Colors from "@/constants/Colors"
 import { createPetAction } from "@/services/api/pet/createPetAction"
 import { FirebaseAppContext } from "@/utils/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
+import { StackNavigationProp } from "@react-navigation/stack"
 import { useContext } from "react"
 import React, { ScrollView, StyleSheet } from "react-native"
+import { RootStackParamList } from "../Navigation/RootStack"
 
 export default function PetRegistration() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const firebaseApp = useContext(FirebaseAppContext)
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <CreatePetForm
-        onSubmit={async (fields, form) => {
-          await createPetAction(fields, form, firebaseApp, navigation)
+        onSubmit={async (form) => {
+          const fields = form.getValues()
+          await createPetAction(fields, firebaseApp)
+          form.reset()
+          navigation.navigate("addPetsSuccess")
         }}
       />
     </ScrollView>

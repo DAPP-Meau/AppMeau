@@ -1,5 +1,5 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import {
   Button,
   Divider,
@@ -27,7 +27,8 @@ import {
   temperamento,
 } from "@/utils/strings"
 import HeaderAndText from "@/components/atoms/HeaderAndText"
-import { HandleFavourite } from "@/services/api/pet/handleFavourite"
+import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
+import { isInterestedInPet } from "@/utils/isInterestedInPet"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -36,20 +37,22 @@ export default function PetDetails({ route, navigation }: Props) {
   const styles = makeStyles(theme)
 
   const refreshList = route.params.refreshList
-  const { id: petID, data: pet } = route.params.petAndOwner.pet
+  const { id: petID } = route.params.petAndOwner.pet
+  let { data: pet } = route.params.petAndOwner.pet
   const { id: ownerID, data: owner } = route.params.petAndOwner.user
 
   const firebaseApp = useContext(FirebaseAppContext)
-  const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
+  const loggedInUserID = getAuth(firebaseApp).currentUser?.uid
 
-  const userIsOwner = loggedInUserUID && ownerID === loggedInUserUID
+  const userIsOwner = loggedInUserID && ownerID === loggedInUserID
 
   const [interested, setInterested] = useState(false)
+  // Trocar estado do interesse do usuário no pet.
   useEffect(() => {
-    if (loggedInUserUID) {
-      setInterested(pet.interested.includes(loggedInUserUID))
+    if (loggedInUserID) {
+      setInterested(pet.interestedUsersList?.includes(loggedInUserID) ?? false)
     }
-  }, [loggedInUserUID, pet])
+  }, [loggedInUserID, pet])
 
   // Função para setar botão de compartilhar no cabeçalho
   useEffect(() => {
@@ -65,6 +68,22 @@ export default function PetDetails({ route, navigation }: Props) {
       ),
     })
   }, [navigation])
+
+  const handerToggleInterest = useCallback(() => {
+    const myfunc = async () => {
+        pet = await toggleInterestedInPet(firebaseApp, pet, petID)
+        const value = isInterestedInPet(pet.interestedUsersList, loggedInUserID)
+        Alert.alert(
+          pet.animal.name +
+            " foi " +
+            (value ? "adicionado dos" : "removido aos") +
+            " seus interesses",
+        )
+        refreshList()
+    }
+    
+    return myfunc
+  }, [loggedInUserID])
 
   const HandleEditPet = () => {
     Alert.alert("função ainda não implementada")
@@ -93,7 +112,7 @@ export default function PetDetails({ route, navigation }: Props) {
           <Zoomable isDoubleTapEnabled doubleTapScale={2}>
             <Image
               style={styles.image}
-              source={pet.animal.picture_uid}
+              source={pet.picture_url}
               placeholder={{ blurhash }}
               contentFit="scale-down"
               transition={1000}
@@ -112,35 +131,35 @@ export default function PetDetails({ route, navigation }: Props) {
           >
             <Image
               style={{ height: 150 }}
-              source={pet.animal.picture_uid}
+              source={pet.picture_url}
               placeholder={{ blurhash }}
               contentFit="cover"
               transition={1000}
             />
           </TouchableOpacity>
         </View>
-        <FAB
-          style={styles.fab}
-          icon={userIsOwner ? "pencil" : interested ? "heart" : "heart-outline"}
-          variant="surface"
-          size="medium"
-          onPress={() => {
-            userIsOwner
-              ? HandleEditPet()
-              : HandleFavourite(firebaseApp, pet, petID, (value) => {
-                  setInterested(value)
-                  Alert.alert(
-                    pet.animal.name 
-                    + " foi " 
-                    + (value
-                      ? "removido dos"
-                      : "adicionado aos")
-                    + " seus interesses",
-                  )
-                  refreshList()
-                })
-          }} // Ação depende se é dono ou não}
-        />
+        {userIsOwner ? ( // Usuário é dono
+          <FAB
+            style={styles.fab}
+            icon={"pencil"}
+            variant="surface"
+            size="medium"
+            onPress={() => {
+              HandleEditPet()
+            }}
+          />
+        ) : (
+          // Usuário não é dono
+          <FAB
+            style={styles.fab}
+            icon={interested ? "heart" : "heart-outline"}
+            variant="surface"
+            size="medium"
+            loading={}
+            onPress={() => {}}
+          />
+        )}
+
         <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
           <Text style={styles.animalName}>{pet.animal.name}</Text>
           <View style={{ gap: 16 }}>

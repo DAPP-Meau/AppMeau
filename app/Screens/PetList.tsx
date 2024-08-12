@@ -34,9 +34,6 @@ export default function PetList() {
       renderItem={({ item }) => (
         <PetCard
           petAndOwner={item}
-          onRefresh={() => {
-            setRefreshing(true)
-          }}
         />
       )}
       ListEmptyComponent={() => {

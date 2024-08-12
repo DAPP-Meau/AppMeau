@@ -20,7 +20,7 @@ import {
   where,
   documentId,
 } from "firebase/firestore"
-import { collections } from "@/constants"
+import { collectionPaths } from "@/constants"
 import { UserRegistrationDocument } from "@/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
@@ -53,7 +53,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
       //where("interested", "array-contains", uid)
       //)
       let interestedUserIds: string[] = []
-      const interestedQuery = await getDocs(collection(db, collections.pets))
+      const interestedQuery = await getDocs(collection(db, collectionPaths.pets))
       interestedQuery.forEach((docpet) => {
         if (docpet.id == petId) {
           const interested = docpet.data().interested || []

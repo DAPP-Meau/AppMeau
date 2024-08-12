@@ -11,7 +11,7 @@ import {
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { PasswordConfirm } from "@/components/organisms/CreateUserForm"
-import { collections } from "@/constants"
+import { collectionPaths } from "@/constants"
 import { submitDataToStorage } from "../storage/submitDataToStorage"
 import * as Crypto from "expo-crypto"
 import { getStorage } from "firebase/storage"
@@ -73,7 +73,7 @@ export async function createUserAction(
 
     //Setando documento de usuário no Firestore
     const uid = data.user.uid
-    const ref = collection(db, collections.users)
+    const ref = collection(db, collectionPaths.users)
 
     // Criando o objeto a ser inserido no banco utilizando o tipo correto.
     const registrationDocument: UserRegistrationDocument = {
