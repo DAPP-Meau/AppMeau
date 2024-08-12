@@ -9,6 +9,8 @@ import {
   MD3Theme,
   Modal,
   Portal,
+  ProgressBar,
+  Snackbar,
   useTheme,
 } from "react-native-paper"
 import { ScrollView } from "react-native"
@@ -90,6 +92,7 @@ export default function PetDetails({ route, navigation }: Props) {
     Alert.alert("função ainda não implementada")
   }
 
+  const [interstSnackbarVisible, setInterstSnackbarVisible] = useState(false)
   const [loadingToggleInterest, setLoadingToggleInterest] = useState(false)
   const TogglePetInterest = () => {
     if (petAndOwner) {
@@ -102,6 +105,7 @@ export default function PetDetails({ route, navigation }: Props) {
         })
         .finally(() => {
           setLoadingToggleInterest(false)
+          setInterstSnackbarVisible(true)
         })
     }
   }
@@ -121,7 +125,7 @@ export default function PetDetails({ route, navigation }: Props) {
   const [isImageZoomModalOpen, setIsImageZoomModalOpen] = useState(false)
 
   if (!petAndOwner || loading) {
-    return <ActivityIndicator />
+    return <ProgressBar indeterminate />
   } else {
     const pet = petAndOwner.pet.data
     const owner = petAndOwner.user.data
@@ -147,6 +151,20 @@ export default function PetDetails({ route, navigation }: Props) {
               />
             </Zoomable>
           </Modal>
+          <Snackbar
+            visible={interstSnackbarVisible}
+            onDismiss={() => setInterstSnackbarVisible(false)}
+          >
+            {interested ? (
+              <Text style={{ color: theme.colors.onTertiary }}>
+                Seu interesse foi armazenado com sucesso
+              </Text>
+            ) : (
+              <Text style={{ color: theme.colors.onTertiary }}>
+                Seu interesse no pet foi removido
+              </Text>
+            )}
+          </Snackbar>
         </Portal>
 
         {/* Resto da tela */}
@@ -179,7 +197,7 @@ export default function PetDetails({ route, navigation }: Props) {
             <FAB
               style={styles.fab}
               icon={"heart-outline"}
-              variant="surface"
+              variant="secondary"
               size="medium"
               onPress={TogglePetFavourite}
             />
@@ -283,6 +301,7 @@ export default function PetDetails({ route, navigation }: Props) {
                   style={{ flex: 1 }}
                   onPress={TogglePetInterest}
                   loading={loadingToggleInterest}
+                  disabled={loadingToggleInterest}
                 >
                   {!interested ? (
                     <Text>Estou interessado</Text>
@@ -319,7 +338,7 @@ const makeStyles = (theme: MD3Theme) =>
       right: 0,
       top: 115,
       borderColor: "black",
-      borderWidth: 1,
+      borderWidth: 0.5,
     },
     modalContent: {
       backgroundColor: "transparent",

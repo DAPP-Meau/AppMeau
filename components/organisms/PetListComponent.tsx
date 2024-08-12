@@ -5,9 +5,9 @@ import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { QueryConstraint } from "firebase/firestore"
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { Alert, Text } from "react-native"
+import { Alert, Text, View } from "react-native"
 import { FlatList, RefreshControl } from "react-native-gesture-handler"
-import { ActivityIndicator, IconButton } from "react-native-paper"
+import { ActivityIndicator, Icon, IconButton, ProgressBar } from "react-native-paper"
 
 export interface IPetListProps {
   query?: QueryConstraint[]
@@ -36,15 +36,17 @@ export default function PetListComponent({ query }: IPetListProps) {
   // Adicionar botão de pesquisa no cabeçalho desta tela.
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () => <IconButton icon="magnify" onPress={onSearch} />
+      headerRight: () => <IconButton icon="magnify" onPress={onSearch} />,
     })
   }, [navigation])
 
-  const onFavourite = () => { // TODO: botão de favorito
+  const onFavourite = () => {
+    // TODO: botão de favorito
     Alert.alert("Não implementado")
   }
 
-  const onSearch = () => { // TODO: filtro de pesquisa
+  const onSearch = () => {
+    // TODO: filtro de pesquisa
     Alert.alert("Não implementado")
   }
 
@@ -72,6 +74,16 @@ export default function PetListComponent({ query }: IPetListProps) {
 }
 
 function ListEmpty({ loading }: { loading: boolean }) {
-  if (loading) return <ActivityIndicator />
-  else return <Text>Nadinha!</Text>
+  return (
+    <View >
+      {loading ? (
+        <ProgressBar indeterminate/>
+      ) : (
+        <View style={{margin:20, alignItems: "center" }}>
+          <Icon source="alert-circle-outline" size={40} />
+          <Text>Não encontramos pets com esses critérios</Text>
+        </View >
+      )}
+    </View>
+  )
 }
