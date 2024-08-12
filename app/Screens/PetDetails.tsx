@@ -1,5 +1,5 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import {
   ActivityIndicator,
   Button,
@@ -32,6 +32,7 @@ import { PetAndOwnerDocument } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { blurhash } from "@/constants/blurhash"
 import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
+import { isInterestedInPet } from "@/utils/isInterestedInPet"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -46,8 +47,7 @@ export default function PetDetails({ route, navigation }: Props) {
     PetAndOwnerDocument | undefined
   >(undefined)
   // Pegar dados do banco
-  useEffect(() => {
-    setLoading(true)
+  useMemo(() => {
     getPetAndOwnerAction(route.params.petID, firebaseApp)
       .then((value) => {
         setPetAndOwner(value)
@@ -55,20 +55,10 @@ export default function PetDetails({ route, navigation }: Props) {
       .finally(() => {
         setLoading(false)
       })
-  }, [loading, route])
+  }, [loading])
 
   const [userIsOwner, setUserIsOwner] = useState(false)
   const [interested, setInterested] = useState(false)
-  // Trocar estado do interesse do usuário e de usuário é dono
-  useEffect(() => {
-    if (loggedInUserID && petAndOwner) {
-      setInterested(
-        petAndOwner.pet.data.interestedUsersList?.includes(loggedInUserID) ??
-          false,
-      )
-      setUserIsOwner(loggedInUserID === petAndOwner.user.id)
-    }
-  }, [loggedInUserID, petAndOwner])
 
   // Função para setar botão de compartilhar no cabeçalho
   useEffect(() => {
@@ -115,6 +105,18 @@ export default function PetDetails({ route, navigation }: Props) {
         })
     }
   }
+
+  // Trocar estado do interesse do usuário e de usuário é dono
+  useEffect(() => {
+    if (loggedInUserID && petAndOwner) {
+      const localIsInterested = isInterestedInPet(
+        petAndOwner.pet.data.interestedUsersList,
+        loggedInUserID,
+      )
+      setInterested(localIsInterested)
+      setUserIsOwner(loggedInUserID === petAndOwner.user.id)
+    }
+  }, [loggedInUserID, petAndOwner, loadingToggleInterest])
 
   const [isImageZoomModalOpen, setIsImageZoomModalOpen] = useState(false)
 
@@ -170,15 +172,13 @@ export default function PetDetails({ route, navigation }: Props) {
               icon={"pencil"}
               variant="surface"
               size="medium"
-              onPress={() => {
-                HandleEditPet()
-              }}
+              onPress={HandleEditPet}
             />
           ) : (
             // Usuário não é dono
             <FAB
               style={styles.fab}
-              icon={interested ? "heart" : "heart-outline"}
+              icon={"heart-outline"}
               variant="surface"
               size="medium"
               onPress={TogglePetFavourite}
@@ -240,12 +240,16 @@ export default function PetDetails({ route, navigation }: Props) {
                 <Text>{exigências(pet)}</Text>
               </HeaderAndText>
             </View>
-            <Divider />
-            <View style={{ flexDirection: "row" }}>
-              <HeaderAndText title={"Mais Sobre " + pet.animal.name}>
-                <Text>{pet.animal.story}</Text>
-              </HeaderAndText>
-            </View>
+            {pet.animal.story && (
+              <>
+                <Divider />
+                <View style={{ flexDirection: "row" }}>
+                  <HeaderAndText title={"Mais Sobre " + pet.animal.name}>
+                    <Text>{pet.animal.story}</Text>
+                  </HeaderAndText>
+                </View>
+              </>
+            )}
             <View
               style={{
                 flexDirection: "row",
@@ -280,7 +284,11 @@ export default function PetDetails({ route, navigation }: Props) {
                   onPress={TogglePetInterest}
                   loading={loadingToggleInterest}
                 >
-                  <Text>Estou interessado</Text>
+                  {!interested ? (
+                    <Text>Estou interessado</Text>
+                  ) : (
+                    <Text>Não estou mais interessado</Text>
+                  )}
                 </Button>
               )}
             </View>

@@ -49,9 +49,9 @@ export function createTextFromList<T>(
 ) {
   return capitalize(
     list
-      .filter((x) => x !== "") // Filtrar apenas as opções possíveis
+      .filter((x) => x && x !== "") // Filtrar apenas as opções possíveis
       .flatMap((val, i, arr) => {
-        // Colocar vírgulas e "e" na frase
+        // Colocar vírgulas e "e" no final da frase
         if (i < arr.length - 2) {
           return [val, separator]
         } else if (i <= arr.length - 2) {
@@ -79,27 +79,35 @@ export const temperamento = (pet: PetDocument): string => {
 }
 
 export const exigências = (pet: PetDocument): string => {
+  const {
+    requireAdoptionTerm,
+    requireHousePhoto,
+    requireMonitoring,
+    requirePreviousVisit,
+  } = pet.adoptionRequirements
+
+  const stringNull = (b: boolean, s: string) => {
+    if (b) {
+      return s
+    } else {
+      return null
+    }
+  }
+
   return createTextFromList(
     [
-      pet.adoptionRequirements.requireAdoptionTerm ? "Termo de adoção" : "",
-      pet.adoptionRequirements.requireHousePhoto ? "fotos da casa" : "",
-      pet.adoptionRequirements.requirePreviousVisit
-        ? "visita prévia à casa"
-        : "",
-      pet.adoptionRequirements.requireMonitoring
-        ? "acompanhamento pós adoção"
-        : "",
+      stringNull(requireAdoptionTerm, "Termo de adoção"),
+      stringNull(requireHousePhoto, "fotos da casa"),
+      stringNull(requirePreviousVisit, "visita prévia à casa"),
+      stringNull(
+        requireMonitoring !== 0,
+        requireMonitoring + " meses de acompanhamento pós adoção",
+      ),
     ],
-    "nenhum!",
+    "nenhuma!",
   )
 }
 
-export const endereco = ({address}: UserRegistrationDocument): string => {
-  return (
-    address.fullAddress +
-    " - " +
-    address.city +
-    ", " +
-    address.state
-  )
+export const endereco = ({ address }: UserRegistrationDocument): string => {
+  return address.fullAddress + " - " + address.city + ", " + address.state
 }

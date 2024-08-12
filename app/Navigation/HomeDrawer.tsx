@@ -41,20 +41,20 @@ export default function HomeDrawer() {
         component={PetRegistration}
       />
       <Drawer.Screen
-        name="logout"
-        options={{
-          drawerLabel: "Sair",
-          title: "Sair",
-        }}
-        component={Logout}
-      />
-      <Drawer.Screen
         name="userPetList"
         options={{
           drawerLabel: "Meus Pets",
           title: "Meus Pets",
         }}
         component={UserPetList}
+      />
+      <Drawer.Screen
+        name="logout"
+        options={{
+          drawerLabel: "Sair",
+          title: "Sair",
+        }}
+        component={Logout}
       />
     </Drawer.Navigator>
   )

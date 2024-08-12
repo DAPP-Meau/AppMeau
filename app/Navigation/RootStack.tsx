@@ -42,7 +42,13 @@ export default function RootStack() {
             title: "Detalhes do pet",
           }}
         />
-        <Stack.Screen name="UserList" component={InterestedUserList} />
+        <Stack.Screen
+          name="UserList"
+          options={{
+            title: "Usuários interessados",
+          }}
+          component={InterestedUserList}
+        />
         <Stack.Screen
           name="chat"
           options={{

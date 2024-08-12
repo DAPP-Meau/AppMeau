@@ -19,10 +19,11 @@ const setUninterested = async (
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
 ) : Promise<string[]> => {
+  const interestedUserList : Pick<PetDocument, "interestedUsersList"> = {
+    interestedUsersList: arrayRemove(loggedInUserUID),
+  }
   // Atualizar documento no firebase
-  await updateDoc(petDocumentRef, {
-    interested: arrayRemove(loggedInUserUID),
-  })
+  await updateDoc(petDocumentRef, interestedUserList)
 
   //Atualizar lista de pets locais
   return listRemove(pet.interestedUsersList, loggedInUserUID)
@@ -33,10 +34,11 @@ const setInterested = async (
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
 ) : Promise<string[]> => {
+  const interestedUserList : Pick<PetDocument, "interestedUsersList"> = {
+    interestedUsersList: arrayUnion(loggedInUserUID),
+  }
   // Atualizar documento no firebase
-  await updateDoc(petDocumentRef, {
-    interested: arrayUnion(loggedInUserUID),
-  })
+  await updateDoc(petDocumentRef, interestedUserList)
 
   //Atualizar lista de pets locais
   return listUnion(pet.interestedUsersList, loggedInUserUID)
@@ -72,11 +74,14 @@ export async function toggleInterestedInPet(
     )
   }
 
+  console.log({pet: pet.interestedUsersList})
+
   const interested = isInterestedInPet(
     pet.interestedUsersList,
     loggedInUserUID,
   )
   let newInterestedList = []
+  console.log(interested)
   if (interested) {
     newInterestedList = await setUninterested(pet, petDocumentRef, loggedInUserUID)
   } else {

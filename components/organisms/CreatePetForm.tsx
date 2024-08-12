@@ -1,7 +1,7 @@
 import CheckBoxGroup from "../atoms/CheckBoxGroup"
 import RadioButtonGroup from "../atoms/RadioButtonGroup"
 import Colors from "@/constants/Colors"
-import { petDocumentSchema } from "@/models"
+import { PetDocument } from "@/models"
 import selectImage from "@/utils/selectImage"
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
@@ -23,19 +23,11 @@ import {
 import { MD3Theme } from "react-native-paper/lib/typescript/types"
 import ErrorHelperText from "../atoms/ErrorHelperText"
 import { useState } from "react"
-import { z } from "zod"
 
-export const petRegistrationFieldsSchema = petDocumentSchema
-  .omit({
-    interestedUsersList: true,
-    owner_uid: true,
-    picture_url: true,
-  })
-  .extend({
-    imageURI: z.string(),
-  })
-
-export type PetRegistrationFields = z.infer<typeof petRegistrationFieldsSchema>
+export type PetRegistrationFields = Omit<
+  PetDocument,
+  "interestedUsersList" | "owner_uid" | "picture_url"
+> & { imageURI: string }
 
 export interface CreatePetFormProps {
   /**

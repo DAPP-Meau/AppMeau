@@ -1,36 +1,39 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import React from "react"
 import { Button, MD3Theme, useTheme } from "react-native-paper"
-import { StatusBar } from "expo-status-bar"
-import { Link } from "expo-router"
+import { DrawerScreenProps } from "@react-navigation/drawer"
+import { RootStackParamList } from "../Navigation/RootStack"
 
-export default function PetRegistrationSuccess() {
+type Props = DrawerScreenProps<RootStackParamList, "addPetsSuccess">
+
+export default function PetRegistrationSuccess({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 
   return (
     <ScrollView>
-        <View style={styles.container}>
-          <Text style={styles.title}>Eba!</Text>
-          <View style={styles.flavor}>
-            <Text style={styles.flavorText}>
-              O cadastro do seu pet foi realizado com sucesso!
-            </Text>
-            <Text style={styles.flavorText}>
-              Certifique-se que permitiu o envio de notificações por push no
-              campo privacidade do menu configurações do aplicativo. Assim
-              poderemos te avisar assim que alguém interessado entrar em
-              contato!
-            </Text>
-          </View>
-
-
-          <Link push href="/(app)/myPets" asChild>
-            <Button mode="contained">
-              <Text>Meus Pets</Text>
-            </Button>
-          </Link>
+      <View style={styles.container}>
+        <Text style={styles.title}>Eba!</Text>
+        <View style={styles.flavor}>
+          <Text style={styles.flavorText}>
+            O cadastro do seu pet foi realizado com sucesso!
+          </Text>
+          <Text style={styles.flavorText}>
+            Certifique-se que permitiu o envio de notificações por push no campo
+            privacidade do menu configurações do aplicativo. Assim poderemos te
+            avisar assim que alguém interessado entrar em contato!
+          </Text>
         </View>
+
+        <Button
+          mode="contained"
+          onPress={() => {
+            navigation.navigate("homeDrawer", { screen: "userPetList" })
+          }}
+        >
+          <Text>Meus Pets</Text>
+        </Button>
+      </View>
     </ScrollView>
   )
 }

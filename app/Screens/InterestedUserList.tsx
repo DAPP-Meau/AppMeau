@@ -1,11 +1,10 @@
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native"
 import { Image } from "expo-image"
 import React, { useContext, useEffect, useState } from "react"
@@ -24,6 +23,7 @@ import { collectionPaths } from "@/constants"
 import { UserRegistrationDocument } from "@/models"
 import { DrawerScreenProps } from "@react-navigation/drawer"
 import { RootStackParamList } from "../Navigation/RootStack"
+import { blurhash } from "@/constants/blurhash"
 
 type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
@@ -32,7 +32,9 @@ export default function InterestedUserList({ route, navigation }: Props) {
   const styles = makeStyles(theme)
   const petId = route.params.petId
   const firebaseApp = useContext(FirebaseAppContext)
-  const [users, setUsers] = useState<Array<UserRegistrationDocument & {id:string}>>([])
+  const [users, setUsers] = useState<
+    Array<UserRegistrationDocument & { id: string }>
+  >([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -53,7 +55,9 @@ export default function InterestedUserList({ route, navigation }: Props) {
       //where("interested", "array-contains", uid)
       //)
       let interestedUserIds: string[] = []
-      const interestedQuery = await getDocs(collection(db, collectionPaths.pets))
+      const interestedQuery = await getDocs(
+        collection(db, collectionPaths.pets),
+      )
       interestedQuery.forEach((docpet) => {
         if (docpet.id == petId) {
           const interested = docpet.data().interested || []
@@ -75,10 +79,13 @@ export default function InterestedUserList({ route, navigation }: Props) {
         const userSnapshot = await getDocs(userQuery)
         //userSnapshot.forEach((doc) => {console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);});
         const interestedUsers = userSnapshot.docs.map((doc) => ({
-          ...doc.data(), id: doc.id
+          ...doc.data(),
+          id: doc.id,
         }))
         console.log(interestedUsers)
-        setUsers(interestedUsers as Array<UserRegistrationDocument & {id:string}>)
+        setUsers(
+          interestedUsers as Array<UserRegistrationDocument & { id: string }>,
+        )
       } catch (error) {
         console.error("Erro ao buscar usuários interessados: ")
       } finally {
@@ -88,16 +95,6 @@ export default function InterestedUserList({ route, navigation }: Props) {
 
     fetchUsers()
   }, [petId, firebaseApp])
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
-    )
-  }
-  const blurhash =
-    "fSSh}iWVo~ofbxofX=WBaJj?nzj@rna#f6j?aef6vva}kCj@WYayV=ayaxj[ocfQ"
 
   return (
     <FlatList
@@ -115,7 +112,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate("chat", {userID:item.id, petID:petId})
+              navigation.navigate("chat", { userID: item.id, petID: petId })
             }}
           >
             <Text style={styles.buttonText}>Entrar em contato</Text>
