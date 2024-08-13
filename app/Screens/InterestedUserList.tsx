@@ -53,7 +53,6 @@ export default function InterestedUserList({ route, navigation }: Props) {
           onRefresh={() => setRefreshing(true)}
         />
       }
-      numColumns={2}
     />
   )
 }
