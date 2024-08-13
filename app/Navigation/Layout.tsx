@@ -5,7 +5,7 @@ import UserRegistration from "../Screens/UserRegistration"
 import Unauthorized from "../Screens/LoginError"
 import { createStackNavigator } from "@react-navigation/stack"
 import RootStack from "./RootStack"
-import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
+import CustomStackHeaderBar from "@/components/organisms/CustomStackHeaderBar"
 
 export type LayoutParamList = {
   index: undefined

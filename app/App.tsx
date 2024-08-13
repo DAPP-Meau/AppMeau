@@ -1,6 +1,6 @@
-import "@/services/gesture-handler" // Esse deve vir antes de todos os outros.
+import "@/utils/gesture-handler" // Esse deve vir antes de todos os outros.
 import { fonts } from "@/assets"
-import FirebaseAppProvider from "@/components/FirebaseAppProvider"
+import FirebaseAppProvider from "@/services/store/FirebaseAppProvider"
 import { lightModeBlueTheme, lightModeYellowTheme } from "@/constants"
 import { useFonts } from "expo-font"
 import { SplashScreen } from "expo-router"
@@ -13,8 +13,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context"
 import {
   ColorSchemeContextProps,
   ColorSchemes,
-} from "@/services/ColorSchemeContext"
-import ColorSchemeProvider from "@/components/ColorSchemeProvider"
+} from "@/services/store/ColorSchemeContext"
+import ColorSchemeProvider from "@/services/store/ColorSchemeProvider"
 import { Image, StatusBar, View } from "react-native"
 import merge from "deepmerge"
 import { GestureHandlerRootView } from "react-native-gesture-handler"

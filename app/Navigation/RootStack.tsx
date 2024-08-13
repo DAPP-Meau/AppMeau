@@ -3,15 +3,16 @@ import { createStackNavigator } from "@react-navigation/stack"
 import HomeDrawer from "./HomeDrawer"
 import PetDetails from "../Screens/PetDetails"
 import PetRegistrationSuccess from "../Screens/PetRegistrationSuccess"
-import { PetAndOwnerDocument } from "@/services/actions"
-import CustomStackHeaderBar from "@/components/elements/display/CustomStackHeaderBar"
-import UserList from "../Screens/UserList"
+import CustomStackHeaderBar from "@/components/organisms/CustomStackHeaderBar"
+import InterestedUserList from "../Screens/InterestedUserList"
+import Chat from "../Screens/Chat"
 
 export type RootStackParamList = {
   homeDrawer: undefined
   addPetsSuccess: undefined
-  petDetails: { petAndOwner: PetAndOwnerDocument, proOnRefresh: () => void }
-  UserList: {petId:string}
+  petDetails: { petID: string }
+  UserList: { petId: string }
+  chat: { userID: string; petID: string }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -41,7 +42,20 @@ export default function RootStack() {
             title: "Detalhes do pet",
           }}
         />
-        <Stack.Screen name="UserList" component={UserList} />
+        <Stack.Screen
+          name="UserList"
+          options={{
+            title: "Usuários interessados",
+          }}
+          component={InterestedUserList}
+        />
+        <Stack.Screen
+          name="chat"
+          options={{
+            title: "chat",
+          }}
+          component={Chat}
+        />
       </Stack.Group>
     </Stack.Navigator>
   )

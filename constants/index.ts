@@ -1,2 +1,2 @@
 export * from "./lightModeTheme"
-export * from "./collections"
+export * from "./collectionPaths"

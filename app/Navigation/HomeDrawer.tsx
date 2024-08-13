@@ -3,7 +3,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer"
 import PetList from "../Screens/PetList"
 import PetRegistration from "../Screens/PetRegistration"
 import Logout from "../Screens/Logout"
-import CustomDrawerHeaderBar from "@/components/elements/display/CustomDrawerHeaderBar"
+import CustomDrawerHeaderBar from "@/components/organisms/CustomDrawerHeaderBar"
 import UserPetList from "../Screens/UserPetList"
 
 export type HomeDrawerParamList = {
@@ -41,20 +41,20 @@ export default function HomeDrawer() {
         component={PetRegistration}
       />
       <Drawer.Screen
-        name="logout"
-        options={{
-          drawerLabel: "Sair",
-          title: "Sair",
-        }}
-        component={Logout}
-      />
-      <Drawer.Screen
         name="userPetList"
         options={{
           drawerLabel: "Meus Pets",
           title: "Meus Pets",
         }}
         component={UserPetList}
+      />
+      <Drawer.Screen
+        name="logout"
+        options={{
+          drawerLabel: "Sair",
+          title: "Sair",
+        }}
+        component={Logout}
       />
     </Drawer.Navigator>
   )
