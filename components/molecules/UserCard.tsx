@@ -1,4 +1,4 @@
-import { GestureResponderEvent, StyleSheet, Text } from "react-native"
+import { GestureResponderEvent, StyleSheet, Text, View } from "react-native"
 import React from "react"
 import { Card, MD3Theme, useTheme } from "react-native-paper"
 import { Image } from "expo-image"
@@ -17,15 +17,17 @@ export default function UserCard({ user, onPress }: IUserCardProps) {
 
   return (
     <Card style={styles.card} onPress={onPress}>
-      <Image
-        style={styles.image}
-        source={userData.person.pictureURL}
-        placeholder={{ blurhash }}
-        contentFit="scale-down"
-        transition={1000}
-      />
-      <Text style={styles.userName}>{userData.person.fullName}</Text>
-      <Text style={styles.userName}>{userData.person.age} anos</Text>
+      <Card.Title title={userData.person.fullName}/>
+      <Card.Content>
+        <Image
+          style={styles.image}
+          source={userData.person.pictureURL}
+          placeholder={{ blurhash }}
+          contentFit="scale-down"
+          transition={1000}
+        />
+          <Text style={styles.userName}>{userData.person.age} anos</Text>
+      </Card.Content>
     </Card>
   )
 }
@@ -33,23 +35,23 @@ export default function UserCard({ user, onPress }: IUserCardProps) {
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
     card: {
-      margin: 20,
-      backgroundColor: theme.colors.surface,
-      flexDirection: "row",
-      justifyContent: "center",
-      alignContent: "center",
-      alignItems: "center",
       flex: 0.5,
-      padding: 10,
+      margin: 10,
+    },
+    container: {
+      margin: 20,
+      flexDirection: "column",
+      padding: 1,
+      gap:10,
+      alignItems: "center",
     },
     image: {
-      height: 140,
-      width: 140,
+      width: "100%",
+      height: undefined,
+      aspectRatio: 1,
+      borderRadius: 5,
     },
     userName: {
-      justifyContent: "center",
-      alignContent: "center",
-      alignItems: "center",
-      margin: 10,
+      textAlign: "center"
     },
   })

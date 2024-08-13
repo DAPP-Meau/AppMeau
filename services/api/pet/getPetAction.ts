@@ -24,6 +24,7 @@ export default async function getPetAction(
     return petDocumentSchema.parse(petData)
   } catch (e) {
     if (e instanceof z.ZodError) {
+      console.error("Schema error in getPetAction: " + e)
       return undefined
     }
   }

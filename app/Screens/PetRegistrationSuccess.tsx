@@ -28,7 +28,7 @@ export default function PetRegistrationSuccess({ route, navigation }: Props) {
         <Button
           mode="contained"
           onPress={() => {
-            navigation.navigate("homeDrawer", { screen: "userPetList" })
+            navigation.navigate("homeDrawer")
           }}
         >
           <Text>Meus Pets</Text>

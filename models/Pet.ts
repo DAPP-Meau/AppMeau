@@ -77,7 +77,7 @@ export const petDocumentSchema = z.object({
   adoptionRequirements: adoptionRequirementsSchema,
   interestedUsersList: z.array(z.string()).optional(),
   owner_uid: z.string(),
-  picture_url: z.string(),
+  picture_url: z.string().optional(),
 })
 
 export type PetDocument = z.infer<typeof petDocumentSchema>

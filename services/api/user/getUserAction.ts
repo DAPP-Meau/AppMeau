@@ -22,7 +22,7 @@ export default async function getUserAction(
     }
   } catch (e) {
     if (e instanceof z.ZodError) {
-      console.log(e)
+      console.error(e)
       return undefined
     }
   }

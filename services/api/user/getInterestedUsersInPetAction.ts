@@ -15,7 +15,6 @@ export async function getInterestedUsersInPetAction(
 ): Promise<GetUserActionReturn[]> {
   const userList: GetUserActionReturn[] = []
   const petDocument = await getPetAction(petID, firebaseApp)
-  console.log(petDocument)
   if (!petDocument || !petDocument.interestedUsersList) {
     return []
   }

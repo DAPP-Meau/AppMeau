@@ -32,8 +32,7 @@ export async function getPetListAction(
     const userId = petDocument.data.owner_uid
     const userDocument = await getUserAction(userId, firebaseApp)
     if (!userDocument) {
-      // Avisar apenas na primeira vez
-      console.warn("Existe um pet sem dono!")
+      console.warn("Erro ao pegar dono de um pet, ignorando pets %s", petDocument.id)
       continue
     }
 

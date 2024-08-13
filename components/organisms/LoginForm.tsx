@@ -50,7 +50,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = form
 
   return (
@@ -141,8 +141,8 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                   <Button
                     mode="text"
                     onPress={() => {
-                      form.setValue("password", debugUser.password)
-                      form.setValue("email", debugUser.email)
+                      form.setValue("password", debugUser?.password ?? "")
+                      form.setValue("email", debugUser?.email ?? "")
                       form.trigger()
                     }}
                   >

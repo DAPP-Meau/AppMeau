@@ -23,7 +23,6 @@ export default function InterestedUserList({ route, navigation }: Props) {
   useMemo(() => {
     getInterestedUsersInPetAction(petId, firebaseApp)
       .then((result) => {
-        console.info({ result: result })
         setInterestedUsers(result)
       })
       .finally(() => {
