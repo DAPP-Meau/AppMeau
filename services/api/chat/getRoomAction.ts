@@ -12,7 +12,8 @@ import {
   where,
 } from "firebase/firestore"
 
-/** Retorna id da sala da conversa do usuário logado com o userID. Caso não exista, ela é criada.
+/** Retorna id da sala da conversa do usuário logado com o userID. Caso não 
+ * exista, ela é criada.
  *
  * @param userID Id de usuário */
 export default async function getRoomWithUserAction(

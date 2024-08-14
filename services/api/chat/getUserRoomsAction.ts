@@ -1,5 +1,5 @@
 import { collectionPaths } from "@/constants"
-import { RoomDocument, roomDocumentSchema } from "@/models"
+import { RoomDocument, roomDocumentSchema, UserDocument } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseApp } from "firebase/app"
 import {
@@ -9,12 +9,16 @@ import {
   query,
   where,
 } from "firebase/firestore"
+import getUserAction from "../user/getUserAction"
 
-export type GetUserRoomsActionData = { id: string; data: RoomDocument }
+export type GetUserRoomsActionData = {
+  room: { id: string; data: RoomDocument }
+  user: { id: string; data: UserDocument }
+}
 export type GetUserRoomsActionReturn = GetUserRoomsActionData[]
 
 /**
- * Pegar lista de salas abertas do usuário logadp
+ * Retorna uma lista de salas de chat do usuário
  *
  * @param firebaseApp instância do firebase
  * @returns Lista de salas
@@ -24,18 +28,38 @@ export default async function getUserRoomsAction(
 ): Promise<GetUserRoomsActionReturn> {
   const db = getFirestore(firebaseApp)
   const roomCollectionReference = collection(db, collectionPaths.rooms)
-  const userUID = getCurrentUserUID(firebaseApp)
+  const loggedInUserID = getCurrentUserUID(firebaseApp)
 
   const roomQuery = query(
     roomCollectionReference,
-    where("users", "array-contains", userUID),
+    where("users", "array-contains", loggedInUserID),
   )
   const roomQuerySnapshot = await getDocs(roomQuery)
 
   const roomList: GetUserRoomsActionReturn = []
   for (const room of roomQuerySnapshot.docs) {
     const roomDocument: RoomDocument = roomDocumentSchema.parse(room.data())
-    roomList.push({ id: room.id, data: roomDocument })
+    const userID = roomDocument.users
+      .filter((val) => {
+        return val !== loggedInUserID
+      })
+      .at(0)
+    if (!userID) {
+      console.error("Error in getUserRoomsAction")
+      continue
+    }
+
+    const userDocument = await getUserAction(userID, firebaseApp)
+    if (!userDocument) {
+      console.error(
+        "Error in getUserRoomsAction, there is no user with id" + userID,
+      )
+      continue
+    }
+    roomList.push({
+      room: { id: room.id, data: roomDocument },
+      user: userDocument,
+    })
   }
 
   return roomList
