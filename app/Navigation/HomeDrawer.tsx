@@ -5,12 +5,14 @@ import PetRegistration from "../Screens/PetRegistration"
 import Logout from "../Screens/Logout"
 import CustomDrawerHeaderBar from "@/components/organisms/CustomDrawerHeaderBar"
 import UserPetList from "../Screens/UserPetList"
+import OpenRooms from "../Screens/OpenRooms"
 
 export type HomeDrawerParamList = {
   petList: undefined
   addPets: undefined
   logout: undefined
   userPetList: undefined
+  openRooms: undefined
 }
 
 const Drawer = createDrawerNavigator<HomeDrawerParamList>()
@@ -55,6 +57,10 @@ export default function HomeDrawer() {
           title: "Sair",
         }}
         component={Logout}
+      />
+      <Drawer.Screen
+        name="openRooms"
+        component={OpenRooms}
       />
     </Drawer.Navigator>
   )

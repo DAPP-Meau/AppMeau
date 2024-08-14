@@ -1,4 +1,5 @@
 export const collectionPaths = {
     users: "users",
-    pets: "pets"
+    pets: "pets",
+    rooms: "rooms",
 }

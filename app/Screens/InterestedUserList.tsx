@@ -1,4 +1,4 @@
-import { FlatList } from "react-native"
+import { FlatList, Text } from "react-native"
 import React, { useContext, useMemo, useState } from "react"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { DrawerScreenProps } from "@react-navigation/drawer"
@@ -8,6 +8,8 @@ import { GetUserActionReturn } from "@/services/api/user/getUserAction"
 import { RefreshControl } from "react-native-gesture-handler"
 import ListEmpty from "@/components/atoms/ListEmpty"
 import UserCard from "@/components/molecules/UserCard"
+import { Button } from "react-native-paper"
+import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
 
 type Props = DrawerScreenProps<RootStackParamList, "UserList">
 
@@ -33,12 +35,21 @@ export default function InterestedUserList({ route, navigation }: Props) {
   return (
     <FlatList
       data={interestedUsers}
-      renderItem={({ item }) => (
+      renderItem={({ item: user }) => (
         <UserCard
-          user={item}
-          onPress={() => {
-            navigation.navigate("chat", { userID: item.id, petID: petId })
-          }}
+          user={user}
+          right={
+            <Button
+              mode="contained"
+              compact
+              onPress={() => {
+                getRoomWithUserAction(firebaseApp, user.id)
+                navigation.navigate("chat", { roomId: user.id })
+              }}
+            >
+              <Text>Entrar em contato</Text>
+            </Button>
+          }
         />
       )}
       ListEmptyComponent={() => (

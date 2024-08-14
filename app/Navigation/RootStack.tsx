@@ -12,7 +12,7 @@ export type RootStackParamList = {
   addPetsSuccess: undefined
   petDetails: { petID: string }
   UserList: { petId: string }
-  chat: { userID: string; petID: string }
+  chat: { roomId: string }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
