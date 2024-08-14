@@ -24,11 +24,11 @@ export const loginSchema = z.object({
 
 export type Login = z.infer<typeof loginSchema>
 
-export const userDocumentSchema = z.object({
+export const userSchema = z.object({
   person: personSchema,
   address: addressSchema,
   login: loginSchema,
 })
 
 /** Usado para armazenamento de dados do usuário no Firestore */
-export type UserDocument = z.infer<typeof userDocumentSchema>
+export type User = z.infer<typeof userSchema>

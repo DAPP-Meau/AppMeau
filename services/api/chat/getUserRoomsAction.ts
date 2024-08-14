@@ -1,5 +1,5 @@
 import { collectionPaths } from "@/constants"
-import { RoomDocument, roomDocumentSchema, UserDocument } from "@/models"
+import { Room, roomSchema, User } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseApp } from "firebase/app"
 import {
@@ -12,8 +12,8 @@ import {
 import getUserAction from "../user/getUserAction"
 
 export type GetUserRoomsActionData = {
-  room: { id: string; data: RoomDocument }
-  user: { id: string; data: UserDocument }
+  room: { id: string; data: Room }
+  user: { id: string; data: User }
 }
 export type GetUserRoomsActionReturn = GetUserRoomsActionData[]
 
@@ -38,7 +38,7 @@ export default async function getUserRoomsAction(
 
   const roomList: GetUserRoomsActionReturn = []
   for (const room of roomQuerySnapshot.docs) {
-    const roomDocument: RoomDocument = roomDocumentSchema.parse(room.data())
+    const roomDocument: Room = roomSchema.parse(room.data())
     const userID = roomDocument.users
       .filter((val) => {
         return val !== loggedInUserID

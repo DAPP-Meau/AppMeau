@@ -1,7 +1,7 @@
 import CheckBoxGroup from "../atoms/CheckBoxGroup"
 import RadioButtonGroup from "../atoms/RadioButtonGroup"
 import Colors from "@/constants/Colors"
-import { PetDocument } from "@/models"
+import { Pet } from "@/models"
 import selectImage from "@/utils/selectImage"
 import { Controller, Path, UseFormReturn, useForm } from "react-hook-form"
 import React, {
@@ -9,8 +9,7 @@ import React, {
   StyleSheet,
   TouchableOpacity,
   View,
-  Text,
-  Alert,
+  Text
 } from "react-native"
 import {
   Button,
@@ -25,7 +24,7 @@ import ErrorHelperText from "../atoms/ErrorHelperText"
 import { useState } from "react"
 
 export type PetRegistrationFields = Omit<
-  PetDocument,
+  Pet,
   "interestedUsersList" | "owner_uid" | "picture_url"
 > & { imageURI: string }
 
@@ -85,7 +84,7 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
     },
     mode: "onChange",
   })
-  const { control, handleSubmit, watch, formState, reset } = form
+  const { control, handleSubmit, watch, formState } = form
   const { errors, isSubmitting } = formState
   const watchSick = watch("health.sick")
 

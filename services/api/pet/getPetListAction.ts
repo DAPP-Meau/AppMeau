@@ -2,8 +2,14 @@ import { FirebaseApp } from "firebase/app"
 import { QueryConstraint } from "firebase/firestore"
 
 import getUserAction from "../user/getUserAction"
-import { GetPetListActionReturn } from "@/models"
 import { getPetsAction } from "./getPetsAction"
+import { Pet, User } from "@/models"
+
+export type PetAndOwnerDocument = {
+  pet: { id: string; data: Pet }
+  user: { id: string; data: User }
+}
+export type GetPetListActionReturn = PetAndOwnerDocument[]
 
 /** Buscar pets no banco de dados e unir com os respectivos donos para
  * renderizar listas de cartões de pets.
@@ -32,7 +38,10 @@ export async function getPetListAction(
     const userId = petDocument.data.owner_uid
     const userDocument = await getUserAction(userId, firebaseApp)
     if (!userDocument) {
-      console.warn("Erro ao pegar dono de um pet, ignorando pets %s", petDocument.id)
+      console.warn(
+        "Erro ao pegar dono de um pet, ignorando pets %s",
+        petDocument.id,
+      )
       continue
     }
 

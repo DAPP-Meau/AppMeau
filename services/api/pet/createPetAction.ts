@@ -6,7 +6,7 @@ import { getStorage } from "firebase/storage"
 import * as Crypto from "expo-crypto"
 import { FirebaseApp } from "firebase/app"
 import { PetRegistrationFields } from "@/components/organisms/CreatePetForm"
-import { PetDocument } from "@/models"
+import { Pet } from "@/models"
 import { UseFormReturn } from "react-hook-form"
 
 /** Cria novo pet usando o usuário logado 
@@ -41,7 +41,7 @@ export async function createPetAction(
     throw new Error("No user logged in to create pet.")
   }
   const ref = collection(db, collectionPaths.pets)
-  const data: PetDocument = {
+  const data: Pet = {
     ...fields,
     owner_uid: auth.currentUser.uid,
     picture_url: image_url,

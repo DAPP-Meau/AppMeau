@@ -5,7 +5,7 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native-gesture-handler"
-import { RoomDocument } from "@/models"
+import { Room } from "@/models"
 import ListEmpty from "@/components/atoms/ListEmpty"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import getCurrentUserUID from "@/utils/getCurrentUser"
@@ -76,7 +76,7 @@ export default function OpenRooms() {
 }
 
 interface IRoomCardProps {
-  room: RoomDocument
+  room: Room
   onPress: (e: GestureResponderEvent) => void
 }
 

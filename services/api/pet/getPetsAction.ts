@@ -1,5 +1,5 @@
 import { collectionPaths } from "@/constants"
-import { PetDocument, petDocumentSchema } from "@/models"
+import { Pet, petSchema } from "@/models"
 import { FirebaseApp } from "firebase/app"
 import {
   collection,
@@ -9,7 +9,7 @@ import {
   QueryConstraint,
 } from "firebase/firestore"
 
-export type GetPetsActionReturn = { id: string; data: PetDocument }[]
+export type GetPetsActionReturn = { id: string; data: Pet }[]
 
 /** Buscar lista de pets no banco de dados.
  *
@@ -36,7 +36,7 @@ export async function getPetsAction(
   const querySnapshot = await getDocs(q)
 
   for (const document of querySnapshot.docs) {
-    const petDocument: PetDocument = petDocumentSchema.parse(document.data())
+    const petDocument: Pet = petSchema.parse(document.data())
     petList.push({ id: document.id, data: petDocument })
   }
 

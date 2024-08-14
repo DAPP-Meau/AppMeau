@@ -1,14 +1,14 @@
 import { IMessage } from "react-native-gifted-chat"
 import z from "zod"
 
-export const roomDocumentSchema = z.object({
+export const roomSchema = z.object({
   users: z.array(z.string()).min(2)
 })
 
-export type RoomDocument = z.infer<typeof roomDocumentSchema>
+export type Room = z.infer<typeof roomSchema>
 
-export const messageDocumentSchema = z.object({
+export const messageSchema = z.object({
   
 })
 
-export type MessageDocument = IMessage
+export type Message = IMessage

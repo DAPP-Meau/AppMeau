@@ -7,7 +7,7 @@ import {
   getFirestore,
   updateDoc,
 } from "firebase/firestore"
-import { PetDocument } from "@/models"
+import { Pet } from "@/models"
 import { getAuth } from "firebase/auth"
 import { collectionPaths } from "@/constants"
 import { listRemove, listUnion } from "@/utils/listUtils"
@@ -15,11 +15,11 @@ import { isInterestedInPet } from "@/utils/isInterestedInPet"
 import getPetAction from "./getPetAction"
 
 const setUninterested = async (
-  pet: PetDocument,
+  pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
 ): Promise<string[]> => {
-  const interestedUserList: Pick<PetDocument, "interestedUsersList"> = {
+  const interestedUserList: Pick<Pet, "interestedUsersList"> = {
     // @ts-expect-error  2322
     interestedUsersList: arrayRemove(loggedInUserUID),
   }
@@ -31,11 +31,11 @@ const setUninterested = async (
 }
 
 const setInterested = async (
-  pet: PetDocument,
+  pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
 ): Promise<string[]> => {
-  const interestedUserList: Pick<PetDocument, "interestedUsersList"> = {
+  const interestedUserList: Pick<Pet, "interestedUsersList"> = {
     // @ts-expect-error  2322
     interestedUsersList: arrayUnion(loggedInUserUID),
   }
@@ -58,7 +58,7 @@ const setInterested = async (
 export async function toggleInterestedInPet(
   petID: string,
   firebaseApp: FirebaseApp,
-): Promise<PetDocument> {
+): Promise<Pet> {
   const db = getFirestore(firebaseApp)
   const petDocumentRef = doc(db, collectionPaths.pets, petID)
   const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid

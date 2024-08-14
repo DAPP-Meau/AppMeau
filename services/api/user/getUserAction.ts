@@ -1,10 +1,10 @@
 import { collectionPaths } from "@/constants"
 import { FirebaseApp } from "firebase/app"
 import { doc, getDoc, getFirestore } from "firebase/firestore"
-import { UserDocument, userDocumentSchema } from "../../../models"
+import { User, userSchema } from "../../../models"
 import { z } from "zod"
 
-export type GetUserActionReturn = { id: string; data: UserDocument }
+export type GetUserActionReturn = { id: string; data: User }
 
 export default async function getUserAction(
   userId: string,
@@ -18,7 +18,7 @@ export default async function getUserAction(
   try {
     return {
       id: userDocumentSnapshot.id,
-      data: userDocumentSchema.parse(userDocument),
+      data: userSchema.parse(userDocument),
     }
   } catch (e) {
     if (e instanceof z.ZodError) {

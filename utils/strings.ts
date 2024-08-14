@@ -1,10 +1,10 @@
-import { PetDocument, UserDocument } from "../models"
+import { Pet, User } from "../models"
 
 export function boolToSimNao(b: boolean) {
   return b ? "Sim" : "Não"
 }
 
-export const machoFemea = (pet: PetDocument) => {
+export const machoFemea = (pet: Pet) => {
   switch (pet.animal.sex) {
     case "female":
       return "Fêmea"
@@ -13,7 +13,7 @@ export const machoFemea = (pet: PetDocument) => {
   }
 }
 
-export const tamanho = (pet: PetDocument) => {
+export const tamanho = (pet: Pet) => {
   switch (pet.animal.size) {
     case "large":
       return "Grande"
@@ -24,7 +24,7 @@ export const tamanho = (pet: PetDocument) => {
   }
 }
 
-export const idade = (pet: PetDocument) => {
+export const idade = (pet: Pet) => {
   switch (pet.animal.age) {
     case "adult":
       return "Adulto"
@@ -64,7 +64,7 @@ export function createTextFromList<T>(
   ) // Capitalizar primeiro caractere
 }
 
-export const temperamento = (pet: PetDocument): string => {
+export const temperamento = (pet: Pet): string => {
   return createTextFromList(
     [
       pet.temperament.calm ? "calmo" : "",
@@ -78,7 +78,7 @@ export const temperamento = (pet: PetDocument): string => {
   )
 }
 
-export const exigências = (pet: PetDocument): string => {
+export const exigências = (pet: Pet): string => {
   const {
     requireAdoptionTerm,
     requireHousePhoto,
@@ -108,7 +108,7 @@ export const exigências = (pet: PetDocument): string => {
   )
 }
 
-export const endereco = ({ address }: UserDocument): string => {
+export const endereco = ({ address }: User): string => {
   const { fullAddress, city, state } = address
   return fullAddress + " - " + city + ", " + state
 }

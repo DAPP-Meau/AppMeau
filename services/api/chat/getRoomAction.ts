@@ -1,5 +1,5 @@
 import { collectionPaths } from "@/constants"
-import { RoomDocument, roomDocumentSchema } from "@/models"
+import { Room, roomSchema } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseApp } from "firebase/app"
 import {
@@ -19,7 +19,7 @@ import {
 export default async function getRoomWithUserAction(
   firebaseApp: FirebaseApp,
   userID: string,
-): Promise<{ id: string; data: RoomDocument }> {
+): Promise<{ id: string; data: Room }> {
   const db = getFirestore(firebaseApp)
   const roomCollectionReference = collection(db, collectionPaths.rooms)
   const loggedInUser = getCurrentUserUID(firebaseApp)
@@ -40,17 +40,17 @@ export default async function getRoomWithUserAction(
   }
   const room = roomsDocuments.at(0)
   if (!room?.exists) return await createRoom(firebaseApp, userID, loggedInUser)
-  return { id: room.id, data: roomDocumentSchema.parse(room.data) }
+  return { id: room.id, data: roomSchema.parse(room.data) }
 }
 
 async function createRoom(
   firebaseApp: FirebaseApp,
   user1: string,
   user2: string,
-): Promise<{ id: string; data: RoomDocument }> {
+): Promise<{ id: string; data: Room }> {
   const db = getFirestore(firebaseApp)
   const documentReference = doc(collection(db, collectionPaths.rooms))
-  const data: RoomDocument = { users: [user1, user2] }
+  const data: Room = { users: [user1, user2] }
   await setDoc(documentReference, data)
   return { id: documentReference.id, data: data }
 }
