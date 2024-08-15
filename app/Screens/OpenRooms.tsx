@@ -9,9 +9,7 @@ import { Room } from "@/models"
 import ListEmpty from "@/components/atoms/ListEmpty"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import getCurrentUserUID from "@/utils/getCurrentUser"
-import getUserRoomsAction, {
-  GetUserRoomsActionReturn,
-} from "@/services/api/chat/getUserRoomsAction"
+import getUserRoomsAction, { RoomAndUserDocument } from "@/services/api/chat/getUserRoomsAction"
 import UserCard from "@/components/molecules/UserCard"
 import { Button } from "react-native-paper"
 import { StackNavigationProp } from "@react-navigation/stack"
@@ -21,7 +19,7 @@ import { useNavigation } from "@react-navigation/native"
 export default function OpenRooms() {
   const rootStackNavigation =
     useNavigation<StackNavigationProp<RootStackParamList>>()
-  const [openRoomsList, setOpenRoomsList] = useState<GetUserRoomsActionReturn>()
+  const [openRoomsList, setOpenRoomsList] = useState<RoomAndUserDocument[]>()
   const [refreshing, setRefreshing] = useState(true)
 
   const firebaseApp = useContext(FirebaseAppContext)
@@ -45,7 +43,7 @@ export default function OpenRooms() {
       data={openRoomsList}
       renderItem={({ item }) => (
         <UserCard
-          user={item.user}
+          user={item.user.data}
           right={
             <Button
               mode="contained"

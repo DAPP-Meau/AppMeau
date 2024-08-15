@@ -14,6 +14,7 @@ import { listRemove, listUnion } from "@/utils/listUtils"
 import { isInterestedInPet } from "@/utils/isInterestedInPet"
 import getPetAction from "./getPetAction"
 
+/** Função auxiliar */
 const setUninterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
@@ -30,6 +31,7 @@ const setUninterested = async (
   return listRemove(pet.interestedUsersList, loggedInUserUID)
 }
 
+/** Função auxiliar */
 const setInterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,

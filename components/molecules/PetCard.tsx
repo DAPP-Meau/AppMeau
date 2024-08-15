@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "@/app/Navigation/RootStack"
 import { Image } from "expo-image"
 import { endereco, idade, machoFemea, tamanho } from "@/utils/strings"
-import { PetAndOwnerDocument } from "@/services/api/pet/getPetListAction"
+import { PetAndOwnerDocument } from "@/models"
 import { blurhash } from "@/constants/blurhash"
 
 interface IPetCardsProps {

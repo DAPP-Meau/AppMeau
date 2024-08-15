@@ -3,13 +3,7 @@ import { QueryConstraint } from "firebase/firestore"
 
 import getUserAction from "../user/getUserAction"
 import { getPetsAction } from "./getPetsAction"
-import { Pet, User } from "@/models"
-
-export type PetAndOwnerDocument = {
-  pet: { id: string; data: Pet }
-  user: { id: string; data: User }
-}
-export type GetPetListActionReturn = PetAndOwnerDocument[]
+import { PetAndOwnerDocument } from "@/models"
 
 /** Buscar pets no banco de dados e unir com os respectivos donos para
  * renderizar listas de cartões de pets.
@@ -29,10 +23,10 @@ export type GetPetListActionReturn = PetAndOwnerDocument[]
 export async function getPetListAction(
   firebaseApp: FirebaseApp,
   ...queryConstraints: QueryConstraint[]
-): Promise<GetPetListActionReturn> {
+): Promise<PetAndOwnerDocument[]> {
   const petList = await getPetsAction(firebaseApp, ...queryConstraints)
 
-  const petAndOwner: GetPetListActionReturn = []
+  const petAndOwner: PetAndOwnerDocument[] = []
   for (const petDocument of petList) {
     // Encontrar dono do pet
     const userId = petDocument.data.owner_uid
@@ -47,7 +41,7 @@ export async function getPetListAction(
 
     petAndOwner.push({
       pet: { ...petDocument },
-      user: { ...userDocument },
+      user: { id: userId, data: userDocument },
     })
   }
 

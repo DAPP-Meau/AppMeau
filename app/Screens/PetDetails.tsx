@@ -29,7 +29,7 @@ import {
 } from "@/utils/strings"
 import HeaderAndText from "@/components/atoms/HeaderAndText"
 import getPetAndOwnerAction from "@/services/api/pet/getPetAndOwnerAction"
-import { PetAndOwnerDocument } from "@/services/api/pet/getPetListAction"
+import { PetAndOwnerDocument } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { blurhash } from "@/constants/blurhash"
 import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"

@@ -7,16 +7,16 @@ import { z } from "zod"
 /**
  * Buscar pet no banco por ID do pet.
  *
- * @param petId id do pet a ser encontrado no banco de dados
+ * @param petID id do pet a ser encontrado no banco de dados
  * @param firebaseApp Instância do firebase
  * @returns O documento do pet, undefined caso contrário.
  */
 export default async function getPetAction(
-  petId: string,
+  petID: string,
   firebaseApp: FirebaseApp,
 ): Promise<Pet | undefined> {
   const db = getFirestore(firebaseApp)
-  const petsRef = doc(db, collectionPaths.pets, petId)
+  const petsRef = doc(db, collectionPaths.pets, petID)
   const documentSnapshot = await getDoc(petsRef)
   const petData = documentSnapshot.data()
 

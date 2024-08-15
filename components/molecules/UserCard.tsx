@@ -2,11 +2,11 @@ import { StyleSheet, Text, View } from "react-native"
 import React, { ReactNode } from "react"
 import { MD3Theme, useTheme } from "react-native-paper"
 import { Image } from "expo-image"
-import { GetUserActionReturn } from "@/services/api/user/getUserAction"
 import { blurhash } from "@/constants/blurhash"
+import { User } from "@/models"
 
 interface IUserCardProps {
-  user: GetUserActionReturn
+  user: User
   left?: ReactNode
   right?: ReactNode
 }
@@ -14,18 +14,18 @@ interface IUserCardProps {
 export default function UserCard({ user, left, right }: IUserCardProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
-  const { data: userData } = user
+  const { person } = user
 
   return (
     <View style={styles.item}>
       {left ?? null}
       <Image
         style={styles.profileImage}
-        source={userData.person.pictureURL}
+        source={person.pictureURL}
         placeholder={{ blurhash }}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{userData.person.fullName}</Text>
+        <Text style={styles.name}>{person.fullName}</Text>
       </View>
       {right ?? null}
     </View>

@@ -17,8 +17,8 @@ import {
  *
  * @param userID Id de usuário */
 export default async function getRoomWithUserAction(
-  firebaseApp: FirebaseApp,
   userID: string,
+  firebaseApp: FirebaseApp,
 ): Promise<{ id: string; data: Room }> {
   const db = getFirestore(firebaseApp)
   const roomCollectionReference = collection(db, collectionPaths.rooms)

@@ -6,14 +6,14 @@ import { getStorage } from "firebase/storage"
 import * as Crypto from "expo-crypto"
 import { FirebaseApp } from "firebase/app"
 import { PetRegistrationFields } from "@/components/organisms/CreatePetForm"
-import { Pet } from "@/models"
+import { Pet, petSchema } from "@/models"
 import { UseFormReturn } from "react-hook-form"
 
-/** Cria novo pet usando o usuário logado 
+/** Cria novo pet usando o usuário logado
  *
  * @param form Instância do formulário que criou os dados
  * @param firebaseApp Instẫncia do firebase a ser utilizada
- * 
+ *
  * @throws {Error} Se não tiver usuário logado
  */
 export async function createPetAction(
@@ -33,7 +33,9 @@ export async function createPetAction(
     "photo/pets/" + Crypto.randomUUID() + "_image_pet.jpeg",
   )
   if (!image_url) {
-    throw new Error("image_url is empty, submitDataToStorage could have failed.")
+    throw new Error(
+      "image_url is empty, submitDataToStorage could have failed.",
+    )
   }
 
   // Upando dados no Firestore
@@ -47,5 +49,5 @@ export async function createPetAction(
     picture_url: image_url,
   }
 
-  await setDoc(doc(ref), data)
+  await setDoc(doc(ref), petSchema.parse(data))
 }

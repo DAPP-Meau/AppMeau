@@ -1,5 +1,5 @@
 import { collectionPaths } from "@/constants"
-import { Room, roomSchema, User } from "@/models"
+import { Room, roomSchema, Snapshot, User } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseApp } from "firebase/app"
 import {
@@ -11,11 +11,10 @@ import {
 } from "firebase/firestore"
 import getUserAction from "../user/getUserAction"
 
-export type GetUserRoomsActionData = {
-  room: { id: string; data: Room }
-  user: { id: string; data: User }
+export type RoomAndUserDocument = {
+  room: Snapshot<Room>
+  user: Snapshot<User>
 }
-export type GetUserRoomsActionReturn = GetUserRoomsActionData[]
 
 /**
  * Retorna uma lista de salas de chat do usuário
@@ -25,7 +24,7 @@ export type GetUserRoomsActionReturn = GetUserRoomsActionData[]
  */
 export default async function getUserRoomsAction(
   firebaseApp: FirebaseApp,
-): Promise<GetUserRoomsActionReturn> {
+): Promise<RoomAndUserDocument[]> {
   const db = getFirestore(firebaseApp)
   const roomCollectionReference = collection(db, collectionPaths.rooms)
   const loggedInUserID = getCurrentUserUID(firebaseApp)
@@ -36,7 +35,7 @@ export default async function getUserRoomsAction(
   )
   const roomQuerySnapshot = await getDocs(roomQuery)
 
-  const roomList: GetUserRoomsActionReturn = []
+  const roomList: RoomAndUserDocument[] = []
   for (const room of roomQuerySnapshot.docs) {
     const roomDocument: Room = roomSchema.parse(room.data())
     const userID = roomDocument.users
@@ -58,7 +57,7 @@ export default async function getUserRoomsAction(
     }
     roomList.push({
       room: { id: room.id, data: roomDocument },
-      user: userDocument,
+      user: { id: userID, data: userDocument },
     })
   }
 

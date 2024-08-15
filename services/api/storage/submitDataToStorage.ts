@@ -5,13 +5,21 @@ import {
   uploadBytesResumable,
 } from "firebase/storage"
 
+/**
+ * Armazena arquivo no Firebase Storage
+ *
+ * @param fileURI URI do arquivo a ser armazenado
+ * @param storage instância do firebaseStorage
+ * @param fileName Nome do arquivo no banco
+ * @returns url do arquivo armazenado
+ */
 export async function submitDataToStorage(
-  file_URI: string,
+  fileURI: string,
   storage: FirebaseStorage,
-  nameImage: string,
+  fileName: string,
 ) {
-  const storageRef = ref(storage, nameImage)
-  const file = await fetch(file_URI)
+  const storageRef = ref(storage, fileName)
+  const file = await fetch(fileURI)
   const file_blob = await file.blob()
   const snapshot = await uploadBytesResumable(storageRef, file_blob)
   const url = await getDownloadURL(snapshot.ref)

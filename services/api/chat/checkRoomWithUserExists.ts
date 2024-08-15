@@ -8,8 +8,8 @@ import {
 } from "firebase/firestore"
 
 export default async function checkRoomWithUserExists(
-  firebaseApp: FirebaseApp,
   userID: string,
+  firebaseApp: FirebaseApp,
 ) {
   const db = getFirestore(firebaseApp)
   const roomCollectionReference = collection(db, collectionPaths.rooms)
