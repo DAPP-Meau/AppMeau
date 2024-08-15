@@ -67,7 +67,8 @@ export default function Chat({ route }: Props) {
         if (!createdAt) continue
         tempMessages.push({
           ...restOfMessage,
-          createdAt: data.createdAt.toDate(), // Erro de tipo, coerção necessária
+          // Erro de tipo, coerção necessária. Só não sei como...
+          createdAt: data.createdAt.toDate(), 
         })
       }
       setMessages(tempMessages)
