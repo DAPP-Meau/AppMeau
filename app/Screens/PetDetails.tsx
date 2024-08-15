@@ -1,5 +1,5 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import {
   Button,
   Divider,
@@ -48,14 +48,15 @@ export default function PetDetails({ route, navigation }: Props) {
     PetAndOwnerDocument | undefined
   >(undefined)
   // Pegar dados do banco
-  useMemo(() => {
-    getPetAndOwnerAction(route.params.petID, firebaseApp)
-      .then((value) => {
-        setPetAndOwner(value)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+  useEffect(() => {
+    callback().finally(() => {
+      setLoading(false)
+    })
+
+    async function callback() {
+      const value = await getPetAndOwnerAction(route.params.petID, firebaseApp)
+      setPetAndOwner(value)
+    }
   }, [loading])
 
   const [userIsOwner, setUserIsOwner] = useState(false)
