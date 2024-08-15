@@ -114,6 +114,7 @@ export default function Chat({ route }: Props) {
       user={{
         _id: loggedInUserID ?? 0,
         name: loggedInUserDocument?.person.fullName ?? "null",
+        avatar: loggedInUserDocument?.person.pictureURL
       }}
     />
   )
