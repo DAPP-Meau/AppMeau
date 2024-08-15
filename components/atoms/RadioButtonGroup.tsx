@@ -3,8 +3,7 @@ import {
   Controller,
   FieldValues,
   Path,
-  RegisterOptions,
-  useFormState,
+  RegisterOptions
 } from "react-hook-form"
 import React, { View, StyleSheet } from "react-native"
 import {
@@ -12,10 +11,8 @@ import {
   MD3Theme,
   RadioButton,
   useTheme,
-  Divider,
-  HelperText,
+  Divider
 } from "react-native-paper"
-import { ErrorMessage } from "@hookform/error-message"
 import ErrorHelperText from "./ErrorHelperText"
 
 export type radioButton<T> = {
