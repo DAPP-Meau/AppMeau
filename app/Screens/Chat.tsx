@@ -8,33 +8,63 @@ import {
   onSnapshot,
   addDoc,
   serverTimestamp,
+  doc,
+  query,
+  orderBy,
+  limit,
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
+import { collectionPaths } from "@/constants"
+import getCurrentUserUID from "@/utils/getCurrentUser"
+import getUserAction from "@/services/api/user/getUserAction"
+import { User } from "@/models"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
-export default function Chat({ route, navigation }: Props) {
+export default function Chat({ route }: Props) {
   const firebaseApp = useContext(FirebaseAppContext)
+  const db = getFirestore(firebaseApp)
+  const loggedInUser = getCurrentUserUID(firebaseApp)
+  const [loggedInUserDocument, setLoggedInUserDocument] = useState<User>()
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
+  const documentReference = doc(db, collectionPaths.rooms, route.params.roomId)
+  const messagesCollectionReference = collection(
+    documentReference,
+    collectionPaths.rooms_messages,
+  )
+
   useEffect(() => {
-    const db = getFirestore(firebaseApp)
-    const messagesCollection = collection(
-      db,
-      "rooms/XosXGlWEmejG35dVCv7k/messages",
+    if (loggedInUser) {
+      callback()
+    }
+    async function callback() {
+      if (!loggedInUser) throw new Error("No logged in user!")
+      const tempUser = await getUserAction(loggedInUser, firebaseApp)
+      setLoggedInUserDocument(tempUser)
+    }
+  }, [loggedInUser])
+
+  useEffect(() => {
+    const q = query(
+      messagesCollectionReference,
+      limit(100),
+      orderBy("createdAt", "desc"),
     )
-
-    const unsubscribe = onSnapshot(messagesCollection, (snapshot) => {
-      const newMessages = snapshot.docs.map((doc) => ({
-        _id: doc.id,
-        text: doc.data().text,
-        createdAt: doc.data().createdAt.toDate(),
-        user: doc.data().user,
-      }))
-
-      setMessages((prevMessages) =>
-        GiftedChat.append(prevMessages, newMessages),
-      )
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const tempMessages: IMessage[] = []
+      for (const doc of snapshot.docs) {
+        const data = doc.data() as IMessage
+        console.log(data)
+        if (!data.createdAt) continue
+        tempMessages.push({
+          _id: doc.id,
+          createdAt: data.createdAt.toDate(),
+          text: data.text,
+          user: data.user,
+        })
+      }
+      setMessages(tempMessages)
     })
 
     return () => unsubscribe()
@@ -42,15 +72,9 @@ export default function Chat({ route, navigation }: Props) {
 
   const onSend = useCallback(
     async (newMessages: IMessage[] = []) => {
-      const db = getFirestore(firebaseApp)
-      const messagesCollection = collection(
-        db,
-        "rooms/XosXGlWEmejG35dVCv7k/messages",
-      )
-
       const writeBatch = async () => {
         const batch = newMessages.map(async (message) => {
-          await addDoc(messagesCollection, {
+          await addDoc(messagesCollectionReference, {
             text: message.text,
             createdAt: serverTimestamp(),
             user: message.user,
@@ -74,7 +98,7 @@ export default function Chat({ route, navigation }: Props) {
       onSend={(messages) => onSend(messages)}
       user={{
         _id: 1,
-        name: "User Name", // Pode ser qualquer nome de usuário que você esteja usando
+        name: loggedInUserDocument?.person.fullName ?? "none",
       }}
     />
   )

@@ -52,7 +52,7 @@ export default function OpenRooms() {
                 rootStackNavigation.navigate("chat", { roomId: item.room.id })
               }}
             >
-              <Text>Entrar em contato</Text>
+              <Text>Continuar conversa</Text>
             </Button>
           }
         />

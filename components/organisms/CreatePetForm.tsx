@@ -425,9 +425,8 @@ export default function CreatePetForm({ onSubmit }: CreatePetFormProps) {
           <Text>COLOCAR PARA ADOÇÃO</Text>
         </Button>
         <HelperText type="error" visible={Object.keys(errors).length != 0}>
-          Por favor resolva os erros acima antes de cadastrar.
+          Por favor resolva os erros antes de cadastrar.
         </HelperText>
-        <Text>{JSON.stringify(errors)}</Text>
       </View>
 
       {/* <Button

@@ -50,6 +50,14 @@ export default function HomeDrawer() {
         }}
         component={UserPetList}
       />
+      <Drawer.Screen 
+        name="openRooms" 
+        options={{
+          drawerLabel: "Conversas",
+          title: "Conversas",
+        }}
+        component={OpenRooms} 
+      />
       <Drawer.Screen
         name="logout"
         options={{
@@ -57,10 +65,6 @@ export default function HomeDrawer() {
           title: "Sair",
         }}
         component={Logout}
-      />
-      <Drawer.Screen
-        name="openRooms"
-        component={OpenRooms}
       />
     </Drawer.Navigator>
   )

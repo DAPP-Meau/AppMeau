@@ -52,7 +52,7 @@ export default function RootStack() {
         <Stack.Screen
           name="chat"
           options={{
-            title: "chat",
+            title: "Chat",
           }}
           component={Chat}
         />
