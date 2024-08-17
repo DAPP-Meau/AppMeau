@@ -6,7 +6,7 @@ import { RootStackParamList } from "../Navigation/RootStack"
 
 type Props = DrawerScreenProps<RootStackParamList, "addPetsSuccess">
 
-export default function PetRegistrationSuccess({ route, navigation }: Props) {
+export default function PetRegistrationSuccess({ navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
 

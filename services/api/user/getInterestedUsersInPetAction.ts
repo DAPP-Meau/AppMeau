@@ -1,27 +1,27 @@
 import { FirebaseApp } from "firebase/app"
 import getPetAction from "../pet/getPetAction"
-import getUserAction, { GetUserActionReturn } from "./getUserAction"
+import getUserAction from "./getUserAction"
+import { Snapshot, User } from "@/models"
 
 /** Buscar lista de usuários interessados no pet
  *
  * @param petID Id do pet a ser buscado
- * @returns Lista de usuários interessados no pet. Se não tiver usuários a lista retorna vazia.
- *
- * @throws Se não tiver usuário logado
+ * @returns Lista de usuários interessados no pet. Se não houver usuários a
+ * lista retorna vazia.
  */
 export async function getInterestedUsersInPetAction(
   petID: string,
   firebaseApp: FirebaseApp,
-): Promise<GetUserActionReturn[]> {
-  const userList: GetUserActionReturn[] = []
+): Promise<Snapshot<User>[]> {
+  const userList: Snapshot<User>[] = []
   const petDocument = await getPetAction(petID, firebaseApp)
-  if (!petDocument || !petDocument.interestedUsersList) {
+  if (!petDocument?.interestedUsersList) {
     return []
   }
 
   for (const userID of petDocument.interestedUsersList) {
     const userDocument = await getUserAction(userID, firebaseApp)
-    userDocument && userList.push(userDocument)
+    if (userDocument) userList.push({ id: userID, data: userDocument })
   }
 
   return userList

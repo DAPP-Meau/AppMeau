@@ -1,5 +1,4 @@
 import z from "zod"
-import { UserDocument } from "./User"
 
 export const speciesOptionsEnum = z.enum(["cat", "dog"])
 export const sexOptionsEnum = z.enum(["male", "female"])
@@ -12,24 +11,12 @@ export type sizeOptions = z.infer<typeof sizeOptionsEnum>
 export type ageOptions = z.infer<typeof ageOptionsEnum>
 
 export const animalSchema = z.object({
-  name: z
-    .string()
-    .min(0, "O nome do seu pet está muito curto")
-    .max(
-      100,
-      "O nome do seu pet está muito comprido, o máximo são 100 caracteres",
-    ),
+  name: z.string().min(1).max(100),
   species: speciesOptionsEnum,
   sex: sexOptionsEnum,
   size: sizeOptionsEnum,
   age: ageOptionsEnum,
-  story: z
-    .string()
-    .max(
-      256,
-      "A história do seu pet está muito longa, o máximo são 256 caracteres.",
-    )
-    .optional(),
+  story: z.string().max(256).optional(),
 })
 
 export type Animal = z.infer<typeof animalSchema>
@@ -50,13 +37,7 @@ export const healthSchema = z.object({
   dewormed: z.boolean(),
   neutered: z.boolean(),
   sick: z.boolean(),
-  sicknesses: z
-    .string()
-    .max(
-      256,
-      "A história do seu pet está muito longa, o máximo são 256 caracteres.",
-    )
-    .optional(),
+  sicknesses: z.string().max(256).optional(),
 })
 
 export type Health = z.infer<typeof healthSchema>
@@ -70,7 +51,7 @@ export const adoptionRequirementsSchema = z.object({
 
 export type AdoptionRequirements = z.infer<typeof adoptionRequirementsSchema>
 
-export const petDocumentSchema = z.object({
+export const petSchema = z.object({
   animal: animalSchema,
   temperament: temperamentSchema,
   health: healthSchema,
@@ -80,11 +61,6 @@ export const petDocumentSchema = z.object({
   picture_url: z.string().optional(),
 })
 
-export type PetDocument = z.infer<typeof petDocumentSchema>
+export type Pet = z.infer<typeof petSchema>
 
-export type PetAndOwnerDocument = {
-  pet: { id: string; data: PetDocument }
-  user: { id: string; data: UserDocument }
-}
-
-export type GetPetListActionReturn = PetAndOwnerDocument[]
+export type PetDocument = {id: string, data: PetDocument}

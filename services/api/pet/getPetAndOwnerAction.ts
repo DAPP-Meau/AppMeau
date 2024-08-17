@@ -1,26 +1,28 @@
-import { PetAndOwnerDocument } from "@/models"
 import { FirebaseApp } from "firebase/app"
 import getPetAction from "./getPetAction"
 import getUserAction from "../user/getUserAction"
+import { PetAndOwnerDocument } from "@/models"
 
 /**
  * Buscar pet no banco por ID do pet.
  *
- * @param petId id do pet a ser encontrado no banco de dados
+ * @param petID id do pet a ser encontrado no banco de dados
  * @param firebaseApp Instância do firebase
  * @returns O documento do pet, undefined caso contrário.
  */
 export default async function getPetAndOwnerAction(
-  petId: string,
+  petID: string,
   firebaseApp: FirebaseApp,
 ): Promise<PetAndOwnerDocument | undefined> {
-  const petDocument = await getPetAction(petId, firebaseApp)
+  const petDocument = await getPetAction(petID, firebaseApp)
+
   if (petDocument) {
-    const userDocument = await getUserAction(petDocument.owner_uid, firebaseApp)
+    const { owner_uid } = petDocument
+    const userDocument = await getUserAction(owner_uid, firebaseApp)
     if (userDocument) {
       return {
-        pet: { id: petId, data: petDocument },
-        user: { ...userDocument },
+        pet: { id: petID, data: petDocument },
+        user: { id: owner_uid, data: userDocument },
       }
     }
   }

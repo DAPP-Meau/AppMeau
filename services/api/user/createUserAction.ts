@@ -3,7 +3,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth
 } from "firebase/auth"
-import { UserDocument, userDocumentSchema } from "@/models"
+import { User, userSchema } from "@/models"
 import { collection, doc, getFirestore, setDoc } from "firebase/firestore"
 import { UseFormReturn } from "react-hook-form"
 import { UserRegistrationFields } from "@/components/organisms/CreateUserForm"
@@ -62,7 +62,7 @@ export async function createUserAction(
   fields.person.age = Number(fields.person.age)
 
   // Criando o objeto a ser inserido no banco utilizando o tipo correto.
-  const registrationDocument: UserDocument = userDocumentSchema.parse({
+  const registrationDocument: User = userSchema.parse({
     person: { ...fields.person, pictureURL: image_url },
     address: fields.address,
     login: {

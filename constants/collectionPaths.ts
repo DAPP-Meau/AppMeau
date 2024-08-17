@@ -1,4 +1,6 @@
 export const collectionPaths = {
     users: "users",
-    pets: "pets"
+    pets: "pets",
+    rooms: "rooms",
+    rooms_messages: "messages",
 }

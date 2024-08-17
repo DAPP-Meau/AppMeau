@@ -1,36 +1,33 @@
-import { GestureResponderEvent, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import React from "react"
+import { StyleSheet, Text, View } from "react-native"
+import React, { ReactNode } from "react"
 import { MD3Theme, useTheme } from "react-native-paper"
 import { Image } from "expo-image"
-import { GetUserActionReturn } from "@/services/api/user/getUserAction"
 import { blurhash } from "@/constants/blurhash"
+import { User } from "@/models"
 
 interface IUserCardProps {
-  user: GetUserActionReturn
-  onPress: (e: GestureResponderEvent) => void
+  user: User
+  left?: ReactNode
+  right?: ReactNode
 }
 
-export default function UserCard({ user, onPress }: IUserCardProps) {
+export default function UserCard({ user, left, right }: IUserCardProps) {
   const theme = useTheme()
   const styles = makeStyles(theme)
-  const { data: userData } = user
+  const { person } = user
 
   return (
     <View style={styles.item}>
+      {left ?? null}
       <Image
         style={styles.profileImage}
-        source={userData.person.pictureURL}
+        source={person.pictureURL}
         placeholder={{ blurhash }}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.name}>{userData.person.fullName}</Text>
+        <Text style={styles.name}>{person.fullName}</Text>
       </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={onPress}
-      >
-        <Text style={styles.buttonText}>Entrar em contato</Text>
-      </TouchableOpacity>
+      {right ?? null}
     </View>
   )
 }
@@ -43,8 +40,8 @@ const makeStyles = (theme: MD3Theme) =>
       alignItems: "center",
     },
     item: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: 16,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.backdrop,
@@ -61,19 +58,5 @@ const makeStyles = (theme: MD3Theme) =>
     name: {
       fontWeight: "bold",
       fontSize: 16,
-    },
-
-    button: {
-      padding: 12,
-      backgroundColor: theme.colors.primary,
-      borderRadius: 4,
-    },
-    buttonText: {
-      color: "#fff",
-      textAlign: "center",
-    },
-    emptyText: {
-      textAlign: "center",
-      margin: 16,
     },
   })

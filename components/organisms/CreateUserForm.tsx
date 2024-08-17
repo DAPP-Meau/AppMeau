@@ -16,11 +16,11 @@ import {
   useTheme,
 } from "react-native-paper"
 import ErrorHelperText from "../atoms/ErrorHelperText"
-import { Person, UserDocument } from "@/models"
+import { Person, User } from "@/models"
 
 export type NewPerson = Omit<Person, "pictureURL">
 
-export type UserRegistrationFields = Omit<UserDocument, "person"> & {
+export type UserRegistrationFields = Omit<User, "person"> & {
   person: NewPerson
 } & {
   password: string

@@ -12,7 +12,7 @@ export type RootStackParamList = {
   addPetsSuccess: undefined
   petDetails: { petID: string }
   UserList: { petId: string }
-  chat: { userID: string; petID: string }
+  chat: { roomId: string }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -52,7 +52,7 @@ export default function RootStack() {
         <Stack.Screen
           name="chat"
           options={{
-            title: "chat",
+            title: "Chat",
           }}
           component={Chat}
         />
