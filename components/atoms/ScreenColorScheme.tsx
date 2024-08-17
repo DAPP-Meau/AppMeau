@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useEffect } from "react"
+import React, { ReactNode, useContext, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/native"
 import { ColorSchemeContext, ColorSchemes } from "@/services/store/ColorSchemeContext"
 
@@ -26,13 +26,13 @@ export function ScreenColorScheme({
   const navigation = useNavigation()
   const colorScheme = useContext(ColorSchemeContext)
   // O valor padrão do app é yellow, caso não tenha um tema anterior.
-  let oldScheme: ColorSchemes = "yellow"
+  const [oldScheme, setOldScheme] = useState<ColorSchemes>("yellow")
 
   // Event Listener de quando a tela entra em foco, trocando para o tema
   // selecionado.
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      oldScheme = colorScheme.colorScheme
+      setOldScheme(colorScheme.colorScheme)
       colorScheme.setColorScheme(theme)
     })
     return unsubscribe
