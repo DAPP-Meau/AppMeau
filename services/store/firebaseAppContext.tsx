@@ -4,9 +4,15 @@ import { connectAuthEmulator, getAuth } from "firebase/auth"
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore"
 import { connectStorageEmulator, getStorage } from "firebase/storage"
 import { createContext } from "react"
+import { initializeAuth, getReactNativePersistence } from "firebase/auth"
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 
 function getEmulatorOrNot(): FirebaseApp {
   const firebaseApp: FirebaseApp = initializeApp(firebaseAppConfig)
+  const auth = initializeAuth(firebaseApp, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  })
+  
   const variables = [
     process.env.EXPO_PUBLIC_EMULATOR_AUTH_URL,
     process.env.EXPO_PUBLIC_EMULATOR_FIRESTORE_HOST,
