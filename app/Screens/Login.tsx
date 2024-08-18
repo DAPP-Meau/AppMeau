@@ -3,16 +3,12 @@ import { AuthErrorCodes, getAuth } from "firebase/auth"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { loginAction } from "@/services/api/auth/loginAction"
 import LoginForm, { LoginFields } from "@/components/organisms/LoginForm"
-import { useNavigation } from "@react-navigation/native"
 import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"
 import { Alert } from "react-native"
-import { DrawerNavigationProp } from "@react-navigation/drawer"
-import { LayoutParamList } from "../Navigation/Layout"
 import { UseFormReturn } from "react-hook-form"
 import { FirebaseError } from "firebase/app"
 
 export default function Login() {
-  const navigation = useNavigation<DrawerNavigationProp<LayoutParamList>>()
   const firebaseapp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseapp)
 
@@ -21,7 +17,6 @@ export default function Login() {
       await loginAction(form, auth)
       form.reset()
       Alert.alert("Bem vindo!")
-      navigation.navigate("rootStack")
     } catch (error) {
       const setWrongPassword = () =>
         form.setError("password", {
