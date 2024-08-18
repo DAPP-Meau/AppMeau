@@ -1,25 +1,22 @@
-import { GestureResponderEvent, Text } from "react-native"
+import { Text, View } from "react-native"
 import React, { useContext, useEffect, useState } from "react"
-import {
-  FlatList,
-  RefreshControl,
-  TouchableOpacity,
-} from "react-native-gesture-handler"
-import { Room } from "@/models"
+import { FlatList, RefreshControl } from "react-native-gesture-handler"
 import ListEmpty from "@/components/atoms/ListEmpty"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import getCurrentUserUID from "@/utils/getCurrentUser"
-import getUserRoomsAction, { RoomAndUserDocument } from "@/services/api/chat/getUserRoomsAction"
+import getUserRoomPetAction, {
+  RoomUserAndPetDocument,
+} from "@/services/api/chat/getUserRoomsAction"
 import UserCard from "@/components/molecules/UserCard"
-import { Button } from "react-native-paper"
+import { Button, Card, useTheme } from "react-native-paper"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "../Navigation/RootStack"
 import { useNavigation } from "@react-navigation/native"
+import { Image } from "expo-image"
+import { blurhash } from "@/constants/blurhash"
 
 export default function OpenRooms() {
-  const rootStackNavigation =
-    useNavigation<StackNavigationProp<RootStackParamList>>()
-  const [openRoomsList, setOpenRoomsList] = useState<RoomAndUserDocument[]>()
+  const [openRoomsList, setOpenRoomsList] = useState<RoomUserAndPetDocument[]>()
   const [refreshing, setRefreshing] = useState(true)
 
   const firebaseApp = useContext(FirebaseAppContext)
@@ -29,10 +26,10 @@ export default function OpenRooms() {
   useEffect(() => {
     async function fetchData() {
       if (!loggedInUserUid) return
-      const userRooms = await getUserRoomsAction(firebaseApp)
+      const userRooms = await getUserRoomPetAction(firebaseApp)
       setOpenRoomsList(userRooms)
     }
-    
+
     fetchData().then(() => {
       setRefreshing(false)
     })
@@ -41,22 +38,7 @@ export default function OpenRooms() {
   return (
     <FlatList
       data={openRoomsList}
-      renderItem={({ item }) => (
-        <UserCard
-          user={item.user.data}
-          right={
-            <Button
-              mode="contained"
-              compact
-              onPress={() => {
-                rootStackNavigation.navigate("chat", { roomId: item.room.id })
-              }}
-            >
-              <Text>Continuar conversa</Text>
-            </Button>
-          }
-        />
-      )}
+      renderItem={({ item }) => <PetRoomsList roomUserPet={item} />}
       ListEmptyComponent={() => (
         <ListEmpty
           loading={refreshing}
@@ -73,15 +55,69 @@ export default function OpenRooms() {
   )
 }
 
-interface IRoomCardProps {
-  room: Room
-  onPress: (e: GestureResponderEvent) => void
+interface IPetRoomListProps {
+  roomUserPet: RoomUserAndPetDocument
 }
 
-export function RoomCard({ room }: IRoomCardProps) {
+export function PetRoomsList({ roomUserPet }: IPetRoomListProps) {
+  const theme = useTheme()
+  const rootStackNavigation =
+    useNavigation<StackNavigationProp<RootStackParamList>>()
+
+  const { petDocument, listOfRooms } = roomUserPet
+  const { data: petData, id: petID } = petDocument
+
   return (
-    <TouchableOpacity>
-      <Text>{room.users}</Text>
-    </TouchableOpacity>
+    <Card elevation={1} style={{ margin: 10 }}>
+      <Card
+        onPress={() => {
+          rootStackNavigation.navigate("petDetails", { petID: petID })
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 10,
+            backgroundColor: theme.colors.primaryContainer,
+            borderRadius: 5,
+            alignItems: "center"
+          }}
+        >
+          <Image
+            style={{ height: 50, aspectRatio: 1, borderRadius: 5 }}
+            source={petData.picture_url}
+            placeholder={{ blurhash }}
+            contentFit="scale-down"
+            transition={1000}
+          />
+          <View style={{ flexDirection: "column" }}>
+            <Text style={{ fontSize: 18 }}>{petData.animal.name}</Text>
+          </View>
+        </View>
+      </Card>
+
+      <FlatList
+        data={listOfRooms}
+        style={{ margin: 10 }}
+        renderItem={({ item }) => (
+          <UserCard
+            user={item.user.data}
+            right={
+              <Button
+                mode="contained"
+                compact
+                onPress={() => {
+                  rootStackNavigation.navigate("chat", { roomId: item.room.id })
+                }}
+              >
+                <Text>Continuar conversa</Text>
+              </Button>
+            }
+            key={item.room.id}
+          />
+        )}
+        scrollEnabled={false}
+      />
+    </Card>
   )
 }

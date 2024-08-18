@@ -4,7 +4,7 @@ import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { useNavigation } from "@react-navigation/native"
 import { QueryConstraint } from "firebase/firestore"
 import React, { useContext, useEffect, useState } from "react"
-import { Alert } from "react-native"
+import { Alert, View } from "react-native"
 import { FlatList, RefreshControl } from "react-native-gesture-handler"
 import { IconButton } from "react-native-paper"
 import ListEmpty from "../atoms/ListEmpty"
@@ -12,9 +12,10 @@ import { PetAndOwnerDocument } from "@/models"
 
 export interface IPetListProps {
   query?: QueryConstraint[]
+  card?: (item: PetAndOwnerDocument) => React.JSX.Element
 }
 
-export default function PetListComponent({ query }: IPetListProps) {
+export default function PetListComponent({ query, card }: IPetListProps) {
   const navigation = useNavigation()
   const firebaseApp = useContext(FirebaseAppContext)
 
@@ -28,10 +29,10 @@ export default function PetListComponent({ query }: IPetListProps) {
     callback().finally(() => {
       setRefreshing(false)
     })
-    
+
     async function callback() {
-    const tempPetList = await getPetListAction(firebaseApp, ...(query ?? []))
-    setPetList(tempPetList)
+      const tempPetList = await getPetListAction(firebaseApp, ...(query ?? []))
+      setPetList(tempPetList)
     }
   }, [refreshing])
 
@@ -52,15 +53,20 @@ export default function PetListComponent({ query }: IPetListProps) {
     Alert.alert("Não implementado")
   }
 
+  const renderCard = (item: PetAndOwnerDocument) => {
+    if (card) return card(item)
+    return (
+      <PetCard petAndOwner={item} key={item.pet.id} onFavourite={onFavourite} />
+    )
+  }
+
   return (
     <FlatList
       data={petList}
       renderItem={({ item }) => (
-        <PetCard
-          petAndOwner={item}
-          key={item.pet.id}
-          onFavourite={onFavourite}
-        />
+        <View style={{margin:10}}>
+          {renderCard(item)}
+        </View>
       )}
       ListEmptyComponent={() => (
         <ListEmpty

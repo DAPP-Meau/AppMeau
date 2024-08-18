@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from "react-native"
 import React, { ReactNode } from "react"
-import { MD3Theme, useTheme } from "react-native-paper"
 import { Image } from "expo-image"
 import { blurhash } from "@/constants/blurhash"
 import { User } from "@/models"
@@ -12,8 +11,7 @@ interface IUserCardProps {
 }
 
 export default function UserCard({ user, left, right }: IUserCardProps) {
-  const theme = useTheme()
-  const styles = makeStyles(theme)
+  const styles = makeStyles()
   const { person } = user
 
   return (
@@ -32,7 +30,7 @@ export default function UserCard({ user, left, right }: IUserCardProps) {
   )
 }
 
-const makeStyles = (theme: MD3Theme) =>
+const makeStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -42,15 +40,13 @@ const makeStyles = (theme: MD3Theme) =>
     item: {
       flexDirection: "row",
       alignItems: "center",
-      padding: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.backdrop,
+      padding: 10,
     },
     profileImage: {
       width: 50,
       height: 50,
       borderRadius: 25,
-      marginRight: 16,
+      marginRight: 10,
     },
     textContainer: {
       flex: 1,
