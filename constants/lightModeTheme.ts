@@ -1,5 +1,5 @@
 import { DefaultTheme } from "react-native-paper"
-import { ThemeProp } from "react-native-paper/lib/typescript/types"
+import { MD3Theme } from "react-native-paper/lib/typescript/types"
 
 const yellowThemeColors = {
   "colors": {
@@ -20,7 +20,7 @@ const yellowThemeColors = {
     "errorContainer": "rgb(255, 218, 214)",
     "onErrorContainer": "rgb(65, 0, 2)",
     "background": "rgb(255, 251, 255)",
-    "onBackground": "rgb(30, 27, 22)",
+    "onBackground": "rgb(117, 117, 117)",
     "surface": "rgb(255, 251, 255)",
     "onSurface": "rgb(30, 27, 22)",
     "surfaceVariant": "rgb(236, 225, 207)",
@@ -50,7 +50,7 @@ const blueThemeColors = {
   "colors": {
     "primary": "rgb(0, 106, 97)",
     "onPrimary": "rgb(255, 255, 255)",
-    "primaryContainer": "rgb(115, 248, 231)",
+    "primaryContainer": "rgb(136, 201, 191)",
     "onPrimaryContainer": "rgb(0, 32, 29)",
     "secondary": "rgb(56, 107, 1)",
     "onSecondary": "rgb(255, 255, 255)",
@@ -91,17 +91,17 @@ const blueThemeColors = {
   }
 }
 
-export const lightModeTheme: ThemeProp = {
+export const lightModeTheme: MD3Theme = {
   ...DefaultTheme,
   roundness: 1
 }
 
-export const lightModeYellowTheme: ThemeProp = {
+export const lightModeYellowTheme: MD3Theme = {
   ...lightModeTheme,
   colors: yellowThemeColors.colors,
 }
 
-export const lightModeBlueTheme: ThemeProp = {
+export const lightModeBlueTheme: MD3Theme = {
   ...lightModeTheme,
   colors: blueThemeColors.colors,
 }

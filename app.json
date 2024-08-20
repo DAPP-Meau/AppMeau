@@ -4,15 +4,17 @@
     "slug": "meau",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/Meau_Icone.png",
+    "scheme": "meau",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/Meau_malha.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#88c9bf"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.unb.meauapp",
       "buildNumber": "1",
@@ -23,11 +25,10 @@
       "package": "com.unb.meauapp",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/Meau_Icone.png",
         "backgroundColor": "#88c9bf"
       },
       "googleServicesFile": "./google-services.json"
-      //"package": "com.icode.fontsrn"
     },
     "web": {
       "bundler": "metro",
@@ -35,7 +36,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/perf",
@@ -53,7 +53,6 @@
         {
           "photosPermission": "custom photos permission",
           "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
-
           "//": "Disables the microphone permission",
           "microphonePermission": false
         }
@@ -62,19 +61,19 @@
         "expo-font",
         {
           "fonts": [
-            "@/assets/fonts/Courgette-Regular.otf",
-            "@/assets/fonts/Roboto-Regular.otf",
-            "@/assets/fonts/Roboto-Black.otf",
-            "@/assets/fonts/Roboto-BlackItalic.otf",
-            "@/assets/fonts/Roboto-Bold.otf",
-            "@/assets/fonts/Roboto-Light.otf",
-            "@/assets/fonts/Roboto-Medium.otf",
-            "@/assets/fonts/Roboto-Thin.otf",
-            "@/assets/fonts/Roboto-Italic.otf",
-            "@/assets/fonts/Roboto-BoldItalic.otf",
-            "@/assets/fonts/Roboto-LightItalic.otf",
-            "@/assets/fonts/Roboto-MediumItalic.otf",
-            "@/assets/fonts/Roboto-ThinItalic.otf"
+            "./assets/fonts/Courgette-Regular.otf",
+            "./assets/fonts/Roboto-Regular.otf",
+            "./assets/fonts/Roboto-Black.otf",
+            "./assets/fonts/Roboto-BlackItalic.otf",
+            "./assets/fonts/Roboto-Bold.otf",
+            "./assets/fonts/Roboto-Light.otf",
+            "./assets/fonts/Roboto-Medium.otf",
+            "./assets/fonts/Roboto-Thin.otf",
+            "./assets/fonts/Roboto-Italic.otf",
+            "./assets/fonts/Roboto-BoldItalic.otf",
+            "./assets/fonts/Roboto-LightItalic.otf",
+            "./assets/fonts/Roboto-MediumItalic.otf",
+            "./assets/fonts/Roboto-ThinItalic.otf"
           ]
         }
       ],
@@ -88,11 +87,16 @@
             "newArchEnabled": true
           }
         }
-      ]
+      ],
+      "expo-router"
     ],
-
-    "experiments": {
-      "typedRoutes": true
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "52302002-e84f-4b99-8e28-ed83189c1738"
+      }
     }
   }
 }
