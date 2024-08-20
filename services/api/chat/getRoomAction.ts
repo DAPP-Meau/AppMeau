@@ -13,14 +13,16 @@ import {
 } from "firebase/firestore"
 
 /** Retorna id da sala da conversa do usuário logado com o userID. Caso não
- * exista, ela é criadau
+ * exista, ela é criada.
  *
  * @param userID Id do usuário que queira conversar
+ * @param petID Id do pet no qual os usuários estão negociando.
  * @param firebaseApp instância do firebase ativa
  * @returns Sala com ambos userID e o usuário logado.
  */
 export default async function getRoomWithUserAction(
   userID: string,
+  petID: string,
   firebaseApp: FirebaseApp,
 ): Promise<Snapshot<Room>> {
   const db = getFirestore(firebaseApp)
@@ -31,6 +33,7 @@ export default async function getRoomWithUserAction(
   const q = query(
     roomCollectionReference,
     where("users", "array-contains", loggedInUser),
+    where("petID", "==", petID)
   )
   const roomsSnapshot = await getDocs(q) // Encontrar Salas que tenham o usuário
   for (const roomS of roomsSnapshot.docs) {
@@ -39,17 +42,18 @@ export default async function getRoomWithUserAction(
     if (room.users.includes(userID)) return { id: roomS.id, data: room }
   }
   // Se a verificação acima falhar, criar nova sala.
-  return await createRoom(firebaseApp, userID, loggedInUser)
+  return await createRoom(firebaseApp, userID, loggedInUser, petID)
 }
 
 async function createRoom(
   firebaseApp: FirebaseApp,
   user1: string,
   user2: string,
+  petID: string,
 ): Promise<{ id: string; data: Room }> {
   const db = getFirestore(firebaseApp)
   const documentReference = doc(collection(db, collectionPaths.rooms))
-  const data: Room = { users: [user1, user2] }
+  const data: Room = { users: [user1, user2], petID: petID }
   await setDoc(documentReference, data)
   return { id: documentReference.id, data: data }
 }

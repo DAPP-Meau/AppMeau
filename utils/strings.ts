@@ -112,3 +112,11 @@ export const endereco = ({ address }: User): string => {
   const { fullAddress, city, state } = address
   return fullAddress + " - " + city + ", " + state
 }
+
+export const usuariosInteressados = (x: number): string => {
+  if (x) {
+    const s = x > 1 ? "s" : ""
+    return x + " usuário" + s + " interessado" + s
+  }
+  return "Nenhum usuário interessado"
+}

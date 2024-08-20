@@ -45,7 +45,7 @@ export type Health = z.infer<typeof healthSchema>
 export const adoptionRequirementsSchema = z.object({
   requireAdoptionTerm: z.boolean(),
   requireHousePhoto: z.boolean(),
-  requireMonitoring: z.number().int().nonnegative(),
+  requireMonitoring: z.coerce.number().int().nonnegative(),
   requirePreviousVisit: z.boolean(),
 })
 

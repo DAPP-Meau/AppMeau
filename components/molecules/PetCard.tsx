@@ -30,8 +30,6 @@ export default function PetCard({
   return (
     <Card
       style={{
-        marginVertical: 5,
-        marginHorizontal: 18,
         backgroundColor: theme.colors.surface,
       }}
       onPress={() => {
