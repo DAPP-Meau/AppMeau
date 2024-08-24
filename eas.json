@@ -5,11 +5,27 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "AIzaSyAdR3vDtZ8a8QnvyyHSp3K7-9qvVO1LhLk",
+        "EXPO_PUBLIC_AUTHDOMAIN": "meau-app-1b023.firebaseapp.com",
+        "EXPO_PUBLIC_PROJECTID": "meau-app-1b023",
+        "EXPO_PUBLIC_STORAGEBUCKET": "meau-app-1b023.appspot.com",
+        "EXPO_PUBLIC_APPID": "813508935570"
+      }
     },
     "preview": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "distribution": "internal",
+        "image": "latest"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "AIzaSyAdR3vDtZ8a8QnvyyHSp3K7-9qvVO1LhLk",
+        "EXPO_PUBLIC_AUTHDOMAIN": "meau-app-1b023.firebaseapp.com",
+        "EXPO_PUBLIC_PROJECTID": "meau-app-1b023",
+        "EXPO_PUBLIC_STORAGEBUCKET": "meau-app-1b023.appspot.com",
+        "EXPO_PUBLIC_APPID": "813508935570"
       }
     },
     "production": {}
