@@ -10,7 +10,7 @@ import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 function getEmulatorOrNot(): FirebaseApp {
   const firebaseApp: FirebaseApp = initializeApp(firebaseAppConfig)
   // Inicializar permanência
-  const auth = initializeAuth(firebaseApp, {
+  initializeAuth(firebaseApp, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage),
   })
   
