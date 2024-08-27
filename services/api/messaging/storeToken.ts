@@ -9,7 +9,7 @@ export default async function storeToken(
   firebaseApp: FirebaseApp,
 ): Promise<void> {
   /* timestamp dá erro de tipo aqui pois serverTimestamp() retorna um objeto 
-   * cuja data só resolve quando o objeto é armazenado no servidor.
+   * cuja data só resolve quando é armazenado no servidor.
    */
   const data: DeviceToken = { token: token, timestamp: serverTimestamp() }
 
