@@ -6,4 +6,3 @@ export const deviceTokenSchema = z.object({
 })
 
 export type DeviceToken = z.infer<typeof deviceTokenSchema>
-
