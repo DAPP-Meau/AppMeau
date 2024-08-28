@@ -4,6 +4,15 @@ import getCurrentUserUID from "@/utils/getCurrentUser"
 import { FirebaseApp } from "firebase/app"
 import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore"
 
+/**
+ * Armazena o token do usuário logado junto com a data em que o token foi
+ * armazenado na coleção de tokens.
+ *
+ * @param token token a ser armazenado
+ * @param firebaseApp instância do firebase
+ * 
+ * @throws Error caso não tenha usuário logado
+ */
 export default async function storeToken(
   token: string,
   firebaseApp: FirebaseApp,
@@ -19,5 +28,6 @@ export default async function storeToken(
     throw new Error("No user logged in to store token for.")
   }
 
-  await setDoc(doc(db, collectionPaths.fcmTokens, userID), data)
+  const docRef = doc(db, collectionPaths.fcmTokens, userID)
+  await setDoc(docRef, data)
 }
