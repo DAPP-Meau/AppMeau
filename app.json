@@ -4,6 +4,7 @@
     "slug": "meau",
     "version": "1.0.0",
     "orientation": "portrait",
+    "owner": "meauapp",
     "icon": "./assets/images/Meau_Icone.png",
     "scheme": "meau",
     "userInterfaceStyle": "automatic",
