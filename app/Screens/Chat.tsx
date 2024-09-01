@@ -23,7 +23,7 @@ import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
-export default function Chat({ route }: Props) {
+export default function Chat({ route, navigation }: Props) {
   const firebaseApp = useContext(FirebaseAppContext)
   const db = getFirestore(firebaseApp)
   // Dados do do usuário logado
@@ -51,17 +51,21 @@ export default function Chat({ route }: Props) {
 
     async function callback() {
       // Encontrar documento da sala
+      console.log("get room Doc")
       const roomDoc = await getDoc(roomDocumentReference)
       if (!roomDoc) throw new Error("No room document to create chat!")
       const _room = roomSchema.parse(roomDoc.data())
+      console.log("setRoom")
       setRoomDocument(_room)
       // Encontrar usuário com o qual está conversando
       const userId = _room.users.filter((val) => {
         return val !== loggedInUser?.id
       })[0]
+      console.log("setUserID")
       setUserID(userId)
+      console.log("dados do useEffect: " + JSON.stringify({ _room }))
     }
-  }, [])
+  }, [navigation])
 
   // Event Listener de mensagens novas do firebase.
   useEffect(() => {
@@ -93,34 +97,34 @@ export default function Chat({ route }: Props) {
     return () => unsubscribe()
   }, [firebaseApp])
 
-  const storeNewMessages = async (newMessages: IMessage[]) => {
-    const batch = newMessages.map((message) => {
-      // Nós queremos substituir created at pelo horário que a mensagem chegou
-      // no servidor.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { createdAt: _, ...restOfMessage } = message
-      const pushDoc: IMessage = {
-        // @ts-expect-error 2339 Firebase armazena dados numa classe != Date
-        createdAt: serverTimestamp(),
-        ...restOfMessage,
-      }
-
-      return addDoc(messagesCollectionReference, pushDoc)
-    })
-
-    // batch é uma lista de promises. Usando Promise.all podemos executar
-    // paralelamente todos os pedidos.
-    return Promise.all(batch)
-  }
-
   // Callback de mensagens novas
   const onSend = useCallback(
     async (newMessages: IMessage[] = []) => {
       // Armazenar mensagens no firebase
+      const storeNewMessages = async (newMessages: IMessage[]) => {
+        const batch = newMessages.map((message) => {
+          // Nós queremos substituir created at pelo horário que a mensagem chegou
+          // no servidor.
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { createdAt: _, ...restOfMessage } = message
+          const pushDoc: IMessage = {
+            // @ts-expect-error 2339 Firebase armazena dados numa classe != Date
+            createdAt: serverTimestamp(),
+            ...restOfMessage,
+          }
+
+          return addDoc(messagesCollectionReference, pushDoc)
+        })
+
+        // batch é uma lista de promises. Usando Promise.all podemos executar
+        // paralelamente todos os pedidos.
+        return Promise.all(batch)
+      }
+
       await storeNewMessages(newMessages)
 
       // Enviar push notification
-      if (loggedInUser?.id && userID && roomDocument)
+      if (loggedInUser?.id && userID && roomDocument) {
         createChatPushMessage(
           loggedInUser?.id,
           userID,
@@ -128,13 +132,23 @@ export default function Chat({ route }: Props) {
           newMessages[0].text,
           firebaseApp,
         ).then((pushMessage) => sendPushNotification(pushMessage))
+      } else {
+        console.error(
+          "Faltam dados para enviar mensagem: " +
+            JSON.stringify({
+              logged_uid: loggedInUser?.id ?? "null",
+              uid: userID ?? "null",
+              room: roomDocument ?? "null",
+            }),
+        )
+      }
 
       // Adicionar mensagens ao estado das mensagens
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessages),
       )
     },
-    [firebaseApp],
+    [firebaseApp, loggedInUser, userID, roomDocument],
   )
 
   return (
