@@ -7,18 +7,14 @@ import { BlueColorScreen } from "@/components/atoms/ScreenColorScheme"
 import { Alert } from "react-native"
 import { UseFormReturn } from "react-hook-form"
 import { FirebaseError } from "firebase/app"
-import storeToken from "@/services/api/messaging/storeToken"
-import { ExpoPushTokenContext } from "@/services/store/TokenContext"
 
 export default function Login() {
   const firebaseapp = useContext(FirebaseAppContext)
-  const pushToken = useContext(ExpoPushTokenContext)
   const auth = getAuth(firebaseapp)
 
   const submitCallback = async (form: UseFormReturn<LoginFields>) => {
     try {
       await loginAction(form, auth)
-      await storeToken(pushToken, firebaseapp)
       form.reset()
       Alert.alert("Bem vindo!")
     } catch (error) {

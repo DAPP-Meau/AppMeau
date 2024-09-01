@@ -1,4 +1,7 @@
-import { User } from "firebase/auth"
+import { Snapshot, User } from "@/models"
 import { createContext } from "react"
 
-export const LoggedInUserContext = createContext<User | null>(null)
+/**
+ * Contexto que armazena Snapshot com dados do usuário logado
+ */
+export const LoggedInUserContext = createContext<Snapshot<User> | null>(null)
