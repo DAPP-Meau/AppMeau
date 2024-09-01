@@ -12,12 +12,16 @@ import {
   query,
   orderBy,
   limit,
+  getDoc,
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { collectionPaths } from "@/constants"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import getUserAction from "@/services/api/user/getUserAction"
-import { User } from "@/models"
+import { Room, roomSchema, User } from "@/models"
+import sendPushNotification from "@/services/api/messaging/sendPushNotification"
+import { createChatPushMessage } from "@/services/api/messaging/createPushMessage"
+import { Text } from "react-native"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
@@ -26,15 +30,21 @@ export default function Chat({ route }: Props) {
   const db = getFirestore(firebaseApp)
   const loggedInUserID = getCurrentUserUID(firebaseApp)
   const [loggedInUserDocument, setLoggedInUserDocument] = useState<User>()
+  const [userID, setUserID] = useState<string>()
+  const [roomDocument, setRoomDocument] = useState<Room>()
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
-  const documentReference = doc(db, collectionPaths.rooms, route.params.roomId)
+  const roomDocumentReference = doc(
+    db,
+    collectionPaths.rooms,
+    route.params.roomId,
+  )
   const messagesCollectionReference = collection(
-    documentReference,
+    roomDocumentReference,
     collectionPaths.rooms_messages,
   )
 
-  // Pegar documento do usuário logado
+  // Pegar documento do usuário logado e do usuário do chat
   useEffect(() => {
     if (loggedInUserID) {
       callback()
@@ -42,8 +52,20 @@ export default function Chat({ route }: Props) {
 
     async function callback() {
       if (!loggedInUserID) throw new Error("No logged in user!")
-      const tempUser = await getUserAction(loggedInUserID, firebaseApp)
-      setLoggedInUserDocument(tempUser)
+      const _loggedInUserDocument = await getUserAction(
+        loggedInUserID,
+        firebaseApp,
+      )
+      setLoggedInUserDocument(_loggedInUserDocument)
+
+      const roomDoc = await getDoc(roomDocumentReference)
+      if (!roomDoc) throw new Error("No room document to create chat!")
+      const _room = roomSchema.parse(roomDoc.data())
+      setRoomDocument(_room)
+      const userId = _room.users.filter((val) => {
+        return val !== loggedInUserID
+      })[0]
+      setUserID(userId)
     }
   }, [loggedInUserID])
 
@@ -68,7 +90,7 @@ export default function Chat({ route }: Props) {
         tempMessages.push({
           ...restOfMessage,
           // Erro de tipo, coerção necessária. Só não sei como...
-          createdAt: data.createdAt.toDate(), 
+          createdAt: data.createdAt.toDate(),
         })
       }
       setMessages(tempMessages)
@@ -100,6 +122,13 @@ export default function Chat({ route }: Props) {
         await Promise.all(batch)
       }
       await writeBatch()
+      createChatPushMessage(
+        loggedInUserID ?? "",
+        userID ?? "",
+        roomDocument?.petID ?? "",
+        newMessages[0].text,
+        firebaseApp,
+      ).then((pushMessage) => sendPushNotification(pushMessage))
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessages),
       )
@@ -108,14 +137,21 @@ export default function Chat({ route }: Props) {
   )
 
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: loggedInUserID ?? 0,
-        name: loggedInUserDocument?.person.fullName ?? "null",
-        avatar: loggedInUserDocument?.person.pictureURL
-      }}
-    />
+    <>
+      <Text>
+        luid: {loggedInUserID ?? ""}
+        uid: {userID ?? ""}
+        pid: {roomDocument?.petID ?? ""}
+      </Text>
+      <GiftedChat
+        messages={messages}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: loggedInUserID ?? 0,
+          name: loggedInUserDocument?.person.fullName ?? "null",
+          avatar: loggedInUserDocument?.person.pictureURL,
+        }}
+      />
+    </>
   )
 }
