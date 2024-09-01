@@ -12,40 +12,60 @@ import {
   query,
   orderBy,
   limit,
+  getDoc,
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { collectionPaths } from "@/constants"
-import getCurrentUserUID from "@/utils/getCurrentUser"
-import getUserAction from "@/services/api/user/getUserAction"
-import { User } from "@/models"
+import { Room, roomSchema } from "@/models"
+import { LoggedInUserContext } from "@/services/store/LoggedInUserContext"
+import { createChatPushMessage } from "@/services/api/messaging/createPushMessage"
+import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
-export default function Chat({ route }: Props) {
+export default function Chat({ route, navigation }: Props) {
   const firebaseApp = useContext(FirebaseAppContext)
   const db = getFirestore(firebaseApp)
-  const loggedInUserID = getCurrentUserUID(firebaseApp)
-  const [loggedInUserDocument, setLoggedInUserDocument] = useState<User>()
+  // Dados do do usuário logado
+  const loggedInUser = useContext(LoggedInUserContext)
+  // Id do usuário com qual estamos conversando
+  const [userID, setUserID] = useState<string>()
+  // Documento da sala
+  const [roomDocument, setRoomDocument] = useState<Room>()
+  // Mensagens exibidas na tela
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
-  const documentReference = doc(db, collectionPaths.rooms, route.params.roomId)
+  const roomDocumentReference = doc(
+    db,
+    collectionPaths.rooms,
+    route.params.roomId,
+  )
   const messagesCollectionReference = collection(
-    documentReference,
+    roomDocumentReference,
     collectionPaths.rooms_messages,
   )
 
-  // Pegar documento do usuário logado
+  // Pegar documento do usuário logado e do usuário do chat
   useEffect(() => {
-    if (loggedInUserID) {
-      callback()
-    }
+    callback()
 
     async function callback() {
-      if (!loggedInUserID) throw new Error("No logged in user!")
-      const tempUser = await getUserAction(loggedInUserID, firebaseApp)
-      setLoggedInUserDocument(tempUser)
+      // Encontrar documento da sala
+      console.log("get room Doc")
+      const roomDoc = await getDoc(roomDocumentReference)
+      if (!roomDoc) throw new Error("No room document to create chat!")
+      const _room = roomSchema.parse(roomDoc.data())
+      console.log("setRoom")
+      setRoomDocument(_room)
+      // Encontrar usuário com o qual está conversando
+      const userId = _room.users.filter((val) => {
+        return val !== loggedInUser?.id
+      })[0]
+      console.log("setUserID")
+      setUserID(userId)
+      console.log("dados do useEffect: " + JSON.stringify({ _room }))
     }
-  }, [loggedInUserID])
+  }, [navigation])
 
   // Event Listener de mensagens novas do firebase.
   useEffect(() => {
@@ -63,12 +83,12 @@ export default function Chat({ route }: Props) {
         const { createdAt, ...restOfMessage } = data
         // On snapshot atualiza para mensagens locais, quando isso acontece
         // createdAt é undefined, pois as horas são criadas apenas quando
-        // o documento criado em onSend chega ao servidor
+        // o documento chega ao servidor
         if (!createdAt) continue
         tempMessages.push({
           ...restOfMessage,
           // Erro de tipo, coerção necessária. Só não sei como...
-          createdAt: data.createdAt.toDate(), 
+          createdAt: data.createdAt.toDate(),
         })
       }
       setMessages(tempMessages)
@@ -80,12 +100,13 @@ export default function Chat({ route }: Props) {
   // Callback de mensagens novas
   const onSend = useCallback(
     async (newMessages: IMessage[] = []) => {
-      const writeBatch = async () => {
+      // Armazenar mensagens no firebase
+      const storeNewMessages = async (newMessages: IMessage[]) => {
         const batch = newMessages.map((message) => {
-          // Nós realmente queremos ignorar createdAt
+          // Nós queremos substituir created at pelo horário que a mensagem chegou
+          // no servidor.
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { createdAt: _, ...restOfMessage } = message
-
           const pushDoc: IMessage = {
             // @ts-expect-error 2339 Firebase armazena dados numa classe != Date
             createdAt: serverTimestamp(),
@@ -97,14 +118,37 @@ export default function Chat({ route }: Props) {
 
         // batch é uma lista de promises. Usando Promise.all podemos executar
         // paralelamente todos os pedidos.
-        await Promise.all(batch)
+        return Promise.all(batch)
       }
-      await writeBatch()
+
+      await storeNewMessages(newMessages)
+
+      // Enviar push notification
+      if (loggedInUser?.id && userID && roomDocument) {
+        createChatPushMessage(
+          loggedInUser?.id,
+          userID,
+          roomDocument?.petID,
+          newMessages[0].text,
+          firebaseApp,
+        ).then((pushMessage) => sendPushNotification(pushMessage))
+      } else {
+        console.error(
+          "Faltam dados para enviar mensagem: " +
+            JSON.stringify({
+              logged_uid: loggedInUser?.id ?? "null",
+              uid: userID ?? "null",
+              room: roomDocument ?? "null",
+            }),
+        )
+      }
+
+      // Adicionar mensagens ao estado das mensagens
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessages),
       )
     },
-    [firebaseApp],
+    [firebaseApp, loggedInUser, userID, roomDocument],
   )
 
   return (
@@ -112,9 +156,9 @@ export default function Chat({ route }: Props) {
       messages={messages}
       onSend={(messages) => onSend(messages)}
       user={{
-        _id: loggedInUserID ?? 0,
-        name: loggedInUserDocument?.person.fullName ?? "null",
-        avatar: loggedInUserDocument?.person.pictureURL
+        _id: loggedInUser?.id ?? 0,
+        name: loggedInUser?.data.person.fullName ?? "null",
+        avatar: loggedInUser?.data.person.pictureURL,
       }}
     />
   )

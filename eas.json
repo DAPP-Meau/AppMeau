@@ -4,14 +4,20 @@
   },
   "build": {
     "development": {
+      "android": {
+        "image": "latest"
+      },
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_URL": "AIzaSyAdR3vDtZ8a8QnvyyHSp3K7-9qvVO1LhLk",
+        "EXPO_PUBLIC_APIKEY": "AIzaSyApRkai4Mj0yym9cqG5hods-vsn8Vejg_g",
         "EXPO_PUBLIC_AUTHDOMAIN": "meau-app-1b023.firebaseapp.com",
+        "EXPO_PUBLIC_DATABASEURL": "https://meau-app-1b023-default-rtdb.firebaseio.com",
         "EXPO_PUBLIC_PROJECTID": "meau-app-1b023",
         "EXPO_PUBLIC_STORAGEBUCKET": "meau-app-1b023.appspot.com",
-        "EXPO_PUBLIC_APPID": "813508935570"
+        "EXPO_PUBLIC_MESSAGINGSENDERID": "813508935570",
+        "EXPO_PUBLIC_APPID": "1:813508935570:web:5faac999278096bead4b4b",
+        "EXPO_PUBLIC_MEASUREMENTID": "G-M2CR23CHM"
       }
     },
     "preview": {
@@ -21,11 +27,14 @@
         "image": "latest"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "AIzaSyAdR3vDtZ8a8QnvyyHSp3K7-9qvVO1LhLk",
+        "EXPO_PUBLIC_APIKEY": "AIzaSyApRkai4Mj0yym9cqG5hods-vsn8Vejg_g",
         "EXPO_PUBLIC_AUTHDOMAIN": "meau-app-1b023.firebaseapp.com",
+        "EXPO_PUBLIC_DATABASEURL": "https://meau-app-1b023-default-rtdb.firebaseio.com",
         "EXPO_PUBLIC_PROJECTID": "meau-app-1b023",
         "EXPO_PUBLIC_STORAGEBUCKET": "meau-app-1b023.appspot.com",
-        "EXPO_PUBLIC_APPID": "813508935570"
+        "EXPO_PUBLIC_MESSAGINGSENDERID": "813508935570",
+        "EXPO_PUBLIC_APPID": "1:813508935570:web:5faac999278096bead4b4b",
+        "EXPO_PUBLIC_MEASUREMENTID": "G-M2CR23CHM"
       }
     },
     "production": {}
