@@ -11,13 +11,13 @@ export interface ILoggedInUserProviderProps {
   children: ReactNode
 }
 
+/** Deve vir após FirebaseAppProvider */
 export default function LoggedInUserProvider({
   children,
 }: ILoggedInUserProviderProps) {
   const firebaseApp = useContext(FirebaseAppContext)
   const auth = getAuth(firebaseApp)
   const [user, setUser] = useState<Snapshot<User> | null>(null)
-  const pushToken = useRef(useContext(ExpoPushTokenContext))
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -27,8 +27,7 @@ export default function LoggedInUserProvider({
         getUserAction(user.uid, firebaseApp).then((document) => {
           if (!document) return
           setUser({ data: document, id: user.uid })
-        })
-        storeToken(pushToken.current, firebaseApp, user.uid)
+        })        
       } else {
         // User is signed out
         setUser(user)

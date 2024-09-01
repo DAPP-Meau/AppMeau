@@ -1,9 +1,12 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react"
+import React, { ReactNode, useContext, useEffect, useRef, useState } from "react"
 import { Platform } from "react-native"
 import * as Device from "expo-device"
 import * as Notifications from "expo-notifications"
 import Constants from "expo-constants"
 import { ExpoPushTokenContext } from "./TokenContext"
+import { LoggedInUserContext } from "./LoggedInUserContext"
+import storeToken from "../api/messaging/storeToken"
+import { FirebaseAppContext } from "./firebaseAppContext"
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -22,11 +25,15 @@ export function MeauNotificationProvider({
 }: IMeauNotificationProviderProps) {
   const [expoPushToken, setExpoPushToken] = useState("")
   const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
+  Notifications.Notification | undefined
   >(undefined)
   const notificationListener = useRef<Notifications.Subscription>()
   const responseListener = useRef<Notifications.Subscription>()
+  // Para armazenar token no usuário
+  const firebaseApp = useContext(FirebaseAppContext)
+  const loggedInUser = useContext(LoggedInUserContext)
 
+  // Listeners de notificação
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then((token) => setExpoPushToken(token ?? ""))
@@ -51,6 +58,12 @@ export function MeauNotificationProvider({
         Notifications.removeNotificationSubscription(responseListener.current)
     }
   }, [])
+
+  //
+  useEffect(() => {
+    if(!loggedInUser) return
+    storeToken(expoPushToken, firebaseApp, loggedInUser.id)
+  }, [loggedInUser, expoPushToken])
 
   return (
     <ExpoPushTokenContext.Provider value={expoPushToken}>
