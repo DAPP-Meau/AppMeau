@@ -47,9 +47,7 @@ export default function Chat({ route }: Props) {
 
   // Pegar documento do usuário logado e do usuário do chat
   useEffect(() => {
-    if (loggedInUser) {
-      callback()
-    }
+    callback()
 
     async function callback() {
       // Encontrar documento da sala
@@ -63,7 +61,7 @@ export default function Chat({ route }: Props) {
       })[0]
       setUserID(userId)
     }
-  }, [loggedInUser])
+  }, [])
 
   // Event Listener de mensagens novas do firebase.
   useEffect(() => {
@@ -122,14 +120,14 @@ export default function Chat({ route }: Props) {
       await storeNewMessages(newMessages)
 
       // Enviar push notification
-      if(loggedInUser?.id && userID && roomDocument)
-      createChatPushMessage(
-        loggedInUser?.id,
-        userID,
-        roomDocument?.petID,
-        newMessages[0].text,
-        firebaseApp,
-      ).then((pushMessage) => sendPushNotification(pushMessage))
+      if (loggedInUser?.id && userID && roomDocument)
+        createChatPushMessage(
+          loggedInUser?.id,
+          userID,
+          roomDocument?.petID,
+          newMessages[0].text,
+          firebaseApp,
+        ).then((pushMessage) => sendPushNotification(pushMessage))
 
       // Adicionar mensagens ao estado das mensagens
       setMessages((previousMessages) =>
