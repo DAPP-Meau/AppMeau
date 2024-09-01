@@ -29,7 +29,7 @@ export default function LoggedInUserProvider({
           setUser({ data: document, id: user.uid })
           storeToken(pushToken, firebaseApp, user.uid)
         })
-        
+
         // ...
       } else {
         // User is signed out

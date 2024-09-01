@@ -30,7 +30,7 @@ export default async function storeToken(
   if (!userID) {
     throw new Error("No user logged in to store token for.")
   }
-
+  if (!token || token==="") console.warn("Storing empty token for " + userID)
   const docRef = doc(db, collectionPaths.fcmTokens, userID)
   await setDoc(docRef, data)
 }

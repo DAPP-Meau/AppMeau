@@ -103,14 +103,14 @@ export function App() {
           <PaperProvider theme={theme}>
             <NavigationContainer theme={theme}>
               <FirebaseAppProvider>
-                <LoggedInUserProvider>
-                  <MeauNotificationProvider>
+                <MeauNotificationProvider>
+                  <LoggedInUserProvider>
                     <SafeAreaProvider>
                       <StatusBar backgroundColor={theme.colors?.primary} />
                       <Layout />
                     </SafeAreaProvider>
-                  </MeauNotificationProvider>
-                </LoggedInUserProvider>
+                  </LoggedInUserProvider>
+                </MeauNotificationProvider>
               </FirebaseAppProvider>
             </NavigationContainer>
           </PaperProvider>

@@ -1,17 +1,8 @@
-import React, {
-  createContext,
-  ReactNode,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react"
-import { Platform, Text } from "react-native"
+import React, { ReactNode, useEffect, useRef, useState } from "react"
+import { Platform } from "react-native"
 import * as Device from "expo-device"
 import * as Notifications from "expo-notifications"
 import Constants from "expo-constants"
-import { Button } from "react-native-paper"
-import sendPushNotification from "../api/messaging/sendPushNotification"
 import { ExpoPushTokenContext } from "./TokenContext"
 
 Notifications.setNotificationHandler({
@@ -22,7 +13,13 @@ Notifications.setNotificationHandler({
   }),
 })
 
-export function MeauNotificationProvider({children}) {
+export interface IMeauNotificationProviderProps {
+  children: ReactNode
+}
+
+export function MeauNotificationProvider({
+  children,
+}: IMeauNotificationProviderProps) {
   const [expoPushToken, setExpoPushToken] = useState("")
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
