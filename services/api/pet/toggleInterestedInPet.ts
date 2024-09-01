@@ -13,9 +13,8 @@ import { collectionPaths } from "@/constants"
 import { listRemove, listUnion } from "@/utils/listUtils"
 import { isInterestedInPet } from "@/utils/isInterestedInPet"
 import getPetAction from "./getPetAction"
-import sendPushNotification, {
-  createInterestedPushMessage,
-} from "../messaging/sendPushNotification"
+import { createInterestedPushMessage } from "../messaging/createPushMessage"
+import sendPushNotification from "../messaging/sendPushNotification"
 
 /** Função auxiliar */
 const setUninterested = async (
