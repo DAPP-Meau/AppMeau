@@ -57,9 +57,10 @@ export async function createChatPushMessage(
   if (!token) throw new Error("User has no token to send message")
 
   const title =
-    "Você recebeu uma mensagem de " + getFirstTwoNames(loggedInUser.person.fullName)
+    "Você recebeu uma mensagem de " +
+    getFirstTwoNames(loggedInUser.person.fullName)
   const body =
-    "Chat no seu pet " + pet.animal.name + ": " + elipsisIfLarge(chatMessage)
+    "Chat no pet " + pet.animal.name + ": " + elipsisIfLarge(chatMessage)
 
   const message: PushMessage = {
     to: token.token,

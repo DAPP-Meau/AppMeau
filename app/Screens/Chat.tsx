@@ -16,22 +16,23 @@ import {
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { collectionPaths } from "@/constants"
-import getCurrentUserUID from "@/utils/getCurrentUser"
-import getUserAction from "@/services/api/user/getUserAction"
-import { Room, roomSchema, User } from "@/models"
-import sendPushNotification from "@/services/api/messaging/sendPushNotification"
+import { Room, roomSchema } from "@/models"
+import { LoggedInUserContext } from "@/services/store/LoggedInUserContext"
 import { createChatPushMessage } from "@/services/api/messaging/createPushMessage"
-import { Text } from "react-native"
+import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
 export default function Chat({ route }: Props) {
   const firebaseApp = useContext(FirebaseAppContext)
   const db = getFirestore(firebaseApp)
-  const loggedInUserID = getCurrentUserUID(firebaseApp)
-  const [loggedInUserDocument, setLoggedInUserDocument] = useState<User>()
+  // Dados do do usuário logado
+  const loggedInUser = useContext(LoggedInUserContext)
+  // Id do usuário com qual estamos conversando
   const [userID, setUserID] = useState<string>()
+  // Documento da sala
   const [roomDocument, setRoomDocument] = useState<Room>()
+  // Mensagens exibidas na tela
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
   const roomDocumentReference = doc(
@@ -46,28 +47,23 @@ export default function Chat({ route }: Props) {
 
   // Pegar documento do usuário logado e do usuário do chat
   useEffect(() => {
-    if (loggedInUserID) {
+    if (loggedInUser) {
       callback()
     }
 
     async function callback() {
-      if (!loggedInUserID) throw new Error("No logged in user!")
-      const _loggedInUserDocument = await getUserAction(
-        loggedInUserID,
-        firebaseApp,
-      )
-      setLoggedInUserDocument(_loggedInUserDocument)
-
+      // Encontrar documento da sala
       const roomDoc = await getDoc(roomDocumentReference)
       if (!roomDoc) throw new Error("No room document to create chat!")
       const _room = roomSchema.parse(roomDoc.data())
       setRoomDocument(_room)
+      // Encontrar usuário com o qual está conversando
       const userId = _room.users.filter((val) => {
-        return val !== loggedInUserID
+        return val !== loggedInUser?.id
       })[0]
       setUserID(userId)
     }
-  }, [loggedInUserID])
+  }, [loggedInUser])
 
   // Event Listener de mensagens novas do firebase.
   useEffect(() => {
@@ -85,7 +81,7 @@ export default function Chat({ route }: Props) {
         const { createdAt, ...restOfMessage } = data
         // On snapshot atualiza para mensagens locais, quando isso acontece
         // createdAt é undefined, pois as horas são criadas apenas quando
-        // o documento criado em onSend chega ao servidor
+        // o documento chega ao servidor
         if (!createdAt) continue
         tempMessages.push({
           ...restOfMessage,
@@ -99,36 +95,43 @@ export default function Chat({ route }: Props) {
     return () => unsubscribe()
   }, [firebaseApp])
 
+  const storeNewMessages = async (newMessages: IMessage[]) => {
+    const batch = newMessages.map((message) => {
+      // Nós queremos substituir created at pelo horário que a mensagem chegou
+      // no servidor.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { createdAt: _, ...restOfMessage } = message
+      const pushDoc: IMessage = {
+        // @ts-expect-error 2339 Firebase armazena dados numa classe != Date
+        createdAt: serverTimestamp(),
+        ...restOfMessage,
+      }
+
+      return addDoc(messagesCollectionReference, pushDoc)
+    })
+
+    // batch é uma lista de promises. Usando Promise.all podemos executar
+    // paralelamente todos os pedidos.
+    return Promise.all(batch)
+  }
+
   // Callback de mensagens novas
   const onSend = useCallback(
     async (newMessages: IMessage[] = []) => {
-      const writeBatch = async () => {
-        const batch = newMessages.map((message) => {
-          // Nós realmente queremos ignorar createdAt
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { createdAt: _, ...restOfMessage } = message
+      // Armazenar mensagens no firebase
+      await storeNewMessages(newMessages)
 
-          const pushDoc: IMessage = {
-            // @ts-expect-error 2339 Firebase armazena dados numa classe != Date
-            createdAt: serverTimestamp(),
-            ...restOfMessage,
-          }
-
-          return addDoc(messagesCollectionReference, pushDoc)
-        })
-
-        // batch é uma lista de promises. Usando Promise.all podemos executar
-        // paralelamente todos os pedidos.
-        await Promise.all(batch)
-      }
-      await writeBatch()
+      // Enviar push notification
+      if(loggedInUser?.id && userID && roomDocument)
       createChatPushMessage(
-        loggedInUserID ?? "",
-        userID ?? "",
-        roomDocument?.petID ?? "",
+        loggedInUser?.id,
+        userID,
+        roomDocument?.petID,
         newMessages[0].text,
         firebaseApp,
       ).then((pushMessage) => sendPushNotification(pushMessage))
+
+      // Adicionar mensagens ao estado das mensagens
       setMessages((previousMessages) =>
         GiftedChat.append(previousMessages, newMessages),
       )
@@ -137,21 +140,14 @@ export default function Chat({ route }: Props) {
   )
 
   return (
-    <>
-      <Text>
-        luid: {loggedInUserID ?? ""}
-        uid: {userID ?? ""}
-        pid: {roomDocument?.petID ?? ""}
-      </Text>
-      <GiftedChat
-        messages={messages}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: loggedInUserID ?? 0,
-          name: loggedInUserDocument?.person.fullName ?? "null",
-          avatar: loggedInUserDocument?.person.pictureURL,
-        }}
-      />
-    </>
+    <GiftedChat
+      messages={messages}
+      onSend={(messages) => onSend(messages)}
+      user={{
+        _id: loggedInUser?.id ?? 0,
+        name: loggedInUser?.data.person.fullName ?? "null",
+        avatar: loggedInUser?.data.person.pictureURL,
+      }}
+    />
   )
 }
