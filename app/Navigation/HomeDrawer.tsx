@@ -6,6 +6,8 @@ import Logout from "../Screens/Logout"
 import CustomDrawerHeaderBar from "@/components/organisms/CustomDrawerHeaderBar"
 import UserPetList from "../Screens/UserPetList"
 import OpenRooms from "../Screens/OpenRooms"
+import CustomDrawerContent from "@/components/organisms/CustomDrawerContent"
+import Profile from "../Screens/Profile"
 
 export type HomeDrawerParamList = {
   petList: undefined
@@ -13,6 +15,7 @@ export type HomeDrawerParamList = {
   logout: undefined
   userPetList: undefined
   openRooms: undefined
+  profile: undefined
 }
 
 const Drawer = createDrawerNavigator<HomeDrawerParamList>()
@@ -20,6 +23,13 @@ const Drawer = createDrawerNavigator<HomeDrawerParamList>()
 export default function HomeDrawer() {
   return (
     <Drawer.Navigator
+      drawerContent={({ navigation, state, descriptors }) => (
+        <CustomDrawerContent
+          navigation={navigation}
+          state={state}
+          descriptors={descriptors}
+        />
+      )}
       screenOptions={{
         headerTitleStyle: { fontFamily: "Roboto_Medium" },
         header: (props) => <CustomDrawerHeaderBar {...props} />,
@@ -27,44 +37,36 @@ export default function HomeDrawer() {
       initialRouteName="petList"
     >
       <Drawer.Screen
-        name="petList"
-        options={{
-          drawerLabel: "Adotar um pet",
-          title: "Adotar um pet",
-        }}
-        component={PetList}
+        name="profile"
+        options={{ title: "Meu Perfil" }}
+        component={Profile}
       />
+      <Drawer.Group>
+        <Drawer.Screen
+          name="petList"
+          component={PetList}
+          options={{ title: "Adotar um pet" }}
+        />
+        <Drawer.Screen
+          name="addPets"
+          component={PetRegistration}
+          options={{ title: "Registrar seu pet" }}
+        />
+        <Drawer.Screen
+          name="userPetList"
+          component={UserPetList}
+          options={{ title: "Meus Pets" }}
+        />
+      </Drawer.Group>
       <Drawer.Screen
-        name="addPets"
-        options={{
-          drawerLabel: "Registrar seu pet",
-          title: "Registrar seu pet",
-        }}
-        component={PetRegistration}
-      />
-      <Drawer.Screen
-        name="userPetList"
-        options={{
-          drawerLabel: "Meus Pets",
-          title: "Meus Pets",
-        }}
-        component={UserPetList}
-      />
-      <Drawer.Screen 
-        name="openRooms" 
-        options={{
-          drawerLabel: "Conversas",
-          title: "Conversas",
-        }}
-        component={OpenRooms} 
+        name="openRooms"
+        component={OpenRooms}
+        options={{ title: "Conversas" }}
       />
       <Drawer.Screen
         name="logout"
-        options={{
-          drawerLabel: "Sair",
-          title: "Sair",
-        }}
         component={Logout}
+        options={{ title: "Sair" }}
       />
     </Drawer.Navigator>
   )
