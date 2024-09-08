@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack"
 import React, { useState, useEffect, useContext, useCallback } from "react"
-import { GiftedChat, IMessage } from "react-native-gifted-chat"
+import { Bubble, GiftedChat, IMessage } from "react-native-gifted-chat"
 import { RootStackParamList } from "../Navigation/RootStack"
 import {
   collection,
@@ -20,6 +20,8 @@ import { Room, roomSchema } from "@/models"
 import { LoggedInUserContext } from "@/services/store/LoggedInUserContext"
 import { createChatPushMessage } from "@/services/api/messaging/createPushMessage"
 import sendPushNotification from "@/services/api/messaging/sendPushNotification"
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
+import getPetAction from "@/services/api/pet/getPetAction"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
@@ -151,6 +153,50 @@ export default function Chat({ route, navigation }: Props) {
     [firebaseApp, loggedInUser, userID, roomDocument],
   )
 
+
+  const handleResponse = async (response) => {
+    if (response=='SIM'){
+      //verifica possivel erro de o dono do pet clicar em SIM e contabilizar aqui
+      const petData = await getPetAction(roomDocument?.petID, firebaseApp);
+      const dono = petData?.owner_uid;
+      if (loggedInUser?.id != dono){
+          //TODO: fazer a troca de usuarios
+          Alert.alert('Seu novo pet ja esta em seu dominio');
+      };
+    };
+    const newMessage = {
+      _id: Math.random().toString(), //Crypto.randomUUID()
+      text: `${response}`,
+      createdAt: serverTimestamp(),
+      user:{
+        _id: loggedInUser?.id ?? 0,
+        name: loggedInUser?.data.person.fullName ?? "null",
+        avatar: loggedInUser?.data.person.pictureURL,
+      },
+    };
+    setMessages((previousMessages) => GiftedChat.append(previousMessages, [newMessage]));
+  };
+  const renderMessageWithButtons = (props) => {
+    const { currentMessage } = props;
+
+    if (currentMessage.buttons) {
+      return (
+        <View style={styles.buttonMessageContainer}>
+          <Text style={styles.messageText}>{currentMessage.text}</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={() => handleResponse('SIM')}>
+              <Text style={styles.buttonText}>SIM</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => handleResponse('NÃO')}>
+              <Text style={styles.buttonText}>NÃO</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    return <Bubble {...props} />;
+  };
   return (
     <GiftedChat
       messages={messages}
@@ -160,6 +206,34 @@ export default function Chat({ route, navigation }: Props) {
         name: loggedInUser?.data.person.fullName ?? "null",
         avatar: loggedInUser?.data.person.pictureURL,
       }}
+      renderMessage={renderMessageWithButtons}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  buttonMessageContainer: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+  },
+  messageText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+

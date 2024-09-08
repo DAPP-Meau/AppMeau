@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { Image } from "expo-image"
 import { useContext, useEffect, useState } from "react"
-import React, { FlatList, Text, View } from "react-native"
+import React, { Alert, FlatList, Text, View } from "react-native"
 import { Button, Card, Divider, useTheme } from "react-native-paper"
 import UserCard from "./UserCard"
 import { UserListRightButton } from "../atoms/UserListRightButton"
@@ -69,6 +69,7 @@ export default function PetCardWithInterestedUsers({
   const rejectDonation = async (userID: string): Promise<void> => {
     await rejectAdoptionAction(petID, userID, firebaseApp)
     // TODO: adicionar um snackbar avisando do sucesso da operação
+    Alert.alert('O usuario foi removido dos interressados e não irá realizar novas consulta ao seu pet');
     setLoading(true)
   }
 
