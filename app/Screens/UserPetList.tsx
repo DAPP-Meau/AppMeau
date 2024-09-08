@@ -4,16 +4,17 @@ import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { where } from "firebase/firestore"
 import React, { useContext } from "react"
 import { PetAndOwnerDocument } from "@/models"
-import MyPetCard from "@/components/molecules/MyPetCard"
+import PetCardWithInterestedUsers from "@/components/molecules/PetCardWithInterestedUsers"
 
 export default function PetList() {
   const firebaseApp = useContext(FirebaseAppContext)
   const uid = getCurrentUserUID(firebaseApp)
 
-
-  const card = (item: PetAndOwnerDocument) : React.JSX.Element => {
-    return <MyPetCard pet={item.pet}/>
+  const card = (item: PetAndOwnerDocument): React.JSX.Element => {
+    return <PetCardWithInterestedUsers pet={item.pet} />
   }
 
-  return <PetListComponent query={[where("owner_uid", "==", uid)]} card={card}/>
+  return (
+    <PetListComponent query={[where("owner_uid", "==", uid)]} card={card} />
+  )
 }
