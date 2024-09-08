@@ -17,7 +17,7 @@ import { createInterestedPushMessage } from "../messaging/createPushMessage"
 import sendPushNotification from "../messaging/sendPushNotification"
 
 /** Função auxiliar */
-const setUninterested = async (
+export const setUninterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
@@ -34,7 +34,7 @@ const setUninterested = async (
 }
 
 /** Função auxiliar */
-const setInterested = async (
+export const setInterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,

@@ -14,6 +14,7 @@ import UserCard from "./UserCard"
 import { UserListRightButton } from "../atoms/UserListRightButton"
 import checkRoomWithUserExists from "@/services/api/chat/checkRoomWithUserExists"
 import ListEmpty from "../atoms/ListEmpty"
+import { rejectAdoptionAction } from "@/services/api/pet/rejectAdoptionAction"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -59,7 +60,12 @@ export default function PetCardWithInterestedUsers({
   }, [pet, loading, firebaseApp])
 
   const acceptDonation = () => {}
-  const rejectDonation = () => {}
+
+  const rejectDonation = async (userID: string): Promise<void> => {
+    await rejectAdoptionAction(petID, userID, firebaseApp)
+    // TODO: adicionar um snackbar avisando do sucesso da operação
+    setLoading(true)
+  }
 
   return (
     <Card
@@ -116,7 +122,7 @@ export default function PetCardWithInterestedUsers({
               <Button compact onPress={acceptDonation}>
                 <Text>Aceitar adoção</Text>
               </Button>
-              <Button compact onPress={rejectDonation}>
+              <Button compact onPress={() => rejectDonation(user.id)}>
                 <Text>Rejeitar adoção</Text>
               </Button>
             </View>

@@ -57,6 +57,7 @@ export const petSchema = z.object({
   health: healthSchema,
   adoptionRequirements: adoptionRequirementsSchema,
   interestedUsersList: z.array(z.string()).optional(),
+  rejectedUsersList: z.array(z.string()).optional(),
   owner_uid: z.string(),
   picture_url: z.string().optional(),
 })
