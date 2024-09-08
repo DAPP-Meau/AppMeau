@@ -5,7 +5,7 @@ import React, { useContext } from "react"
 
 export default function PetList() {
   const user = useContext(LoggedInUserContext)
-
+  console.log(user?.id ?? "");
   return (
     <PetListComponent
       query={[where(user?.id ?? "", "not-in", "rejectedUsersList")]}

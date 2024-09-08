@@ -17,6 +17,7 @@ import ListEmpty from "../atoms/ListEmpty"
 import { rejectAdoptionAction } from "@/services/api/pet/rejectAdoptionAction"
 import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
 import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
+import getPetAction from "@/services/api/pet/getPetAction"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -63,7 +64,21 @@ export default function PetCardWithInterestedUsers({
 
   const acceptDonation = async (userID: string): Promise<void> => {
     const room = await getRoomWithUserAction(userID, petID, firebaseApp)
-    await sendAcceptMessage(room, firebaseApp)
+    //verificar se ja foi enviado esse mensagem caso tenha sido é necessario verificar se teve resposta 
+    //do contrario não deve reenviar a mensagem
+    //TODO:
+    //const pet = await getPetAction(petID,firebaseApp)
+    // if (pet.solicitacao)
+    //else {Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");}
+    try {
+      await sendAcceptMessage(room, firebaseApp)
+      //setar solicitação de adoção como true no pet
+      Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.");
+    } catch (error) {
+      console.error("Erro ao aceitar adoção:", error);
+      Alert.alert("Erro", "Não foi possível aceitar a adoção.");
+    }
+
   }
 
   const rejectDonation = async (userID: string): Promise<void> => {
@@ -125,7 +140,7 @@ export default function PetCardWithInterestedUsers({
                 justifyContent: "space-around"
               }}
             >
-              <Button compact onPress={acceptDonation}>
+              <Button compact onPress={() => acceptDonation(user.id)}>
                 <Text>Aceitar adoção</Text>
               </Button>
               <Button compact onPress={() => rejectDonation(user.id)}>

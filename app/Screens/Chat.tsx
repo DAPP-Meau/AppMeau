@@ -22,6 +22,7 @@ import { createChatPushMessage } from "@/services/api/messaging/createPushMessag
 import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
 import getPetAction from "@/services/api/pet/getPetAction"
+import { useTheme } from "react-native-paper"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
@@ -137,11 +138,11 @@ export default function Chat({ route, navigation }: Props) {
       } else {
         console.error(
           "Faltam dados para enviar mensagem: " +
-            JSON.stringify({
-              logged_uid: loggedInUser?.id ?? "null",
-              uid: userID ?? "null",
-              room: roomDocument ?? "null",
-            }),
+          JSON.stringify({
+            logged_uid: loggedInUser?.id ?? "null",
+            uid: userID ?? "null",
+            room: roomDocument ?? "null",
+          }),
         )
       }
 
@@ -155,20 +156,39 @@ export default function Chat({ route, navigation }: Props) {
 
 
   const handleResponse = async (response) => {
-    if (response=='SIM'){
+    if (response == 'SIM') {
       //verifica possivel erro de o dono do pet clicar em SIM e contabilizar aqui
-      const petData = await getPetAction(roomDocument?.petID, firebaseApp);
+      const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
       const dono = petData?.owner_uid;
-      if (loggedInUser?.id != dono){
-          //TODO: fazer a troca de usuarios
-          Alert.alert('Seu novo pet ja esta em seu dominio');
+      if (loggedInUser?.id != dono) {
+        //TODO: fazer a troca de usuarios
+        //setar solicitação de adoção como False no pet
+        //remover a mensagem de sim e não (pode deletar ela)
+        Alert.alert('Seu novo pet ja esta em seu dominio');
+      }
+      else {
+        Alert.alert(`Aguarde a resposta!`);
+      };
+    }
+    else {
+      const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
+      const dono = petData?.owner_uid;
+      if (loggedInUser?.id != dono) {
+        //TODO: fazer a troca de usuarios
+        //setar solicitação de adoção como False no pet
+        //remover a mensagem de sim e não (pode deletar ela)
+        Alert.alert('O pet não foi transferido para você');
+      }
+      else {
+        Alert.alert(`Aguarde a resposta!`);
       };
     };
-    const newMessage = {
+
+    const newMessage: IMessage = {
       _id: Math.random().toString(), //Crypto.randomUUID()
       text: `${response}`,
-      createdAt: serverTimestamp(),
-      user:{
+      createdAt: serverTimestamp(),// esta com erro!
+      user: {
         _id: loggedInUser?.id ?? 0,
         name: loggedInUser?.data.person.fullName ?? "null",
         avatar: loggedInUser?.data.person.pictureURL,
@@ -176,22 +196,82 @@ export default function Chat({ route, navigation }: Props) {
     };
     setMessages((previousMessages) => GiftedChat.append(previousMessages, [newMessage]));
   };
+  const theme = useTheme()
   const renderMessageWithButtons = (props) => {
     const { currentMessage } = props;
 
     if (currentMessage.buttons) {
       return (
-        <View style={styles.buttonMessageContainer}>
-          <Text style={styles.messageText}>{currentMessage.text}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => handleResponse('SIM')}>
-              <Text style={styles.buttonText}>SIM</Text>
+        <View style={{
+          padding: 20,
+          backgroundColor: theme.colors.primary,
+          borderRadius: 10,
+          shadowColor: '#000',  // Sombra para dar profundidade
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 5,  // Para sombra em Android
+          maxWidth: '75%',  // Define um limite de largura para a mensagem (75% da tela)
+          alignSelf: 'center', // Garante que a mensagem fique alinhada como em chats convencionais
+        }}>
+          <Text style={{
+            fontSize: 18, // Aumenta o tamanho da fonte para melhorar a leitura
+            marginBottom: 15, // Espaço maior entre o texto e os botões
+            color: theme.colors.background,
+            fontWeight: 'bold', // Torna o texto mais destacado
+            textAlign: 'center', // Centraliza o texto
+          }}>
+            {currentMessage.text}
+          </Text>
+        
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-evenly', // Distribui os botões igualmente
+            marginTop: 10, // Espaço adicional no topo
+          }}>
+            <TouchableOpacity style={{
+              paddingVertical: 10,
+              paddingHorizontal: 25,
+              backgroundColor: theme.colors.primaryContainer,
+              borderRadius: 25, // Botões mais arredondados
+              shadowColor: '#000', // Sombra para dar profundidade
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }} onPress={() => handleResponse('SIM')}>
+              <Text style={{
+                color: theme.colors.backdrop,
+                fontSize: 16,
+                fontWeight: '600', // Negrito para destaque
+              }}>
+                SIM
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => handleResponse('NÃO')}>
-              <Text style={styles.buttonText}>NÃO</Text>
+        
+            <TouchableOpacity style={{
+              paddingVertical: 10,
+              paddingHorizontal: 25,
+              backgroundColor: theme.colors.primaryContainer,
+              borderRadius: 25, // Botões mais arredondados
+              shadowColor: '#000', // Sombra para dar profundidade
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }} onPress={() => handleResponse('NÃO')}>
+              <Text style={{
+                color: theme.colors.backdrop,
+                fontSize: 16,
+                fontWeight: '600', // Negrito para destaque
+              }}>
+                NÃO
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
+        
+        
       );
     }
 
@@ -211,29 +291,4 @@ export default function Chat({ route, navigation }: Props) {
   )
 }
 
-const styles = StyleSheet.create({
-  buttonMessageContainer: {
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-  },
-  messageText: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  button: {
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-});
 

@@ -1,11 +1,12 @@
 import { FirebaseApp } from "firebase/app"
-import { serverTimestamp } from "firebase/firestore"
+import { addDoc, collection, doc, getFirestore, serverTimestamp } from "firebase/firestore"
 import { IMessage } from "react-native-gifted-chat"
 import * as Crypto from "expo-crypto"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import getUserAction from "../user/getUserAction"
 import { Room, Snapshot } from "@/models"
 import getPetAction from "../pet/getPetAction"
+import { collectionPaths } from "@/constants"
 
 export default async function sendAcceptMessage(
   room: Snapshot<Room>,
@@ -27,6 +28,19 @@ export default async function sendAcceptMessage(
     },
     buttons: true, // Indicador para renderizar botões
   }
+
+    // Enviar a mensagem para o Firestore
+    const db = getFirestore(firebaseApp)
+    const roomDocumentReference = doc(
+      db,
+      collectionPaths.rooms,
+      room.id,
+    )
+    const messagesCollectionReference = collection(
+      roomDocumentReference,
+      collectionPaths.rooms_messages,
+    )
+    await addDoc(messagesCollectionReference, msg);
   //TODO: enviar msg para o chat
   // TODO: adicionar documento msg na coleção de mensagens de room
 }
