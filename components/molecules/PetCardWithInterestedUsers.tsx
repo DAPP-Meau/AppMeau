@@ -15,6 +15,8 @@ import { UserListRightButton } from "../atoms/UserListRightButton"
 import checkRoomWithUserExists from "@/services/api/chat/checkRoomWithUserExists"
 import ListEmpty from "../atoms/ListEmpty"
 import { rejectAdoptionAction } from "@/services/api/pet/rejectAdoptionAction"
+import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
+import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -59,7 +61,10 @@ export default function PetCardWithInterestedUsers({
     })
   }, [pet, loading, firebaseApp])
 
-  const acceptDonation = () => {}
+  const acceptDonation = async (userID: string): Promise<void> => {
+    const room = await getRoomWithUserAction(userID, petID, firebaseApp)
+    await sendAcceptMessage(room, firebaseApp)
+  }
 
   const rejectDonation = async (userID: string): Promise<void> => {
     await rejectAdoptionAction(petID, userID, firebaseApp)
