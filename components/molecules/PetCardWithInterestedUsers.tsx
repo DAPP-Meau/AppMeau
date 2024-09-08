@@ -18,6 +18,8 @@ import { rejectAdoptionAction } from "@/services/api/pet/rejectAdoptionAction"
 import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
 import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
 import getPetAction from "@/services/api/pet/getPetAction"
+import { doc, getFirestore, updateDoc } from "firebase/firestore"
+import { FirebaseApp } from "firebase/app"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -62,22 +64,34 @@ export default function PetCardWithInterestedUsers({
     })
   }, [pet, loading, firebaseApp])
 
+  async function updatePetAdoptionStatus(petID: string, status: boolean, firebaseApp: FirebaseApp) {
+    const db = getFirestore(firebaseApp);
+    const petRef = doc(db, 'pets', petID);
+  
+    await updateDoc(petRef, {
+      adoptionRequest: status,
+    });
+  }
   const acceptDonation = async (userID: string): Promise<void> => {
     const room = await getRoomWithUserAction(userID, petID, firebaseApp)
     //verificar se ja foi enviado esse mensagem caso tenha sido é necessario verificar se teve resposta 
     //do contrario não deve reenviar a mensagem
     //TODO:
-    //const pet = await getPetAction(petID,firebaseApp)
-    // if (pet.solicitacao)
-    //else {Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");}
-    try {
-      await sendAcceptMessage(room, firebaseApp)
-      //setar solicitação de adoção como true no pet
-      Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.");
-    } catch (error) {
-      console.error("Erro ao aceitar adoção:", error);
-      Alert.alert("Erro", "Não foi possível aceitar a adoção.");
-    }
+    const pet = await getPetAction(petID,firebaseApp)
+    //adicionar adoptionRequest no pet
+    if (!pet?.adoptionRequest){
+      try {
+        await sendAcceptMessage(room, firebaseApp)
+        // Definir a solicitação de adoção como true no pet
+        await updatePetAdoptionStatus(petID??'', true, firebaseApp);
+        Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.");
+      } catch (error) {
+        console.error("Erro ao aceitar adoção:", error);
+        Alert.alert("Erro", "Não foi possível aceitar a adoção.");
+      }
+    }else {Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");}
+    
+
 
   }
 

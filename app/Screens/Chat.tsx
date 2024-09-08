@@ -13,6 +13,8 @@ import {
   orderBy,
   limit,
   getDoc,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { collectionPaths } from "@/constants"
@@ -23,6 +25,7 @@ import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
 import getPetAction from "@/services/api/pet/getPetAction"
 import { useTheme } from "react-native-paper"
+import { FirebaseApp } from "firebase/app"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
@@ -153,49 +156,83 @@ export default function Chat({ route, navigation }: Props) {
     },
     [firebaseApp, loggedInUser, userID, roomDocument],
   )
+  async function updatePetOwner(petID: string, newOwnerID: string, firebaseApp: FirebaseApp) {
+    const db = getFirestore(firebaseApp);
+    const petRef = doc(db, 'pets', petID);
+    
+    await updateDoc(petRef, {
+      owner_uid: newOwnerID,
+    });
+  }
+  
+  async function updatePetAdoptionStatus(petID: string, status: boolean, firebaseApp: FirebaseApp) {
+    const db = getFirestore(firebaseApp);
+    const petRef = doc(db, 'pets', petID);
+  
+    await updateDoc(petRef, {
+      adoptionRequest: status,
+    });
+  }
 
-
+  async function deleteMessageById(messageId: string, roomId: string, firebaseApp: FirebaseApp) {
+    const db = getFirestore(firebaseApp);
+    const messageRef = doc(db, `rooms/${roomId}/messages`, messageId);
+  
+    await deleteDoc(messageRef);
+  }
+  
   const handleResponse = async (response) => {
-    if (response == 'SIM') {
-      //verifica possivel erro de o dono do pet clicar em SIM e contabilizar aqui
-      const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
-      const dono = petData?.owner_uid;
-      if (loggedInUser?.id != dono) {
-        //TODO: fazer a troca de usuarios
-        //setar solicitação de adoção como False no pet
-        //remover a mensagem de sim e não (pode deletar ela)
-        Alert.alert('Seu novo pet ja esta em seu dominio');
-      }
-      else {
-        Alert.alert(`Aguarde a resposta!`);
-      };
+    const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
+    const dono = petData?.owner_uid;
+  
+    if (!petData) {
+      Alert.alert('Erro ao obter dados do pet');
+      return;
     }
-    else {
-      const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
-      const dono = petData?.owner_uid;
-      if (loggedInUser?.id != dono) {
-        //TODO: fazer a troca de usuarios
-        //setar solicitação de adoção como False no pet
-        //remover a mensagem de sim e não (pode deletar ela)
-        Alert.alert('O pet não foi transferido para você');
-      }
-      else {
-        Alert.alert(`Aguarde a resposta!`);
-      };
-    };
+  
+    // Verifica se o dono do pet não está tentando aceitar a própria solicitação
+    if (loggedInUser?.id === dono) {
+      Alert.alert('Aguarde a resposta!');
+      return;
+    }
+  
+    if (response === 'SIM') {
+      // Lógica quando a resposta for SIM
+      try {
+        // TODO: Fazer a troca de usuários
+        // Exemplo: Atualizar o `owner_uid` do pet para o `loggedInUser?.id`
+        await updatePetOwner(roomDocument?.petID ?? '', loggedInUser?.id ?? '', firebaseApp);
+  
+        // Definir a solicitação de adoção como False no pet
+        await updatePetAdoptionStatus(roomDocument?.petID ?? '', false, firebaseApp);
 
-    const newMessage: IMessage = {
-      _id: Math.random().toString(), //Crypto.randomUUID()
-      text: `${response}`,
-      createdAt: serverTimestamp(),// esta com erro!
-      user: {
-        _id: loggedInUser?.id ?? 0,
-        name: loggedInUser?.data.person.fullName ?? "null",
-        avatar: loggedInUser?.data.person.pictureURL,
-      },
-    };
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, [newMessage]));
+        //ajustar para essa funcionar
+        // Remover a mensagem de "SIM/NÃO" após a confirmação
+        //await deleteMessageById(specificMessageId, roomDocument?.roomID, firebaseApp);
+  
+        Alert.alert('Seu novo pet já está em seu domínio');
+      } catch (error) {
+        console.error('Erro ao aceitar a adoção:', error);
+        Alert.alert('Erro ao processar a adoção.');
+      }
+    } else if (response === 'NÃO') {
+      // Lógica quando a resposta for NÃO
+      try {
+        // Definir a solicitação de adoção como False no pet
+        await updatePetAdoptionStatus(roomDocument?.petID ?? '', false, firebaseApp);
+  
+        //ajustar para essa funcionar
+        // Remover a mensagem de "SIM/NÃO" após a recusa
+        //await deleteMessageById(specificMessageId, roomDocument?.roomID, firebaseApp);
+  
+        Alert.alert('O pet não foi transferido para você');
+      } catch (error) {
+        console.error('Erro ao recusar a adoção:', error);
+        Alert.alert('Erro ao processar a recusa.');
+      }
+    }
   };
+  
   const theme = useTheme()
   const renderMessageWithButtons = (props) => {
     const { currentMessage } = props;
