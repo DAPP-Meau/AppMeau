@@ -80,14 +80,14 @@ export default function PetCardWithInterestedUsers({
   }
   const acceptDonation = async (userID: string): Promise<void> => {
     const room = await getRoomWithUserAction(userID, petID, firebaseApp)
-    //verificar se ja foi enviado esse mensagem caso tenha sido é necessario verificar se teve resposta 
+    //verificar se ja foi enviado esse mensagem caso tenha sido é necessário verificar se teve resposta 
     //do contrario não deve reenviar a mensagem
     //TODO:
     const pet = await getPetAction(petID, firebaseApp)
     //adicionar adoptionRequest no pet
     // undefined -> false
     if (pet?.adoptionRequest ?? false) {
-      Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");
+      Alert.alert("Você deve aguardar o retorno da última solicitação que fez.");
     }
     else {
       try {
@@ -105,7 +105,7 @@ export default function PetCardWithInterestedUsers({
   const rejectDonation = async (userID: string): Promise<void> => {
     await rejectAdoptionAction(petID, userID, firebaseApp)
     // TODO: adicionar um snackbar avisando do sucesso da operação
-    Alert.alert('O usuario foi removido dos interressados e não irá realizar novas consulta ao seu pet');
+    Alert.alert('O usuário foi removido dos interessados e não irá realizar novas consulta ao seu pet');
     setLoading(true)
   }
 
