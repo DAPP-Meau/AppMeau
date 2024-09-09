@@ -79,6 +79,7 @@ export default function PetCardWithInterestedUsers({
       adoption: false,
     })
   }
+
   const acceptDonation = async (userID: string): Promise<void> => {
     const room = await getRoomWithUserAction(userID, petID, firebaseApp)
     //verificar se ja foi enviado esse mensagem caso tenha sido é necessário verificar se teve resposta
@@ -96,7 +97,10 @@ export default function PetCardWithInterestedUsers({
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
         await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
-        Alert.alert("Você aceitou a doação.", "Espere a resposta do outro usuário.")
+        Alert.alert(
+          "Você aceitou a doação.",
+          "Espere a resposta do outro usuário.",
+        )
       } catch (error) {
         console.error("Erro ao aceitar adoção:", error)
         Alert.alert("Erro", "Não foi possível aceitar a adoção.")
