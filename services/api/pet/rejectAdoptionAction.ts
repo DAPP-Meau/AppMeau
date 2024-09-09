@@ -10,10 +10,9 @@ import {
 import { Pet } from "@/models"
 import { collectionPaths } from "@/constants"
 import { listRemove, listUnion } from "@/utils/listUtils"
-//import { isrejectedInPet } from "@/utils/isrejectedInPet"
 import getPetAction from "./getPetAction"
-//import { createrejectedPushMessage } from "../messaging/createPushMessage"
 import { setUninterested } from "./toggleInterestedInPet"
+import deleteRoomById from "../chat/deleteRoomById"
 
 /** Função auxiliar */
 const setUnrejected = async (
@@ -51,8 +50,12 @@ const setRejected = async (
 
 /** Rejeita o usuário no pet.
  *
+ * retira o usuário dos interessados no pet, movendo o ID para a lista de
+ * rejeitados e por fim deleta o chat.
+ *
  * @param petID Id do pet
  * @param userID Id do usuário
+ * @param roomID sala com o usuário
  * @param firebaseApp instância do firebase
  *
  * @throws {Error} caso não haja usuário logado, ou o documento petID não exista
@@ -60,6 +63,7 @@ const setRejected = async (
 export async function rejectAdoptionAction(
   petID: string,
   userID: string,
+  roomID: string,
   firebaseApp: FirebaseApp,
 ): Promise<void> {
   const db = getFirestore(firebaseApp)
@@ -70,4 +74,5 @@ export async function rejectAdoptionAction(
 
   setRejected(pet, petDocumentRef, userID)
   setUninterested(pet, petDocumentRef, userID)
+  deleteRoomById(roomID, firebaseApp)
 }
