@@ -96,7 +96,7 @@ export default function PetCardWithInterestedUsers({
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
         await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
-        Alert.alert("Você aceitou a doação.", "Espere o outro usuário aceitar.")
+        Alert.alert("Você aceitou a doação.", "Espere a resposta do outro usuário.")
       } catch (error) {
         console.error("Erro ao aceitar adoção:", error)
         Alert.alert("Erro", "Não foi possível aceitar a adoção.")

@@ -39,7 +39,6 @@ import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 import { View, Text, StyleSheet, Alert } from "react-native"
 import getPetAction from "@/services/api/pet/getPetAction"
 import { Button, MD3Theme, useTheme } from "react-native-paper"
-import { FirebaseApp } from "firebase/app"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
 
@@ -170,7 +169,7 @@ export default function Chat({ route, navigation }: Props) {
     [firebaseApp, loggedInUser, userID, roomDocument],
   )
 
-  async function adoptPet(petID: string) {
+  async function resetPetUsersLists(petID: string) {
     const petDocumentReference = doc(db, collectionPaths.pets, petID)
 
     // Remove the 'Interested' field from the document
@@ -180,27 +179,15 @@ export default function Chat({ route, navigation }: Props) {
     })
   }
 
-  async function updatePetOwner(
-    petID: string,
-    newOwnerID: string,
-    firebaseApp: FirebaseApp,
-  ) {
-    const db = getFirestore(firebaseApp)
+  async function updatePetOwner(petID: string, newOwnerID: string) {
     const petRef = doc(db, "pets", petID)
-
     await updateDoc(petRef, {
       owner_uid: newOwnerID,
     })
   }
 
-  async function updatePetAdoptionStatus(
-    petID: string,
-    status: boolean,
-    firebaseApp: FirebaseApp,
-  ) {
-    const db = getFirestore(firebaseApp)
+  async function updatePetAdoptionStatus(petID: string, status: boolean) {
     const petRef = doc(db, "pets", petID)
-
     await updateDoc(petRef, {
       adoptionRequest: status,
     })
@@ -214,13 +201,15 @@ export default function Chat({ route, navigation }: Props) {
     })
   }
 
-  async function deleteChatByID(petID: string) {
+  async function deleteAllChatsOfPet(petID: string) {
     const roomsCollectionReference = collection(db, collectionPaths.rooms)
     const q = query(roomsCollectionReference, where("petID", "==", petID))
     const querySnapshot = await getDocs(q)
-    querySnapshot.docs.map(async (doc) => {
-      await deleteDoc(doc.ref)
-    })
+    await Promise.all(
+      querySnapshot.docs.map((doc) => {
+        return deleteDoc(doc.ref)
+      }),
+    )
   }
 
   const handleResponse = async (response: "SIM" | "NÃO") => {
@@ -243,28 +232,21 @@ export default function Chat({ route, navigation }: Props) {
       try {
         // TODO: Fazer a troca de usuários
         // Exemplo: Atualizar o `owner_uid` do pet para o `loggedInUser?.id`
-        await updatePetOwner(
-          roomDocument?.petID ?? "",
-          loggedInUser?.id ?? "",
-          firebaseApp,
-        )
+        await updatePetOwner(roomDocument?.petID ?? "", loggedInUser?.id ?? "")
 
         // Definir a solicitação de adoção como False no pet
-        await updatePetAdoptionStatus(
-          roomDocument?.petID ?? "",
-          false,
-          firebaseApp,
-        )
+        await updatePetAdoptionStatus(roomDocument?.petID ?? "", false)
 
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a confirmação
         await deleteMessageById("sendAcceptMessage")
 
         //Deletar todas as salas que tenham o pet_id
-        await deleteChatByID(roomDocument?.petID ?? "")
+        await deleteAllChatsOfPet(roomDocument?.petID ?? "")
 
         // zerando os dados do pet
-        await adoptPet(roomDocument?.petID ?? "")
+        await resetPetUsersLists(roomDocument?.petID ?? "")
+
         Alert.alert("Seu novo pet já está em seu domínio")
       } catch (error) {
         console.error("Erro ao aceitar a adoção:", error)
@@ -274,15 +256,12 @@ export default function Chat({ route, navigation }: Props) {
       // Lógica quando a resposta for NÃO
       try {
         // Definir a solicitação de adoção como False no pet
-        await updatePetAdoptionStatus(
-          roomDocument?.petID ?? "",
-          false,
-          firebaseApp,
-        )
+        await updatePetAdoptionStatus(roomDocument?.petID ?? "", false)
 
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a recusa
         await deleteMessageById("sendAcceptMessage")
+        navigation.goBack()
 
         Alert.alert("O pet não foi transferido para você")
       } catch (error) {
@@ -311,6 +290,7 @@ export default function Chat({ route, navigation }: Props) {
   )
 }
 
+// Componente de bolha de chat customizado
 interface IRMB {
   message: Readonly<MessageProps<IMessage>>
   onResponse: (response: "SIM" | "NÃO") => void
