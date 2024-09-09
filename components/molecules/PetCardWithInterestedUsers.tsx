@@ -8,12 +8,19 @@ import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { Image } from "expo-image"
 import { useContext, useEffect, useState } from "react"
-import React, { FlatList, Text, View } from "react-native"
+import React, { Alert, FlatList, Text, View } from "react-native"
 import { Button, Card, Divider, useTheme } from "react-native-paper"
 import UserCard from "./UserCard"
 import { UserListRightButton } from "../atoms/UserListRightButton"
 import checkRoomWithUserExists from "@/services/api/chat/checkRoomWithUserExists"
 import ListEmpty from "../atoms/ListEmpty"
+import { rejectAdoptionAction } from "@/services/api/pet/rejectAdoptionAction"
+import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
+import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
+import getPetAction from "@/services/api/pet/getPetAction"
+import { doc, getFirestore, updateDoc } from "firebase/firestore"
+import { FirebaseApp } from "firebase/app"
+import { collectionPaths } from "@/constants"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -58,8 +65,57 @@ export default function PetCardWithInterestedUsers({
     })
   }, [pet, loading, firebaseApp])
 
-  const acceptDonation = () => {}
-  const rejectDonation = () => {}
+  async function updatePetAdoptionStatus(
+    petID: string,
+    status: boolean,
+    firebaseApp: FirebaseApp,
+  ) {
+    const db = getFirestore(firebaseApp)
+
+    const petDocumentReference = doc(db, collectionPaths.pets, petID)
+
+    await updateDoc(petDocumentReference, {
+      adoptionRequest: status,
+      adoption: false,
+    })
+  }
+
+  const acceptDonation = async (userID: string): Promise<void> => {
+    const room = await getRoomWithUserAction(userID, petID, firebaseApp)
+    //verificar se ja foi enviado esse mensagem caso tenha sido é necessário verificar se teve resposta
+    //do contrario não deve reenviar a mensagem
+    //TODO:
+    const pet = await getPetAction(petID, firebaseApp)
+    //adicionar adoptionRequest no pet
+    // undefined -> false
+    if (pet?.adoptionRequest ?? false) {
+      Alert.alert(
+        "Você Já aceitou a doação, aguarde a resposta do outro usuário.",
+      )
+    } else {
+      try {
+        await sendAcceptMessage(room, firebaseApp)
+        // Definir a solicitação de adoção como true no pet
+        await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
+        Alert.alert(
+          "Você aceitou a doação.",
+          "Espere a resposta do outro usuário.",
+        )
+      } catch (error) {
+        console.error("Erro ao aceitar adoção:", error)
+        Alert.alert("Erro", "Não foi possível aceitar a adoção.")
+      }
+    }
+  }
+
+  const rejectDonation = async (userID: string): Promise<void> => {
+    await rejectAdoptionAction(petID, userID, firebaseApp)
+    // TODO: adicionar um snackbar avisando do sucesso da operação
+    Alert.alert(
+      "O usuário foi removido da lista de interessados e não poderá ver e interessar o seu pet novamente.",
+    )
+    setLoading(true)
+  }
 
   return (
     <Card
@@ -110,13 +166,13 @@ export default function PetCardWithInterestedUsers({
               style={{
                 flexDirection: "row",
                 flex: 1,
-                justifyContent: "space-around"
+                justifyContent: "space-around",
               }}
             >
-              <Button compact onPress={acceptDonation}>
+              <Button compact onPress={() => acceptDonation(user.id)}>
                 <Text>Aceitar adoção</Text>
               </Button>
-              <Button compact onPress={rejectDonation}>
+              <Button compact onPress={() => rejectDonation(user.id)}>
                 <Text>Rejeitar adoção</Text>
               </Button>
             </View>

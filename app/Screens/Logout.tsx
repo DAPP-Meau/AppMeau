@@ -30,7 +30,6 @@ export default function Logout() {
           uppercase
           onPress={async () => {
             await auth.signOut()
-            navigation.navigate("index")
           }}
         >
           Sair

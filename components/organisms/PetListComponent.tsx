@@ -9,6 +9,7 @@ import { FlatList, RefreshControl } from "react-native-gesture-handler"
 import { IconButton } from "react-native-paper"
 import ListEmpty from "../atoms/ListEmpty"
 import { PetAndOwnerDocument } from "@/models"
+import { LoggedInUserContext } from "@/services/store/LoggedInUserContext"
 
 export interface IPetListProps {
   query?: QueryConstraint[]
@@ -18,6 +19,7 @@ export interface IPetListProps {
 export default function PetListComponent({ query, card }: IPetListProps) {
   const navigation = useNavigation()
   const firebaseApp = useContext(FirebaseAppContext)
+  const loggedInUser = useContext(LoggedInUserContext)
 
   const [refreshing, setRefreshing] = useState(true)
   const [petList, setPetList] = useState<PetAndOwnerDocument[] | undefined>(
@@ -32,7 +34,13 @@ export default function PetListComponent({ query, card }: IPetListProps) {
 
     async function callback() {
       const tempPetList = await getPetListAction(firebaseApp, ...(query ?? []))
-      setPetList(tempPetList)
+      // Filtrar pets o qual o dono rejeitou o usuário atual.
+      if (loggedInUser) {
+        const filtered = tempPetList.filter(({ pet }) => {
+          return !pet.data.rejectedUsersList?.includes(loggedInUser?.id)
+        })
+        setPetList(filtered)
+      }
     }
   }, [refreshing])
 
@@ -64,9 +72,7 @@ export default function PetListComponent({ query, card }: IPetListProps) {
     <FlatList
       data={petList}
       renderItem={({ item }) => (
-        <View style={{margin:10}}>
-          {renderCard(item)}
-        </View>
+        <View style={{ margin: 10 }}>{renderCard(item)}</View>
       )}
       ListEmptyComponent={() => (
         <ListEmpty
