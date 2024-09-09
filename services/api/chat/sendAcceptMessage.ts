@@ -18,7 +18,7 @@ export default async function sendAcceptMessage(
   const userDocument = await getUserAction(loggedInUser, firebaseApp)
   const petData = await getPetAction(room.data.petID, firebaseApp)
   const msg: IMessage = {
-    _id: Crypto.randomUUID(),//possivelmete deveriamos setar um ID unico pois essa mensagem so estara uma unica vez em cada chat
+    _id: 'sendAcceptMessage',//possivelmete deveriamos setar um ID unico pois essa mensagem so estara uma unica vez em cada chat
     text: `${petData?.animal.name} foi liberado para sua adoção você aceita?`,    
     createdAt: serverTimestamp(), // Erro esperado
     user: {

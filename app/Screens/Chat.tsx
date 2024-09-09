@@ -15,6 +15,9 @@ import {
   getDoc,
   updateDoc,
   deleteDoc,
+  where,
+  getDocs,
+  deleteField,
 } from "firebase/firestore"
 import { FirebaseAppContext } from "@/services/store/firebaseAppContext"
 import { collectionPaths } from "@/constants"
@@ -156,6 +159,18 @@ export default function Chat({ route, navigation }: Props) {
     },
     [firebaseApp, loggedInUser, userID, roomDocument],
   )
+  async function adoptPet(petID: string) {
+    const petDocumentReference = doc(db, 
+      collectionPaths.pets,
+      petID
+    )
+
+    // Remove the 'Interested' field from the document
+    await updateDoc(petDocumentReference, {
+      interestedUsersList: deleteField(),
+      rejectedUsersList: deleteField()
+    });
+  }
   async function updatePetOwner(petID: string, newOwnerID: string, firebaseApp: FirebaseApp) {
     const db = getFirestore(firebaseApp);
     const petRef = doc(db, 'pets', petID);
@@ -174,13 +189,28 @@ export default function Chat({ route, navigation }: Props) {
     });
   }
 
-  async function deleteMessageById(messageId: string, roomId: string, firebaseApp: FirebaseApp) {
-    const db = getFirestore(firebaseApp);
-    const messageRef = doc(db, `rooms/${roomId}/messages`, messageId);
-  
-    await deleteDoc(messageRef);
+  async function deleteMessageById(messageId: string) {
+    
+    const q = query(
+      messagesCollectionReference,
+      where('_id', "==", messageId)
+    )
+    const querySnapshot = await getDocs(q);
+    querySnapshot.docs.map(async (doc) => {
+      await deleteDoc(doc.ref)
+    })
   }
-  
+  async function deleteChatByID(petID: string) {
+    const roomsCollectionReference = collection(db, collectionPaths.rooms)
+    const q = query(
+      roomsCollectionReference,
+      where('petID', "==", petID)
+    )
+    const querySnapshot = await getDocs(q);
+    querySnapshot.docs.map(async (doc) => {
+      await deleteDoc(doc.ref)
+    })
+  }
   const handleResponse = async (response) => {
     const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
     const dono = petData?.owner_uid;
@@ -208,8 +238,13 @@ export default function Chat({ route, navigation }: Props) {
 
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a confirmação
-        //await deleteMessageById(specificMessageId, roomDocument?.roomID, firebaseApp);
-  
+        await deleteMessageById('sendAcceptMessage');
+
+        //Deletar todas as salas que tenham o pet_id
+        await deleteChatByID(roomDocument?.petID ?? '')
+        
+        // zerando os dados do pet
+        await adoptPet(roomDocument?.petID ?? '')
         Alert.alert('Seu novo pet já está em seu domínio');
       } catch (error) {
         console.error('Erro ao aceitar a adoção:', error);
@@ -223,7 +258,7 @@ export default function Chat({ route, navigation }: Props) {
   
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a recusa
-        //await deleteMessageById(specificMessageId, roomDocument?.roomID, firebaseApp);
+        await deleteMessageById('sendAcceptMessage');
   
         Alert.alert('O pet não foi transferido para você');
       } catch (error) {

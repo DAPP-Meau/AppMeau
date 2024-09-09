@@ -20,6 +20,7 @@ import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
 import getPetAction from "@/services/api/pet/getPetAction"
 import { doc, getFirestore, updateDoc } from "firebase/firestore"
 import { FirebaseApp } from "firebase/app"
+import { collectionPaths } from "@/constants"
 
 export interface IPetCardWithInterestedUsersProps {
   pet: Snapshot<Pet>
@@ -66,9 +67,13 @@ export default function PetCardWithInterestedUsers({
 
   async function updatePetAdoptionStatus(petID: string, status: boolean, firebaseApp: FirebaseApp) {
     const db = getFirestore(firebaseApp);
-    const petRef = doc(db, 'pets', petID);
-  
-    await updateDoc(petRef, {
+
+    const petDocumentReference = doc(db, 
+      collectionPaths.pets,
+      petID
+    )
+
+    await updateDoc(petDocumentReference, {
       adoptionRequest: status,
     });
   }
@@ -77,22 +82,23 @@ export default function PetCardWithInterestedUsers({
     //verificar se ja foi enviado esse mensagem caso tenha sido é necessario verificar se teve resposta 
     //do contrario não deve reenviar a mensagem
     //TODO:
-    const pet = await getPetAction(petID,firebaseApp)
+    const pet = await getPetAction(petID, firebaseApp)
     //adicionar adoptionRequest no pet
-    if (!pet?.adoptionRequest){
+    // undefined -> false
+    if (pet?.adoptionRequest ?? false) {
+      Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");
+    }
+    else {
       try {
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
-        await updatePetAdoptionStatus(petID??'', true, firebaseApp);
+        await updatePetAdoptionStatus(petID ?? '', true, firebaseApp);
         Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.");
       } catch (error) {
         console.error("Erro ao aceitar adoção:", error);
         Alert.alert("Erro", "Não foi possível aceitar a adoção.");
       }
-    }else {Alert.alert("Você deve aguardar o retorno da ultima solicitação que fez");}
-    
-
-
+    }
   }
 
   const rejectDonation = async (userID: string): Promise<void> => {

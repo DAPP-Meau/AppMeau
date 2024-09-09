@@ -25,14 +25,13 @@ export default function PetListComponent({ query, card }: IPetListProps) {
   )
 
   // Pegar lista de pets do firebase
-  console.log(query);
   useEffect(() => {
     callback().finally(() => {
       setRefreshing(false)
     })
 
     async function callback() {
-      const tempPetList = await getPetListAction(firebaseApp)//, ...(query ?? []))
+      const tempPetList = await getPetListAction(firebaseApp, ...(query ?? []))
       setPetList(tempPetList)
     }
   }, [refreshing])
