@@ -88,13 +88,15 @@ export default function PetCardWithInterestedUsers({
     //adicionar adoptionRequest no pet
     // undefined -> false
     if (pet?.adoptionRequest ?? false) {
-      Alert.alert("Você deve aguardar o retorno da última solicitação que fez.")
+      Alert.alert(
+        "Você Já aceitou a doação, aguarde a resposta do outro usuário.",
+      )
     } else {
       try {
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
         await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
-        Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.")
+        Alert.alert("Você aceitou a doação.", "Espere o outro usuário aceitar.")
       } catch (error) {
         console.error("Erro ao aceitar adoção:", error)
         Alert.alert("Erro", "Não foi possível aceitar a adoção.")
@@ -106,7 +108,7 @@ export default function PetCardWithInterestedUsers({
     await rejectAdoptionAction(petID, userID, firebaseApp)
     // TODO: adicionar um snackbar avisando do sucesso da operação
     Alert.alert(
-      "O usuário foi removido dos interessados e não irá realizar novas consulta ao seu pet.",
+      "O usuário foi removido da lista de interessados e não poderá ver e interessar o seu pet novamente.",
     )
     setLoading(true)
   }

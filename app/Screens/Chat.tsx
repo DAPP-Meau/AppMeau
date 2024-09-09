@@ -1,6 +1,17 @@
 import { StackScreenProps } from "@react-navigation/stack"
-import React, { useState, useEffect, useContext, useCallback } from "react"
-import { Bubble, GiftedChat, IMessage } from "react-native-gifted-chat"
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from "react"
+import {
+  Bubble,
+  GiftedChat,
+  IMessage,
+  MessageProps,
+} from "react-native-gifted-chat"
 import { RootStackParamList } from "../Navigation/RootStack"
 import {
   collection,
@@ -25,9 +36,9 @@ import { Room, roomSchema } from "@/models"
 import { LoggedInUserContext } from "@/services/store/LoggedInUserContext"
 import { createChatPushMessage } from "@/services/api/messaging/createPushMessage"
 import sendPushNotification from "@/services/api/messaging/sendPushNotification"
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
+import { View, Text, StyleSheet, Alert } from "react-native"
 import getPetAction from "@/services/api/pet/getPetAction"
-import { MD3Theme, useTheme } from "react-native-paper"
+import { Button, MD3Theme, useTheme } from "react-native-paper"
 import { FirebaseApp } from "firebase/app"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
@@ -41,11 +52,9 @@ export default function Chat({ route, navigation }: Props) {
   const [userID, setUserID] = useState<string>()
   // Documento da sala
   const [roomDocument, setRoomDocument] = useState<Room>()
+  const [roomID, setRoomId] = useState<string>()
   // Mensagens exibidas na tela
   const [messages, setMessages] = useState<Array<IMessage>>([])
-
-  const theme = useTheme()
-  const styles = makeTheme(theme)
 
   const roomDocumentReference = doc(
     db,
@@ -61,19 +70,17 @@ export default function Chat({ route, navigation }: Props) {
   useEffect(() => {
     async function callback() {
       // Encontrar documento da sala
-      console.log("get room Doc")
       const roomDoc = await getDoc(roomDocumentReference)
       if (!roomDoc) throw new Error("No room document to create chat!")
       const _room = roomSchema.parse(roomDoc.data())
-      console.log("setRoom")
       setRoomDocument(_room)
+      setRoomId(roomDoc.id)
+
       // Encontrar usuário com o qual está conversando
       const userId = _room.users.filter((val) => {
         return val !== loggedInUser?.id
       })[0]
-      console.log("setUserID")
       setUserID(userId)
-      console.log("dados do useEffect: " + JSON.stringify({ _room }))
     }
 
     callback()
@@ -285,42 +292,6 @@ export default function Chat({ route, navigation }: Props) {
     }
   }
 
-  const renderMessageWithButtons = (props) => {
-    const { currentMessage } = props
-
-    if (currentMessage.buttons) {
-      return (
-        <View style={styles.messageContainer}>
-          <Text style={styles.messageTitle}>{currentMessage.text}</Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly", // Distribui os botões igualmente
-              marginTop: 10, // Espaço adicional no topo
-            }}
-          >
-            <TouchableOpacity
-              style={styles.messageButton}
-              onPress={() => handleResponse("SIM")}
-            >
-              <Text style={styles.buttonText}>SIM</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.messageButton}
-              onPress={() => handleResponse("NÃO")}
-            >
-              <Text style={styles.buttonText}>NÃO</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )
-    }
-
-    return <Bubble {...props} />
-  }
-
   return (
     <GiftedChat
       messages={messages}
@@ -330,9 +301,76 @@ export default function Chat({ route, navigation }: Props) {
         name: loggedInUser?.data.person.fullName ?? "null",
         avatar: loggedInUser?.data.person.pictureURL,
       }}
-      renderMessage={renderMessageWithButtons}
+      renderMessage={(message) => (
+        <RenderMessageWithButtons
+          message={message}
+          onResponse={handleResponse}
+        />
+      )}
     />
   )
+}
+
+interface IRMB {
+  message: Readonly<MessageProps<IMessage>>
+  onResponse: (response: "SIM" | "NÃO") => void
+}
+
+function RenderMessageWithButtons({ message, onResponse }: IRMB) {
+  const { currentMessage: _current } = message
+  const currentMessage = _current as IMessage & { buttons: boolean }
+  const loggedInUser = useContext(LoggedInUserContext)
+
+  const theme = useTheme()
+  const styles = makeTheme(theme)
+
+  const [leftSide, setLeftSide] = useState(false)
+  useMemo(() => {
+    setLeftSide(currentMessage.user._id !== loggedInUser?.id)
+  }, [message])
+
+  if (currentMessage)
+    return (
+      <View style={{ margin: 10 }}>
+        {currentMessage.buttons ? (
+          <>
+            {leftSide ? (
+              <View style={[styles.messageContainer, styles.alignLeft]}>
+                <Text style={styles.messageTitle}>{currentMessage.text}</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly", // Distribui os botões igualmente
+                    marginTop: 10, // Espaço adicional no topo
+                  }}
+                >
+                  <Button
+                    style={styles.messageButton}
+                    onPress={() => onResponse("SIM")}
+                  >
+                    <Text style={styles.buttonText}>SIM</Text>
+                  </Button>
+                  <Button
+                    style={styles.messageButton}
+                    onPress={() => onResponse("NÃO")}
+                  >
+                    <Text style={styles.buttonText}>NÃO</Text>
+                  </Button>
+                </View>
+              </View>
+            ) : (
+              <View style={[styles.messageContainer, styles.alignRight]}>
+                <Text>
+                  Pronto para doar. Espere a resposta do outro usuário.
+                </Text>
+              </View>
+            )}
+          </>
+        ) : (
+          <Bubble {...message} />
+        )}
+      </View>
+    )
 }
 
 const makeTheme = (theme: MD3Theme) =>
@@ -346,8 +384,13 @@ const makeTheme = (theme: MD3Theme) =>
       shadowOpacity: 0.3,
       shadowRadius: 4,
       elevation: 5, // Para sombra em Android
-      maxWidth: "75%", // Define um limite de largura para a mensagem (75% da tela)
-      alignSelf: "center", // Garante que a mensagem fique alinhada como em chats convencionais
+      width: "75%", // Define um limite de largura para a mensagem (75% da tela)
+    },
+    alignLeft: {
+      alignSelf: "flex-start",
+    },
+    alignRight: {
+      alignSelf: "flex-end",
     },
     messageTitle: {
       fontSize: 18, // Aumenta o tamanho da fonte para melhorar a leitura
@@ -357,10 +400,7 @@ const makeTheme = (theme: MD3Theme) =>
       textAlign: "center", // Centraliza o texto
     },
     messageButton: {
-      paddingVertical: 10,
-      paddingHorizontal: 25,
       backgroundColor: theme.colors.primaryContainer,
-      borderRadius: 25, // Botões mais arredondados
       shadowColor: "#000", // Sombra para dar profundidade
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
