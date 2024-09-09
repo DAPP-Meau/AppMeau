@@ -60,7 +60,8 @@ export const petSchema = z.object({
   rejectedUsersList: z.array(z.string()).optional(),
   owner_uid: z.string(),
   picture_url: z.string().optional(),
-  adoptionRequest: z.boolean().optional()
+  adoptionRequest: z.boolean().optional(),
+  adoption: z.boolean()
 })
 
 export type Pet = z.infer<typeof petSchema>

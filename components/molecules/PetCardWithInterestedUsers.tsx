@@ -75,6 +75,7 @@ export default function PetCardWithInterestedUsers({
 
     await updateDoc(petDocumentReference, {
       adoptionRequest: status,
+      adoption: false,
     });
   }
   const acceptDonation = async (userID: string): Promise<void> => {

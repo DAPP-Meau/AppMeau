@@ -4,15 +4,7 @@ import { where } from "firebase/firestore"
 import React, { useContext } from "react"
 
 export default function PetList() {
-  const user = useContext(LoggedInUserContext)
-
   return (
-    <>
-      {user?.id && 
-        <PetListComponent
-          
-        />
-      }
-    </>
+    <PetListComponent query={[where("adoption", "==", true)]} />
   )
 }
