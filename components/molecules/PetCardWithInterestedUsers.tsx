@@ -65,39 +65,39 @@ export default function PetCardWithInterestedUsers({
     })
   }, [pet, loading, firebaseApp])
 
-  async function updatePetAdoptionStatus(petID: string, status: boolean, firebaseApp: FirebaseApp) {
-    const db = getFirestore(firebaseApp);
+  async function updatePetAdoptionStatus(
+    petID: string,
+    status: boolean,
+    firebaseApp: FirebaseApp,
+  ) {
+    const db = getFirestore(firebaseApp)
 
-    const petDocumentReference = doc(db, 
-      collectionPaths.pets,
-      petID
-    )
+    const petDocumentReference = doc(db, collectionPaths.pets, petID)
 
     await updateDoc(petDocumentReference, {
       adoptionRequest: status,
       adoption: false,
-    });
+    })
   }
   const acceptDonation = async (userID: string): Promise<void> => {
     const room = await getRoomWithUserAction(userID, petID, firebaseApp)
-    //verificar se ja foi enviado esse mensagem caso tenha sido é necessário verificar se teve resposta 
+    //verificar se ja foi enviado esse mensagem caso tenha sido é necessário verificar se teve resposta
     //do contrario não deve reenviar a mensagem
     //TODO:
     const pet = await getPetAction(petID, firebaseApp)
     //adicionar adoptionRequest no pet
     // undefined -> false
     if (pet?.adoptionRequest ?? false) {
-      Alert.alert("Você deve aguardar o retorno da última solicitação que fez.");
-    }
-    else {
+      Alert.alert("Você deve aguardar o retorno da última solicitação que fez.")
+    } else {
       try {
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
-        await updatePetAdoptionStatus(petID ?? '', true, firebaseApp);
-        Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.");
+        await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
+        Alert.alert("Adoção aceita!", "A mensagem foi enviada para o chat.")
       } catch (error) {
-        console.error("Erro ao aceitar adoção:", error);
-        Alert.alert("Erro", "Não foi possível aceitar a adoção.");
+        console.error("Erro ao aceitar adoção:", error)
+        Alert.alert("Erro", "Não foi possível aceitar a adoção.")
       }
     }
   }
@@ -105,7 +105,9 @@ export default function PetCardWithInterestedUsers({
   const rejectDonation = async (userID: string): Promise<void> => {
     await rejectAdoptionAction(petID, userID, firebaseApp)
     // TODO: adicionar um snackbar avisando do sucesso da operação
-    Alert.alert('O usuário foi removido dos interessados e não irá realizar novas consulta ao seu pet');
+    Alert.alert(
+      "O usuário foi removido dos interessados e não irá realizar novas consulta ao seu pet.",
+    )
     setLoading(true)
   }
 
@@ -158,7 +160,7 @@ export default function PetCardWithInterestedUsers({
               style={{
                 flexDirection: "row",
                 flex: 1,
-                justifyContent: "space-around"
+                justifyContent: "space-around",
               }}
             >
               <Button compact onPress={() => acceptDonation(user.id)}>

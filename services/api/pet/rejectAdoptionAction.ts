@@ -33,7 +33,7 @@ const setUnrejected = async (
 }
 
 /** Função auxiliar */
-const setrejected = async (
+const setRejected = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
@@ -68,6 +68,6 @@ export async function rejectAdoptionAction(
   const pet = await getPetAction(petID, firebaseApp)
   if (!pet) throw new Error("The pet that uses this petID does not exist!")
 
-  setrejected(pet, petDocumentRef, userID)
+  setRejected(pet, petDocumentRef, userID)
   setUninterested(pet, petDocumentRef, userID)
 }

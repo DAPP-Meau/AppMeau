@@ -35,8 +35,8 @@ export default function PetListComponent({ query, card }: IPetListProps) {
     async function callback() {
       const tempPetList = await getPetListAction(firebaseApp, ...(query ?? []))
       // Filtrar pets o qual o dono rejeitou o usuário atual.
-      if(loggedInUser) {
-        const filtered = tempPetList.filter(({pet}) => {
+      if (loggedInUser) {
+        const filtered = tempPetList.filter(({ pet }) => {
           return !pet.data.rejectedUsersList?.includes(loggedInUser?.id)
         })
         setPetList(filtered)
@@ -72,9 +72,7 @@ export default function PetListComponent({ query, card }: IPetListProps) {
     <FlatList
       data={petList}
       renderItem={({ item }) => (
-        <View style={{margin:10}}>
-          {renderCard(item)}
-        </View>
+        <View style={{ margin: 10 }}>{renderCard(item)}</View>
       )}
       ListEmptyComponent={() => (
         <ListEmpty

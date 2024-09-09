@@ -27,7 +27,7 @@ import { createChatPushMessage } from "@/services/api/messaging/createPushMessag
 import sendPushNotification from "@/services/api/messaging/sendPushNotification"
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
 import getPetAction from "@/services/api/pet/getPetAction"
-import { useTheme } from "react-native-paper"
+import { MD3Theme, useTheme } from "react-native-paper"
 import { FirebaseApp } from "firebase/app"
 
 type Props = StackScreenProps<RootStackParamList, "chat">
@@ -44,6 +44,9 @@ export default function Chat({ route, navigation }: Props) {
   // Mensagens exibidas na tela
   const [messages, setMessages] = useState<Array<IMessage>>([])
 
+  const theme = useTheme()
+  const styles = makeTheme(theme)
+
   const roomDocumentReference = doc(
     db,
     collectionPaths.rooms,
@@ -56,8 +59,6 @@ export default function Chat({ route, navigation }: Props) {
 
   // Pegar documento do usuário logado e do usuário do chat
   useEffect(() => {
-    callback()
-
     async function callback() {
       // Encontrar documento da sala
       console.log("get room Doc")
@@ -74,6 +75,8 @@ export default function Chat({ route, navigation }: Props) {
       setUserID(userId)
       console.log("dados do useEffect: " + JSON.stringify({ _room }))
     }
+
+    callback()
   }, [navigation])
 
   // Event Listener de mensagens novas do firebase.
@@ -144,11 +147,11 @@ export default function Chat({ route, navigation }: Props) {
       } else {
         console.error(
           "Faltam dados para enviar mensagem: " +
-          JSON.stringify({
-            logged_uid: loggedInUser?.id ?? "null",
-            uid: userID ?? "null",
-            room: roomDocument ?? "null",
-          }),
+            JSON.stringify({
+              logged_uid: loggedInUser?.id ?? "null",
+              uid: userID ?? "null",
+              room: roomDocument ?? "null",
+            }),
         )
       }
 
@@ -159,196 +162,165 @@ export default function Chat({ route, navigation }: Props) {
     },
     [firebaseApp, loggedInUser, userID, roomDocument],
   )
+
   async function adoptPet(petID: string) {
-    const petDocumentReference = doc(db, 
-      collectionPaths.pets,
-      petID
-    )
+    const petDocumentReference = doc(db, collectionPaths.pets, petID)
 
     // Remove the 'Interested' field from the document
     await updateDoc(petDocumentReference, {
       interestedUsersList: deleteField(),
-      rejectedUsersList: deleteField()
-    });
+      rejectedUsersList: deleteField(),
+    })
   }
-  async function updatePetOwner(petID: string, newOwnerID: string, firebaseApp: FirebaseApp) {
-    const db = getFirestore(firebaseApp);
-    const petRef = doc(db, 'pets', petID);
-    
+
+  async function updatePetOwner(
+    petID: string,
+    newOwnerID: string,
+    firebaseApp: FirebaseApp,
+  ) {
+    const db = getFirestore(firebaseApp)
+    const petRef = doc(db, "pets", petID)
+
     await updateDoc(petRef, {
       owner_uid: newOwnerID,
-    });
+    })
   }
-  
-  async function updatePetAdoptionStatus(petID: string, status: boolean, firebaseApp: FirebaseApp) {
-    const db = getFirestore(firebaseApp);
-    const petRef = doc(db, 'pets', petID);
-  
+
+  async function updatePetAdoptionStatus(
+    petID: string,
+    status: boolean,
+    firebaseApp: FirebaseApp,
+  ) {
+    const db = getFirestore(firebaseApp)
+    const petRef = doc(db, "pets", petID)
+
     await updateDoc(petRef, {
       adoptionRequest: status,
-    });
+    })
   }
 
   async function deleteMessageById(messageId: string) {
-    
-    const q = query(
-      messagesCollectionReference,
-      where('_id', "==", messageId)
-    )
-    const querySnapshot = await getDocs(q);
+    const q = query(messagesCollectionReference, where("_id", "==", messageId))
+    const querySnapshot = await getDocs(q)
     querySnapshot.docs.map(async (doc) => {
       await deleteDoc(doc.ref)
     })
   }
+
   async function deleteChatByID(petID: string) {
     const roomsCollectionReference = collection(db, collectionPaths.rooms)
-    const q = query(
-      roomsCollectionReference,
-      where('petID', "==", petID)
-    )
-    const querySnapshot = await getDocs(q);
+    const q = query(roomsCollectionReference, where("petID", "==", petID))
+    const querySnapshot = await getDocs(q)
     querySnapshot.docs.map(async (doc) => {
       await deleteDoc(doc.ref)
     })
   }
-  const handleResponse = async (response) => {
-    const petData = await getPetAction(roomDocument?.petID ?? '', firebaseApp);
-    const dono = petData?.owner_uid;
-  
+
+  const handleResponse = async (response: "SIM" | "NÃO") => {
+    const petData = await getPetAction(roomDocument?.petID ?? "", firebaseApp)
+    const dono = petData?.owner_uid
+
     if (!petData) {
-      Alert.alert('Erro ao obter dados do pet');
-      return;
+      Alert.alert("Erro ao obter dados do pet")
+      return
     }
-  
+
     // Verifica se o dono do pet não está tentando aceitar a própria solicitação
     if (loggedInUser?.id === dono) {
-      Alert.alert('Aguarde a resposta!');
-      return;
+      Alert.alert("Aguarde a resposta!")
+      return
     }
-  
-    if (response === 'SIM') {
+
+    if (response === "SIM") {
       // Lógica quando a resposta for SIM
       try {
         // TODO: Fazer a troca de usuários
         // Exemplo: Atualizar o `owner_uid` do pet para o `loggedInUser?.id`
-        await updatePetOwner(roomDocument?.petID ?? '', loggedInUser?.id ?? '', firebaseApp);
-  
+        await updatePetOwner(
+          roomDocument?.petID ?? "",
+          loggedInUser?.id ?? "",
+          firebaseApp,
+        )
+
         // Definir a solicitação de adoção como False no pet
-        await updatePetAdoptionStatus(roomDocument?.petID ?? '', false, firebaseApp);
+        await updatePetAdoptionStatus(
+          roomDocument?.petID ?? "",
+          false,
+          firebaseApp,
+        )
 
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a confirmação
-        await deleteMessageById('sendAcceptMessage');
+        await deleteMessageById("sendAcceptMessage")
 
         //Deletar todas as salas que tenham o pet_id
-        await deleteChatByID(roomDocument?.petID ?? '')
-        
+        await deleteChatByID(roomDocument?.petID ?? "")
+
         // zerando os dados do pet
-        await adoptPet(roomDocument?.petID ?? '')
-        Alert.alert('Seu novo pet já está em seu domínio');
+        await adoptPet(roomDocument?.petID ?? "")
+        Alert.alert("Seu novo pet já está em seu domínio")
       } catch (error) {
-        console.error('Erro ao aceitar a adoção:', error);
-        Alert.alert('Erro ao processar a adoção.');
+        console.error("Erro ao aceitar a adoção:", error)
+        Alert.alert("Erro ao processar a adoção.")
       }
-    } else if (response === 'NÃO') {
+    } else if (response === "NÃO") {
       // Lógica quando a resposta for NÃO
       try {
         // Definir a solicitação de adoção como False no pet
-        await updatePetAdoptionStatus(roomDocument?.petID ?? '', false, firebaseApp);
-  
+        await updatePetAdoptionStatus(
+          roomDocument?.petID ?? "",
+          false,
+          firebaseApp,
+        )
+
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a recusa
-        await deleteMessageById('sendAcceptMessage');
-  
-        Alert.alert('O pet não foi transferido para você');
+        await deleteMessageById("sendAcceptMessage")
+
+        Alert.alert("O pet não foi transferido para você")
       } catch (error) {
-        console.error('Erro ao recusar a adoção:', error);
-        Alert.alert('Erro ao processar a recusa.');
+        console.error("Erro ao recusar a adoção:", error)
+        Alert.alert("Erro ao processar a recusa.")
       }
     }
-  };
-  
-  const theme = useTheme()
+  }
+
   const renderMessageWithButtons = (props) => {
-    const { currentMessage } = props;
+    const { currentMessage } = props
 
     if (currentMessage.buttons) {
       return (
-        <View style={{
-          padding: 20,
-          backgroundColor: theme.colors.primary,
-          borderRadius: 10,
-          shadowColor: '#000',  // Sombra para dar profundidade
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          elevation: 5,  // Para sombra em Android
-          maxWidth: '75%',  // Define um limite de largura para a mensagem (75% da tela)
-          alignSelf: 'center', // Garante que a mensagem fique alinhada como em chats convencionais
-        }}>
-          <Text style={{
-            fontSize: 18, // Aumenta o tamanho da fonte para melhorar a leitura
-            marginBottom: 15, // Espaço maior entre o texto e os botões
-            color: theme.colors.background,
-            fontWeight: 'bold', // Torna o texto mais destacado
-            textAlign: 'center', // Centraliza o texto
-          }}>
-            {currentMessage.text}
-          </Text>
-        
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-evenly', // Distribui os botões igualmente
-            marginTop: 10, // Espaço adicional no topo
-          }}>
-            <TouchableOpacity style={{
-              paddingVertical: 10,
-              paddingHorizontal: 25,
-              backgroundColor: theme.colors.primaryContainer,
-              borderRadius: 25, // Botões mais arredondados
-              shadowColor: '#000', // Sombra para dar profundidade
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              elevation: 3,
-            }} onPress={() => handleResponse('SIM')}>
-              <Text style={{
-                color: theme.colors.backdrop,
-                fontSize: 16,
-                fontWeight: '600', // Negrito para destaque
-              }}>
-                SIM
-              </Text>
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageTitle}>{currentMessage.text}</Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly", // Distribui os botões igualmente
+              marginTop: 10, // Espaço adicional no topo
+            }}
+          >
+            <TouchableOpacity
+              style={styles.messageButton}
+              onPress={() => handleResponse("SIM")}
+            >
+              <Text style={styles.buttonText}>SIM</Text>
             </TouchableOpacity>
-        
-            <TouchableOpacity style={{
-              paddingVertical: 10,
-              paddingHorizontal: 25,
-              backgroundColor: theme.colors.primaryContainer,
-              borderRadius: 25, // Botões mais arredondados
-              shadowColor: '#000', // Sombra para dar profundidade
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              elevation: 3,
-            }} onPress={() => handleResponse('NÃO')}>
-              <Text style={{
-                color: theme.colors.backdrop,
-                fontSize: 16,
-                fontWeight: '600', // Negrito para destaque
-              }}>
-                NÃO
-              </Text>
+
+            <TouchableOpacity
+              style={styles.messageButton}
+              onPress={() => handleResponse("NÃO")}
+            >
+              <Text style={styles.buttonText}>NÃO</Text>
             </TouchableOpacity>
           </View>
         </View>
-        
-        
-      );
+      )
     }
 
-    return <Bubble {...props} />;
-  };
+    return <Bubble {...props} />
+  }
+
   return (
     <GiftedChat
       messages={messages}
@@ -363,4 +335,41 @@ export default function Chat({ route, navigation }: Props) {
   )
 }
 
-
+const makeTheme = (theme: MD3Theme) =>
+  StyleSheet.create({
+    messageContainer: {
+      padding: 20,
+      backgroundColor: theme.colors.primary,
+      borderRadius: 10,
+      shadowColor: "#000", // Sombra para dar profundidade
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5, // Para sombra em Android
+      maxWidth: "75%", // Define um limite de largura para a mensagem (75% da tela)
+      alignSelf: "center", // Garante que a mensagem fique alinhada como em chats convencionais
+    },
+    messageTitle: {
+      fontSize: 18, // Aumenta o tamanho da fonte para melhorar a leitura
+      marginBottom: 15, // Espaço maior entre o texto e os botões
+      color: theme.colors.background,
+      fontWeight: "bold", // Torna o texto mais destacado
+      textAlign: "center", // Centraliza o texto
+    },
+    messageButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 25,
+      backgroundColor: theme.colors.primaryContainer,
+      borderRadius: 25, // Botões mais arredondados
+      shadowColor: "#000", // Sombra para dar profundidade
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    buttonText: {
+      color: theme.colors.backdrop,
+      fontSize: 16,
+      fontWeight: "600", // Negrito para destaque
+    },
+  })

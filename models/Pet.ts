@@ -61,7 +61,7 @@ export const petSchema = z.object({
   owner_uid: z.string(),
   picture_url: z.string().optional(),
   adoptionRequest: z.boolean().optional(),
-  adoption: z.boolean()
+  adoption: z.boolean(),
 })
 
 export type Pet = z.infer<typeof petSchema>
