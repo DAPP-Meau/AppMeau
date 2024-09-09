@@ -86,7 +86,7 @@ export default function Chat({ route, navigation }: Props) {
       orderBy("createdAt", "desc"),
       limit(100),
     )
-    // Possível optmização: pegar mensagens iniciais com uma requisição normal
+    // Possível optimização: pegar mensagens iniciais com uma requisição normal
     // e depois registrar esse event listener para pegar só as mensagens novas.
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const tempMessages: IMessage[] = []
