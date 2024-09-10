@@ -19,7 +19,6 @@ import getRoomWithUserAction from "@/services/api/chat/getRoomAction"
 import sendAcceptMessage from "@/services/api/chat/sendAcceptMessage"
 import getPetAction from "@/services/api/pet/getPetAction"
 import { doc, getFirestore, updateDoc } from "firebase/firestore"
-import { FirebaseApp } from "firebase/app"
 import { collectionPaths } from "@/constants"
 
 export interface IPetCardWithInterestedUsersProps {
@@ -30,6 +29,7 @@ export default function PetCardWithInterestedUsers({
   pet,
 }: IPetCardWithInterestedUsersProps) {
   const firebaseApp = useContext(FirebaseAppContext)
+  const db = getFirestore(firebaseApp)
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
   const theme = useTheme()
 
@@ -65,18 +65,13 @@ export default function PetCardWithInterestedUsers({
     })
   }, [pet, loading, firebaseApp])
 
-  async function updatePetAdoptionStatus(
+  async function setAdoptionInProgress(
     petID: string,
     status: boolean,
-    firebaseApp: FirebaseApp,
   ) {
-    const db = getFirestore(firebaseApp)
-
     const petDocumentReference = doc(db, collectionPaths.pets, petID)
-
     await updateDoc(petDocumentReference, {
       adoptionRequest: status,
-      adoption: false,
     })
   }
 
@@ -90,13 +85,13 @@ export default function PetCardWithInterestedUsers({
     // undefined -> false
     if (pet?.adoptionRequest ?? false) {
       Alert.alert(
-        "Você Já aceitou a doação, aguarde a resposta do outro usuário.",
+        "Você já aceitou a doação, aguarde a resposta do outro usuário.",
       )
     } else {
       try {
         await sendAcceptMessage(room, firebaseApp)
         // Definir a solicitação de adoção como true no pet
-        await updatePetAdoptionStatus(petID ?? "", true, firebaseApp)
+        await setAdoptionInProgress(petID ?? "", true)
         Alert.alert(
           "Você aceitou a doação.",
           "Espere a resposta do outro usuário.",

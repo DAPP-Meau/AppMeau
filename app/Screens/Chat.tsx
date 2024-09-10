@@ -248,6 +248,8 @@ export default function Chat({ route, navigation }: Props) {
         await resetPetUsersLists(roomDocument?.petID ?? "")
 
         Alert.alert("Seu novo pet já está em seu domínio")
+
+        navigation.goBack()
       } catch (error) {
         console.error("Erro ao aceitar a adoção:", error)
         Alert.alert("Erro ao processar a adoção.")
@@ -261,7 +263,6 @@ export default function Chat({ route, navigation }: Props) {
         //ajustar para essa funcionar
         // Remover a mensagem de "SIM/NÃO" após a recusa
         await deleteMessageById("sendAcceptMessage")
-        navigation.goBack()
 
         Alert.alert("O pet não foi transferido para você")
       } catch (error) {
