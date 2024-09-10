@@ -104,7 +104,8 @@ export default function PetCardWithInterestedUsers({
   }
 
   const rejectDonation = async (userID: string): Promise<void> => {
-    await rejectAdoptionAction(petID, userID, firebaseApp)
+    const room = await getRoomWithUserAction(userID, petID, firebaseApp)
+    await rejectAdoptionAction(petID, userID, room.id, firebaseApp)
     // TODO: adicionar um snackbar avisando do sucesso da operação
     Alert.alert(
       "O usuário foi removido da lista de interessados e não poderá ver e interessar o seu pet novamente.",
