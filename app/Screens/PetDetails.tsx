@@ -1,4 +1,11 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import {
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import React, { useContext, useEffect, useState } from "react"
 import {
   Button,
@@ -6,10 +13,12 @@ import {
   FAB,
   IconButton,
   MD3Theme,
+  Menu,
   Modal,
   Portal,
   ProgressBar,
   Snackbar,
+  Switch,
   useTheme,
 } from "react-native-paper"
 import { ScrollView } from "react-native"
@@ -29,11 +38,13 @@ import {
 } from "@/utils/strings"
 import HeaderAndText from "@/components/atoms/HeaderAndText"
 import getPetAndOwnerAction from "@/services/api/pet/getPetAndOwnerAction"
-import { PetAndOwnerDocument } from "@/models"
+import { Pet, PetAndOwnerDocument, Snapshot, User } from "@/models"
 import getCurrentUserUID from "@/utils/getCurrentUser"
 import { blurhash } from "@/constants/blurhash"
 import { toggleInterestedInPet } from "@/services/api/pet/toggleInterestedInPet"
 import { isInterestedInPet } from "@/utils/isInterestedInPet"
+import { doc, getFirestore, updateDoc } from "firebase/firestore"
+import { collectionPaths } from "@/constants"
 
 type Props = DrawerScreenProps<RootStackParamList, "petDetails">
 
@@ -41,12 +52,16 @@ export default function PetDetails({ route, navigation }: Props) {
   const theme = useTheme()
   const styles = makeStyles(theme)
   const firebaseApp = useContext(FirebaseAppContext)
+  const db = getFirestore(firebaseApp)
   const loggedInUserID = getCurrentUserUID(firebaseApp)
 
   const [loading, setLoading] = useState(true)
   const [petAndOwner, setPetAndOwner] = useState<
     PetAndOwnerDocument | undefined
   >(undefined)
+  const [pet, setPet] = useState<Pet>()
+  const [owner, setOwner] = useState<User>()
+  const [available, setAvailable] = useState(false)
   // Pegar dados do banco
   useEffect(() => {
     callback().finally(() => {
@@ -56,6 +71,9 @@ export default function PetDetails({ route, navigation }: Props) {
     async function callback() {
       const value = await getPetAndOwnerAction(route.params.petID, firebaseApp)
       setPetAndOwner(value)
+      setPet(value?.pet.data)
+      setOwner(value?.user.data)
+      setAvailable(value?.pet.data.adoption ?? false)
     }
   }, [loading])
 
@@ -78,6 +96,15 @@ export default function PetDetails({ route, navigation }: Props) {
 
   const HandleEditPet = () => {
     Alert.alert("Editar: função ainda não implementada")
+  }
+
+  async function setPetAvailableForAdoption(petID: string, status: boolean) {
+    const petDocumentReference = doc(db, collectionPaths.pets, petID)
+    await updateDoc(petDocumentReference, {
+      adoption: status,
+    })
+    const newPet: Pet = { ...pet, adoption: status }
+    setPet(newPet)
   }
 
   const PetRemove = () => {
@@ -124,11 +151,9 @@ export default function PetDetails({ route, navigation }: Props) {
 
   const [isImageZoomModalOpen, setIsImageZoomModalOpen] = useState(false)
 
-  if (!petAndOwner || loading) {
+  if (!pet || !owner || !petAndOwner || loading) {
     return <ProgressBar indeterminate />
   } else {
-    const pet = petAndOwner.pet.data
-    const owner = petAndOwner.user.data
     return (
       <ScrollView>
         {/* Modal de zoom da imagem */}
@@ -194,6 +219,15 @@ export default function PetDetails({ route, navigation }: Props) {
 
           <View style={{ paddingHorizontal: 20, gap: 16, paddingBottom: 100 }}>
             <Text style={styles.animalName}>{pet.animal.name}</Text>
+            {userIsOwner && (
+              <View style={{flexDirection:"row", alignItems: "center"}}>
+                <Switch value={available} onChange={() => {
+                  setAvailable(!available)
+                  setPetAvailableForAdoption(petAndOwner.pet.id, !available)
+                }}/>
+                <Text>Disponibilidade de adoção</Text>
+              </View>
+            )}
             <View style={{ gap: 16 }}>
               <View style={{ flexDirection: "row", gap: 50 }}>
                 <HeaderAndText title="Sexo">

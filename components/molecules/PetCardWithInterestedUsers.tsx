@@ -127,7 +127,9 @@ export default function PetCardWithInterestedUsers({
         style={{
           flexDirection: "row",
           gap: 10,
-          backgroundColor: theme.colors.primaryContainer,
+          backgroundColor: petData.adoption
+            ? theme.colors.primaryContainer
+            : theme.colors.errorContainer,
           borderRadius: 5,
         }}
       >
@@ -140,6 +142,9 @@ export default function PetCardWithInterestedUsers({
         />
         <View style={{ flexDirection: "column" }}>
           <Text style={{ fontSize: 18 }}>{petData.animal.name}</Text>
+          {!petData.adoption && (
+            <Text style={{ fontSize: 18 }}>Adoção desativada</Text>
+          )}
           <Text>
             {usuariosInteressados(petData.interestedUsersList?.length ?? 0)}
           </Text>
