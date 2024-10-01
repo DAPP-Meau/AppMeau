@@ -13,9 +13,11 @@ import { collectionPaths } from "@/constants"
 import { listRemove, listUnion } from "@/utils/listUtils"
 import { isInterestedInPet } from "@/utils/isInterestedInPet"
 import getPetAction from "./getPetAction"
+import { createInterestedPushMessage } from "../messaging/createPushMessage"
+import sendPushNotification from "../messaging/sendPushNotification"
 
 /** Função auxiliar */
-const setUninterested = async (
+export const setUninterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
@@ -32,7 +34,7 @@ const setUninterested = async (
 }
 
 /** Função auxiliar */
-const setInterested = async (
+export const setInterested = async (
   pet: Pet,
   petDocumentRef: DocumentReference,
   loggedInUserUID: string,
@@ -66,15 +68,11 @@ export async function toggleInterestedInPet(
   const loggedInUserUID = getAuth(firebaseApp).currentUser?.uid
 
   if (!loggedInUserUID) {
-    throw new Error(
-      "Cant toggle interest in pet: user is undefined, probably because it's not logged in.",
-    )
+    throw new Error("Cant toggle interest in pet: user is undefined.")
   }
 
   const pet = await getPetAction(petID, firebaseApp)
-  if (!pet) {
-    throw new Error("The pet that uses this petID does not exist!")
-  }
+  if (!pet) throw new Error("The pet that uses this petID does not exist!")
 
   const interested = isInterestedInPet(pet.interestedUsersList, loggedInUserUID)
   let newInterestedList = []
@@ -85,6 +83,15 @@ export async function toggleInterestedInPet(
       loggedInUserUID,
     )
   } else {
+    console.log("sending message")
+    const message = await createInterestedPushMessage(
+      loggedInUserUID,
+      pet.owner_uid,
+      petID,
+      firebaseApp,
+    )
+    sendPushNotification(message)
+
     newInterestedList = await setInterested(
       pet,
       petDocumentRef,

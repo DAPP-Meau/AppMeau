@@ -18,6 +18,8 @@ import ColorSchemeProvider from "@/services/store/ColorSchemeProvider"
 import { Image, StatusBar, View } from "react-native"
 import merge from "deepmerge"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
+import LoggedInUserProvider from "@/services/store/LoggedInUserProvider"
+import { MeauNotificationProvider } from "@/services/store/MeauNotificationProvider"
 
 const { LightTheme: LightYellowNavTheme } = adaptNavigationTheme({
   reactNavigationLight: DefaultTheme,
@@ -101,10 +103,14 @@ export function App() {
           <PaperProvider theme={theme}>
             <NavigationContainer theme={theme}>
               <FirebaseAppProvider>
-                <SafeAreaProvider>
-                  <StatusBar backgroundColor={theme.colors?.primary} />
-                  <Layout />
-                </SafeAreaProvider>
+                <LoggedInUserProvider>
+                  <MeauNotificationProvider>
+                    <SafeAreaProvider>
+                      <StatusBar backgroundColor={theme.colors?.primary} />
+                      <Layout />
+                    </SafeAreaProvider>
+                  </MeauNotificationProvider>
+                </LoggedInUserProvider>
               </FirebaseAppProvider>
             </NavigationContainer>
           </PaperProvider>

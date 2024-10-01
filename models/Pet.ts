@@ -45,7 +45,7 @@ export type Health = z.infer<typeof healthSchema>
 export const adoptionRequirementsSchema = z.object({
   requireAdoptionTerm: z.boolean(),
   requireHousePhoto: z.boolean(),
-  requireMonitoring: z.number().int().nonnegative(),
+  requireMonitoring: z.coerce.number().int().nonnegative(),
   requirePreviousVisit: z.boolean(),
 })
 
@@ -57,8 +57,11 @@ export const petSchema = z.object({
   health: healthSchema,
   adoptionRequirements: adoptionRequirementsSchema,
   interestedUsersList: z.array(z.string()).optional(),
+  rejectedUsersList: z.array(z.string()).optional(),
   owner_uid: z.string(),
   picture_url: z.string().optional(),
+  adoptionRequest: z.boolean().optional(),
+  adoption: z.boolean(),
 })
 
 export type Pet = z.infer<typeof petSchema>

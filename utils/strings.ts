@@ -112,3 +112,41 @@ export const endereco = ({ address }: User): string => {
   const { fullAddress, city, state } = address
   return fullAddress + " - " + city + ", " + state
 }
+
+export const usuariosInteressados = (x: number): string => {
+  if (x) {
+    const s = x > 1 ? "s" : ""
+    return x + " usuário" + s + " interessado" + s
+  }
+  return "Nenhum usuário interessado"
+}
+
+/**
+ * Truca uma string caso seja muito grande e adiciona 3 pontos.
+ *
+ * @param s a string
+ * @param length O tamanho a partir do qual em que a string será truncada. Padrão 20
+ * @returns A string com três pontos no final caso seja maior que length
+ */
+export const elipsisIfLarge = (s: string, length: number = 20): string => {
+  if (s.length < length) return s
+  else return s.slice(0, length) + "..."
+}
+
+/**
+ * Retorna os dois primeiros nomes de uma pessoa. Caso a pessoa contenha "Da" ou
+ * outro segundo nome com 2 caracteres na string, inclui esse nome.
+ * @param s O nome da pessoa
+ * @returns Os dois primeiros nomes da pessoa
+ * @example
+ *   getFirstTwoNames("Joao Silva") = "Joao Silva"
+ *   getFirstTwoNames("Joao da Silva") = "Joao da Silva"
+ */
+export const getFirstTwoNames = (s: string): string => {
+  const splits = s.split(" ")
+  let cutAt = 2
+  if (splits.length >= 3 && splits[1].length === 2) {
+    cutAt = 3
+  }
+  return splits.slice(0, cutAt).join(" ")
+}

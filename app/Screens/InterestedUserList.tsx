@@ -37,7 +37,7 @@ export default function InterestedUserList({ route, navigation }: Props) {
       const newList: (Snapshot<User> & { roomExists: boolean })[] =
         await Promise.all(
           tempIntList.map(async (usr) => {
-            const b = await checkRoomWithUserExists(usr.id, firebaseApp)
+            const b = await checkRoomWithUserExists(usr.id, petId, firebaseApp)
             return { ...usr, roomExists: b }
           }),
         )
@@ -56,7 +56,11 @@ export default function InterestedUserList({ route, navigation }: Props) {
               mode="contained"
               compact
               onPress={async () => {
-                const room = await getRoomWithUserAction(item.id, firebaseApp)
+                const room = await getRoomWithUserAction(
+                  item.id,
+                  petId,
+                  firebaseApp,
+                )
                 navigation.navigate("chat", { roomId: room.id })
               }}
             >

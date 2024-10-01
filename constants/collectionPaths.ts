@@ -3,4 +3,5 @@ export const collectionPaths = {
     pets: "pets",
     rooms: "rooms",
     rooms_messages: "messages",
+    fcmTokens: "fcmTokens",
 }
